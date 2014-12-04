@@ -191,7 +191,7 @@ text-micro = μ
 \RequirePackage{graphicx}
 \graphicspath{{figures/}}
 %change the caption style a little like 1-1
-\renewcommand{\thefigure}{\arabic{chapter}-\arabic{figure}}
+%\renewcommand{\thefigure}{\arabic{chapter}-\arabic{figure}}
 
 \newenvironment{fig}[2][1]
         {\begin{figure}[H]
@@ -222,13 +222,16 @@ text-micro = μ
 \definecolor{codeback}{RGB}{240,240,240}
 \definecolor{bashback}{RGB}{48,10,36}
 
-\newtcblisting{tcbcode}[2][]{listing engine=minted,minted language=#2,minted options={fontsize=\footnotesize,frame=none},listing only,#1,breakable=true,colback=codeback,boxrule=0.4pt,boxsep=0pt}
+\newtcblisting{tcbcode}[1][text]{listing engine=minted,minted language=#1,minted options={fontsize=\footnotesize,frame=none},listing only,breakable=true,colback=codeback,boxrule=0.4pt,boxsep=0pt}
 
 
 \tcbuselibrary{skins}
-\newtcbinputlisting{tcbinput}[3][]{listing engine=minted,minted language=#2,minted options={fontsize=\footnotesize,frame=none,linenos,numbersep=3mm},listing only,#1,breakable=true,colback=blue!5!white,left=5mm,boxrule=1pt,boxsep=5pt,listing file={#3},enhanced,overlay={\begin{tcbclipinterior}\fill[red!20!blue!20!white] (frame.south west)
+
+\newtcbinputlisting{cppinput}[2][]{listing engine=minted,minted language=cpp,minted options={fontsize=\footnotesize,frame=none,linenos,numbersep=3mm},listing only,breakable=true,colback=blue!5!white,left=5mm,boxrule=1pt,boxsep=5pt,#1,listing file={#2},enhanced,overlay={\begin{tcbclipinterior}\fill[red!20!blue!20!white] (frame.south west)
 rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}}}
 
+\newtcbinputlisting{cppline}[4][]{listing engine=minted,minted language=cpp,minted options={fontsize=\footnotesize,frame=none,linenos,numbersep=3mm,firstline=#3,firstnumber=#3,lastline=#4},#1,listing only,breakable=true,colback=blue!5!white,left=5mm,boxrule=1pt,boxsep=5pt,listing file={#2},enhanced,overlay={\begin{tcbclipinterior}\fill[red!20!blue!20!white] (frame.south west)
+rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}}}
 
 \newtcblisting{tcbpython}[1][]{listing engine=minted,minted language=python,minted options={fontsize=\footnotesize,frame=none},listing only,#1,breakable=true,colback=codeback,boxrule=0.4pt,boxsep=0pt}
 
@@ -268,6 +271,7 @@ rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}}}
 
 
 %=====特殊的环境特殊的文字======%
+\RequirePackage{framed}
 %=========重新定义 quote=====%
 \renewenvironment{quote}[1][anonymous]{
 \newcommand{\quoteauthor}[1][anonymous]{#1}

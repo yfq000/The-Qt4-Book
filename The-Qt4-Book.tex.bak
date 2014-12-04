@@ -19,7 +19,7 @@
 \authorinfo{作者全名：Jasmin Blanchette, Mark Summerfield。本文代码来自\href{http://www.qtrac.eu/marksummerfield.html}{这个网站}。原中文翻译：闫锋欣，曾泉人，张志强；原中文审校：周莉娜，赵延兵。}
 \editor{德山书生}
 \email{a358003542@gmail.com}
-\editorinfo{编者：德山书生，湖南常德人氏。我负责整理排版工作，关于版权我只有一句话，希望我的工作能够帮助更多的人的学习和研究。本项目Github网站在\href{https://github.com/a358003542/The-Qt4-Book}{这里}。有意见请反馈。}
+\editorinfo{编者：德山书生，湖南常德人氏。我负责整理排版工作。本项目Github网站在\href{https://github.com/a358003542/The-Qt4-Book}{这里}。有意见请反馈。}
 \version{0.01}
 \titleLA
 
@@ -71,7 +71,7 @@ Haavard对C++图形用户界面开发的兴趣始于1988年，当时一家瑞典
 
 1995年4月，通过Haavard就读过的大学的一位教授的联系，挪威的Metis公司与他们签订了一份基于Qt进行软件开发的合同。大约在同一时间，公司雇佣了Arnt Gulbrandsen，在公司工作的6年时间里，他设计并实现了一套独具特色的文档系统，并且对Qt的代码也做出了不少贡献。
 
-1995年5月20日，Qt 0.90被上传到sunsite.unc.edu。6天后，在comp.os.linux.announce上发布。这是Qt的第一个公开发行版本。Qt既可以用于Windows上的程序开发，又可以用于UNIX上的程序开发，而且在这两种平台上，都提供了相同的应用程序编程接口。从第一天起，Qt就提供了两个版本的软件许可协议：一个是进行商业开发所需的商业许可协议版，另一个则是适用于开源开发的自由软件许可协议版。Metis的合同确保了公司的发展，然而，在随后长达10个月的时间内，再没有任何人购买Qt的商业许可协议。
+1995年5月20日，Qt 0.90被上传到sunsite.unc.edu。6天后，在\\ comp.os.linux.announce上发布。这是Qt的第一个公开发行版本。Qt既可以用于Windows上的程序开发，又可以用于UNIX上的程序开发，而且在这两种平台上，都提供了相同的应用程序编程接口。从第一天起，Qt就提供了两个版本的软件许可协议：一个是进行商业开发所需的商业许可协议版，另一个则是适用于开源开发的自由软件许可协议版。Metis的合同确保了公司的发展，然而，在随后长达10个月的时间内，再没有任何人购买Qt的商业许可协议。
 
 1996年3月，欧洲航天局(European Space Agency)购买了10份Qt的商业许可协议，它成了第二位Qt客户。凭着坚定的信念，Eirik和Haavard又雇佣了另外一名开发人员。Qt 0.97在同年5月底正式发布，随后在1996年9月24日，Qt1.0正式面世。到了这一年的年底，Qt的版本已经发展到了1.1，共有来自8个不同国家的客户购买了18份Qt的商业许可协议。也就是在这一年，在Matthias Ettrich的带领下，创立了KDE项目。
 
@@ -79,7 +79,7 @@ Qt 1.2于1997年4月发布。Matthias Ettrich利用Qt建立KDE的决定，使Qt�
 
 Matthias在1998年加入公司，并且在当年9月，发布了Qt 1系列的最后一个版本——V 1.40。1999年6月，Qt 2.0发布，该版本拥有一个新的开源许可协议——Q公共许可协议(QPL，Q Public License)，它与开源的定义一致。1999年8月，Qt赢得了LinuxWorld的最佳库/工具奖。大约在这个时候，Trolltech Pty Ltd（澳大利亚）成立了。
 
-2000年，公司发布了Qt/Embedded Linux，它用于Linux嵌入式设备。Qt/Embedded Linux提供了自己的窗口系统，并且可以作为X11的轻量级替代产品。现在，Qt/X11和Qt/Embedded Linux除了提供商业许可协议之外，还提供了广为使用的GNU通用公共许可协议（GPL: General Public License）。2000年底，成立了Trolltech Inc.（美国），并发布了Qtopia的第一版，它是一个用于移动电话和掌上电脑(PDA)的环境平台。Qt/Embedded Linux在2001年和2002年两次获得了LinuxWorld的"Best Embedded Linux Solution"奖，Qtopia Phone也在2004年获得了同样的荣誉。
+2000年，公司发布了Qt/Embedded Linux，它用于Linux嵌入式设备。Qt/Em-bedded Linux提供了自己的窗口系统，并且可以作为X11的轻量级替代产品。现在，Qt/X11和Qt/Embedded Linux除了提供商业许可协议之外，还提供了广为使用的GNU通用公共许可协议（GPL: General Public License）。2000年底，成立了Trolltech Inc.（美国），并发布了Qtopia的第一版，它是一个用于移动电话和掌上电脑(PDA)的环境平台。Qt/Embedded Linux在2001年和2002年两次获得了LinuxWorld的"Best Embedded Linux Solution"奖，Qtopia Phone也在2004年获得了同样的荣誉。
 
 2001年，Qt 3.0发布。现在，Qt已经可用于Windows、Mac OS X、UNIX和Linux（桌面和嵌入式）平台。Qt 3提供了42个新类和超过500 000行的代码。Qt 3是自Qt 2以来前进历程中最为重要的一步，它主要在诸多方面进行了众多改良，包括本地化和统一字符编码标准的支持、全新的文本查看和编辑窗口部件，以及一个类似于Perl正则表达式的类等。2002年，Qt 3赢得了Software Development Times的"Jolt Productivity Award"\footnote{Jolt大奖素有“软件业界的奥斯卡”之美誉，共设通用类图书、技术类图书、语言和开发环境、框架库和组件、开发者网站等十余个分类，每个分类设有一个“震撼奖”(Jolt Award)和三个“生产力奖”(Productivity Award)。一项技术产品只有在获得了Jolt奖之后才能真正成为行业的主流，一本技术书籍只有在获得了Jolt奖之后才能真正奠定其作为经典的地位。虽然Jolt奖项并不起决定作用，但它代表了某种技术趋势与潮流——译者注。}。
 
@@ -94,7 +94,13 @@ Matthias在1998年加入公司，并且在当年9月，发布了Qt 1系列的最
 
 
 \section{编者的话}
+感谢作者，感谢原中文翻译者，感谢原中文审校者。
+
 书名修改不是想标新立异，实在是github和本地文档编译方便，不支持空格。
+
+感谢汉王OCR技术支持，感谢\XeLaTeX 。
+
+
 
 
 %这里空一行。
@@ -119,8 +125,9 @@ Matthias在1998年加入公司，并且在当年9月，发布了Qt 1系列的最
 \section{Hello Qt}
 我们先从一个非常简单的Qt程序开始。首先一行一行地研究这个程序，然后将会看到如何编译并运行它。
 
-\begin{tcbinput}[]{c++}{qt4-book/chap01/hello/hello.cpp}
-\end{tcbinput}
+\begin{cppinput}{qt4-book/chap01/hello/hello.cpp}
+\end{cppinput}
+
 
 第1行和第2行包含了类QApplication和QLabel的定义。对于每个Qt类，都有一个与该类同名（且大写）的头文件，在这个头文件中包括了对该类的定义。
 
@@ -138,10 +145,140 @@ Matthias在1998年加入公司，并且在当年9月，发布了Qt 1系列的最
 \label{fig:Linux上的Hello程序}
 \end{fig}
 
+现在是在机器上测试这个程序的时候了，看起来它应该会如图1.1所示。首先需要安装Qt 4.3.2（或是其后的其他Qt 4新发行版），附录A对这一安装过程进行了说明。从现在开始，假定你已经正确地安装了Qt 4的一个副本，并且假定已经在PATH环境变量中对Qt的bin目录进行了设置。（在Windows操作系统中，这些操作会由Qt的安装程序自动完成。）还需要将该程序的源代码保存到hello.cpp文件，并把它放进一个名为hello的目录中。
+
+现在在命令提示符下，进入hello目录，输入如下命令，生成一个与平台无关的项目文件hello.pro：
+\begin{Verbatim}
+qmake -project
+\end{Verbatim}
+
+然后，输入如下命令，从这个项目文件生成一个与平台相关的makefile文件：
+
+\begin{Verbatim}
+qmake hello.pro
+\end{Verbatim}
+
+键入make命令就可以构建该程序。（在附录B中，会给出qmake工具更为详细的说明。）要运行该程序，在Windows下可以输入\verb+hello+，在UNIX下可以输入\verb+./hello+，在Mac OS X下可以输入\verb+open hello.app+。要结束该程序，可直接单击窗口标题栏上的关闭按钮。
+
+如果使用的是Windows系统，并且已经安装了Qt的开源版和MinGW编译器，那么将会看到一个指向MS-DOS提示符窗口的快捷键，其中已经正确地创建了使用Qt时所需的全部环境变量。如果启动了这个窗口，那么就可以在里面像上面所讲述的那样使用qmake命令和make命令编译Qt应用程序。而由此产生的可执行文件将会保存在应用程序所在目录的debug或release文件夹中。
+
+如果使用的是Microsoft Visual C++和商业版的Qt，则需要用nmake命令代替make命令。除了这一方法外，还可以通过hello.pro文件创建一个Visual Studio的工程文件，此时需要输入命令：
+
+\begin{Verbatim}
+qmake -tp vc hello.pro
+\end{Verbatim}
+
+然后就可以在Visual Studio中编译这个程序了。如果使用的是Mac OS X系统中的Xcode，那么可以使用如下命令来生成一个Xcode工程文件：
+\begin{Verbatim}
+qmake -spec macx-xcode hello.pro
+\end{Verbatim}
+
+在开始进入下一个例子之前，我们一起来做一件有意思的事情：将代码行
+\begin{Verbatim}
+QLabel *label = new QLabel("Hello Qt!");
+\end{Verbatim}
+
+替换为
+\begin{Verbatim}
+QLabel *label = new QLabel("<h2><i>Hello</i> "
+                           "<font color=red>Qt!</font></h2>");
+\end{Verbatim}
+
+然后重新编译该程序。运行程序时，看起来应当是图1.2的样子。正如该例子所显示的那样，通过使用一些简单的HTML样式格式，就可以轻松地把Qt应用程序的用户接口变得更为丰富多彩。
+\begin{fig}{helloqt2}
+\caption{具有简单HTML样式的标签}
+\label{fig:helloqt2}
+\end{fig}
+
+\section{建立连接}
+第二个例子要说明的是如何响应用户的动作。这个应用程序由一个按钮构成，用户可以单击这个按钮退出程序。除了应用程序的主窗口部件使用的是QPushButton而不是QLabel之外，这个应用程序的源代码和Hello程序的源代码非常相似。同时，我们还会将用户的一个动作（单击按钮）与一段代码连接起来。
+
+这个应用程序的源代码位于本书的例子文件中，文件名是qt4-book/chap01/qu-it/quit.cpp。程序的运行效果如图1.3所示。以下是该文件所包含的内容：
+\begin{cppinput}{qt4-book/chap01/quit/quit.cpp}
+\end{cppinput}
+
+\begin{fig}{quit}
+\caption{Quit应用程序}
+\label{fig:quit}
+\end{fig}
+
+Qt的窗口部件通过发射信号(signal)来表明一个用户动作已经发生了或者是一个状态已经改变了\footnote{Qt的信号和UNIX的信号并不相关，本书中所讨论的信号仅指Qt信号。}。例如，当用户单击QPushButton时；该按钮就会发射一个clicked()信号。信号可以与函数（在这里称为槽，slot）相连接，以便在发射信号时，槽可以得到自动执行。在这个例子中，我们把这个按钮的clicked()信号与QApplication对象的quit()槽连接起来。宏SIGNAL()和SLOT()是Qt语法中的一部分。
+
+现在来构建这个应用程序。假设已经创建了一个包含quit.cpp文件的quit目录。在quit目录中，首先运行qmake命令生成它的工程文件，然后再次运行该命令来生成一个makefile文件，这两项操作的命令如下：
+\begin{Verbatim}
+qmake -project
+qmake quit.pro
+\end{Verbatim}
+
+现在，就可以编译并运行这个应用程序了。如果单击Quit按钮，或者按下了空格键（这样也会按下Quit按钮），那么将会退出应用程序。
 
 
+\section{窗口部件的布局}
+这一节将创建一个简单的例子程序，以说明如何用布局(layout)来管理窗口中窗口部件的几何形状，还要说明如何利用信号和槽来同步窗口部件。这个应用程序的运行效果如图1-4所示，它可以用来询问用户的年龄，而用户可以通过操纵微调框(spin box)或者滑块(slider)来完成年龄的输入。
+\begin{fig}{ageapplication}
+\caption{Age应用程序}
+\label{fig:ageapplication}
+\end{fig}
+
+这个应用程序由三个窗口部件组成：一个QSpinBox，一个QSlider和一个QWidget。QWidget是这个应用程序的主窗口。QSpinBox和QSlider会显示在QWidget中，它们都是QWidget窗口部件的子对象。换言之，QWidget窗口部件是QSpinBox和QSlider的父对象。QWidget窗口部件自己则没有父对象，因为程序是把它当作顶层窗口的。QWidget的构造函数以及它的所有子类都会带一个参数QWidget *，以用来说明谁是它们的父窗口部件。
+
+以下是本应用程序的源代码：
+\begin{cppinput}{qt4-book/chap01/age/age.cpp}
+\end{cppinput}
+
+第8行和第9行创建了QWidget对象，并把它作为应用程序的主窗口。我们通过调用setWindowTitle()函数来设置显示在窗口标题栏上的文字。
+
+第10行和第11行分别创建了一个QSpinBox和一个QSlider，并分别在第12行和第13行设置了它们的有效范围。我们可以放心地假定用户的最大年龄不会超过130岁。本应把这个窗口传递给QSpinBox和QSlider的构造函数，以说明这两个窗口部件的父对象都是这个窗口，但在这里没有这个必要，因为布局系统将会自行得出这一结果并自动把该窗口设置为微调框和滑块的父对象，下面将会很快看到这一点。
+
+从第14行到第17行，调用了两次QObject::connect()，这是为了确保能够让微调框和滑块同步，以便它们两个总是可以显示相同的数值。一旦有一个窗口部件的值发生了改变，那么就会发射它的valueChanged(int)信号，而另一个窗口部件就会用这个新值调用它的setValue(int)槽。
+
+第18行将微调框的值设置为35。当发生这种情况时，QSpinBox就会发射valueChanged(int)信号，其中，int参数的值是35。这个参数会被传递给QSlider的setValue(int)槽，它会把这个滑块的值设置为35。于是，滑块就会发射valueChanged(int)信号，因为它的值发生了变化，这样就触发了微调框的setValue(int)槽。但在这一点上，setValue(int)并不会再发射任何信号，因为微调框的值已经是35了。这样就可以避免无限循环的发生。图1.5对这种情况进行了图示概述。
+\begin{fig}{ageapplication2}
+\caption{改变一个窗口部件的值会使两个窗口部件都发生变化}
+\label{fig:ageapplication2}
+\end{fig}
 
 
+\begin{framed}
+\vspace{-\parskip}
+\begin{center}
+\textbf{窗口部件的风格}
+\end{center}
+
+到目前为止，我们看到的这些屏幕截图都来自于Linux，但是Qt应用程序在每一个所支持的平台上都可以看起来像本地程序一样（见图1.6）。Qt是通过所模拟平台的视觉外观来实现这一点的，而不是对某个特殊平台的封装或者一个工具包中的窗口部件集。
+
+\begin{linefig}[0.9]{appstyle}
+\caption{一些预定义风格}
+\label{fig:appstyle}
+\end{linefig}
+
+运行于KDE下的Qt/X11应用程序的默认风格是Plastique，而运行于GNOME下的应用程序的默认风格是Cleanlooks。这些风格使用了渐变和抗锯齿效果，以用来提供一种时尚的外观。运行Qt应用程序的用户可以通过使用命令行参数-style覆盖原有的默认风格。例如，在X11下，要想使用Motif风格来运行Age应用程序，只需简单输入以下命令即可：
+\begin{Verbatim}
+./age -style motif
+\end{Verbatim}
+
+与其他风格不同，Windows XP、Windows Vista和Mac的风格只能在它们的本地平台上有效，因为它们需要依赖平台的主题引擎。
+
+还有另外一种风格QtDotNet，它来自于Qt Solutions模块。创建自定义风格也是可能的，这会在第19章中加以阐述。
+\end{framed}
+
+在源程序的第19行到第22行，使用了一个布局管理器对微调框和滑块进行布局处理。布局管理器(layout manager)就是一个能够对其所负责窗口部件的尺寸大小和位置进行设置的对象。Qt有三个主要的布局管理器类：
+\begin{itemize}
+\item QHBoxLayout。在水平方向上排列窗口部件，从左到右（在某些文化中则是从右向左）。
+\item QVBoxLayout。在竖直方向上排列窗口部件，从上到下。
+\item QGridLayout。把各个窗口部件排列在一个网格中。
+\end{itemize}
+
+第22行的QWidget::setlayout()函数调用会在窗口上安装该布局管理器（见图1.7）。从软件的底层实现来说，QSpinBox和QSlider会自动“重定义父对象”，它们会成为这个安装了布局的窗口部件的子对象。也正是基于这个原因，当创建一个需要放进某个布局中的窗口部件时，就没有必要为其显式地指定父对象了。
+
+\begin{fig}{agelayout}
+\caption{Age应用程序中的窗口部件和布局}
+\label{fig:agelayout}
+\end{fig}
+
+尽管没有明确地设置任何一个窗口部件的位置或大小，但QSpinBox和QSlider还是能够非常好看地一个挨着一个显示出来。这是因为QHBoxLayout可根据所负责的子对象的需要为它们分配
+所需的位置和大小。布局管理器使我们从应用程序的各种屏幕位置关系指定的繁杂纷扰中解脱
+出来，并且它还可以确保窗口尺寸大小发生改变时的平稳性。
 
 
 
@@ -153,76 +290,56 @@ Matthias在1998年加入公司，并且在当年9月，发布了Qt 1系列的最
 
 
 
-这些操作会由Qt的安装程序自动完成。）还需要将该程序的源代码保存到hello．cpp文件，并把它
-放进一个名为hello的目录中。你可以自行把代码录入到hello．cpp文件，也可以从与本书配套的
-那些例子中复制该文件，它放在examples/chapOl/heUo/hello．cpp文件中。（所有例子都可以从本书
-的网站中获取，网址是http：//www .infonnit．com/title/01323541 60。）
-    在命令提示符下，进入Fiello目录，输入如下命令，生成一个与平台无关的项目文件hello．pro：
-    qmake -project
-煞后，输入如下命令，从这个项目文件生成一个与平台相关的makefile文件：
-    qmake hello.pro
-    键入make命令就可以构建该程序。（在附录B中，会给出qmake工具更为详细的说明。）要运
-行该程序，在Windows下可以输入hello，在岍职下可以输入．／hello，在Mac OS x下可以输入open
- hello．app。要结束该程序，可直接单击窗口标题栏上的关闭按钮。
-    如果使用的是Windows系统，并且已经安装了Qt的开源版和MinGW编译器，那么将会看到一
-个指向MS-DOS提示符窗口的快捷键，其中已经正确地创建了使用Qt时所需的全部环境变量。，如
-果启动了这个窗口，那么就可以在里面像上面所讲述的那样使用qmake命令和make命令编译Qt
-应用程序。而由此产生的可执行文件将会保存在应用程序所在目录的debug或release文件夹中
-(例如，C:\examplesV chapOl\hello\release\hello. exe).
-  +女口果使用的是Microsoft VisLial c++和商业版的Qt，Uli懦要用nmake命令代替make命令。，除了这
-一方法外，还可以遁过heⅡo.pro文件创建一个Visual Studio的工程文件，此时需要输入命令：，  ．
-    qmake -tp vc hello.pro
-然后就可以在Visual Studio中编译这个程序了。如果使用的是Mac OS x系统中的Xcode，那各可以
-使用如下命令来生成一个Xcode工程文件：
-    qmake -spec macx-xcode hello.pro
-    在开始进入下一个例子之前，我们一起来做一件有意思的事情：将代码行
-    QLabel *label=new QLabel(”Hello  Qt rIt);
-  替换为
-    QLabel *label=new QLabel(“<h2×i>Hello<／i>u    .t
-    “<font  colo r=red>Qt!<／font><／h2>n);
-    然后重新编译该程序。运行程序时，看起来应当是图1.2的样子。正如该例子所显示的那样，通
-    过使用一些简单的HrML样式格式，就可以轻松地把Qt应用程序的用户接口变得更为丰富多彩。
-}．
-；＼、    弘一爿，。构…（嘲秒、e+一叠
-     4                                                  C++ GUI Qt 4编程(第 -版)
-       -- --
--_---:----.
-图1.2具有简单HTML样式的标签
-1.2建立连接
-    第二个确子要说明的是如何响应用户的动作。这个应用程序由一个按钮构成，用户可以单击
-这个按钮退出程序。除了应用程序的主窗’口部件使用的是QPushButton而不是QLabel亭篓：兰竺
-应用程序的源代码和Hello程序的源代码非常相似。同时，我们还会将用户的一个动作（单击按
-钮）与一段代码连接起来。
-    这个应用程序的源代码位于本书的例子文件中，文件名是exam-
-ples/chapOI/quit/quit. cpp。程序的运行效果如图1.3所示。以下是该
-文件所包含的内容：
-    1  #include <QApplicat,ion>    图1.3 Quit应用程序
-    2 #include <QPushButton>
-    3  int main(int argc, char *argv【】)
-    4  {
-    5    QApplication app(argc,  argv);    ’
-    6    0PushButton车button=new QPushButton(’‘Quit”);
-    ,QObj ect::connec‘(bu‘‘on,—§{}：糍；j÷6“80‘’’r
-    8    ＆app，SLO    );
-    9    button->s胁w()．  ．    。
-    10    returri app.exec(),
-    11  )
-    Qt的窗口部件通过发射信号(signal)来表明一个用户动作已经发生了或者是一个状态已经改
-变了①。例如，当用户单击QPu。hButton时；该按钮就会发射一个chcked()信号。信号可以与函数
-(在这里称为槽，slot)相连接，以便在发射焦号肘，f可以得赳自动执行。在这个例子中，我们把这
-个按钮的chcked()信号与QApplication对象的quit()槽连接起来。宏SIGNAL(')和SLOT()是Qt语法
-中的一部分。  ．
-    现在来构建这个应用程序。假设已经创建了一个包含quit．cpp文件的quit目录。在quit目录
-中，首先运行qmake命令生成它的工程文件，然后再次运行该命令来生成一个makefile文件，这两
-项操作的命令如下：
-    qmake -project
-    qmake quit．pro
-    现在，就可以编译并运行这个应用程序了。如果单击Quit按钮，或者按下了空格键（这样也会
-按下Quit按钮），那么将会退出应用程序。
-1,3  窗口部件的布局
-    这一节将创建一个简单的例子程序，以说明如何用布局(layout)来管理窗日中窗口部件的几何
-形状，还要说明如何利用信号和槽来同步窗口部件。这个应用程序的运行效果如图1-4所示，它可
-以用来询问用户的年龄，而用户可以通过操纵微调框( spin box)或者滑块(shder)来完成年龄的
-输入。
-①Qt的信号和LiMX的信号并不相关，本书中所讨论的信号仅指Q【信号。
 
+
+
+1.4使用参考文档
+    由于Qt的参考文档涉及了Qt中的每一个类和函数，所以对任何一名Qt开发人员来说，它都
+是一个基本工具。本书讲述了Qt的许多类和函数，但是也并不能完全覆盖到Qt中所有的类和函
+8
+
+数，同时也无法对书中所涉及的每个类和函数都提供全部的细节to如果想尽可能多地从,Qt获益，
+那么就应当尽快地达到对Qt参考文档了如指掌的程度。
+
+    在Qt的doc/html目录下可以找到HTML格式的参考文档，并且可以使用任何一种Web浏览器
+来阅读它。也可以使用Qt的帮助浏览器Qt Assistant，它具有强大的查询和索引功能，使用时能够
+比Web浏览器更加快速和容易。
+    要运行Qt Assistant，在Windows’下，可单击“开始”菜单中的“Qt by Trolltech v4.x.yIAssistant”(见
+图1.8)；在UNIX下，可在命令行终端中输入assisLant命令；在Mac  OS:XFinder中，。只需双击‘assis'tant
+即可，在主页的‘‘API'Reference”小节中的链接提供了浏览Qt类的几种不同方式，‘tAll Classes”页面
+列表会列出Qt API中的每一个类，而“Main．Classes”页面列表只会列！出Qt中那些最为常用的类。
+作为练习，你或许可以去试着查询一下这一章中所使用过的那些类和函数。  +    ‘．。  ？
+图1.8  Windows VistaTQt Assistant中的Qt参考文档
+    需要注意的是，通过继承而得到的函数的文档会显示在它的基类中，例如，QPushButton就没有
+它自己的show()函数，因为它是从QWidget那里继承的函数。图1.9给出了到目前为止我们所见
+过的各个类之间的关系。
+
+图1,9  目前为止我们所见过的那些Q[类的继承树
+第1章Qt入门
+9
+    可以从'http://doc.trolltech.com中获取Qt的当前版和一些早期版本的在线参考文档。这个网
+站也选摘了Qt季刊(q Quarterly)中的一些文章。Qt季刊是Qt程序员的时事通讯，会发送给所有
+获得Q【商业许可协议的人员、。    。    j。
+‘  本章介绍了一些重要概念：信号一槽连接和布局，也逐步展示了Qt的兼容性和Qt完全面向对
+象的构建方法和窗口部件的使用。如果你浏览了一遍Qt的参考文档，那么将会发现一种如何学
+习使用新窗口部件的统一方法，并且也将发现Qt,对函数、参数、枚举等变量选名的严谨性，以及在
+使用Qt编程时令人叹服的愉悦感和舒适性。
+：本书第一部分的随后几章，都建立在本章的基础之上，它们演示了如何创建一个完整的GUI
+应用程序‘—拥有菜单、工具栏、文档窗口、状态条和对话框，还有与之相应的用于阅读、处理和输
+出文件的底层功能函数。~：，一    -
+    ．    ，    ’
+第2章  创建对话框
+    这一章讲解如何使用Qt创建对话框。对话框为用户提供了许多选项和多种选择，允许用户
+把选项设置为他们喜欢的变量值并从中做出选择。之所以把它们称为对话框，或者简称为：“对
+话”，是因为它们为用户和应用程序之间提供了一种可以相互“交谈”的交互方式。
+    绝大多数图形用户界面应用程序都带有一个由菜单栏、工具栏构成的主窗口以及几十个对主
+窗口进行补充的对话框。当然，也可以创建对话框应用程序，它可以通过执行合适的动作来直接
+响应用户钧选择（例如，一个计算器应用程序）。
+    本章将首先完全用手写代码的方式创建第一个对话框，以便能够说明是如何完成这项工程
+的。然后将使用Qt的可视化界面设计工具Qt设计师(Qt Designer)。使用Qt设计师比手写代码要
+快得多，并且可以使不同的设计测试工作以及稍后对设计的修改工作变得异常轻松。
+2.1  子类化QDia.log
+    第一个例子是完全使用．C++编写的一个Find(查找)对话框，它的运行效果如图2.1所示，这
+将实现一个拥有自主权的对话框。通过这一过程，就可以让对话框拥有自己的信号和槽，成为一
+个独立的、完备的控件。
+图2.1  Find对
