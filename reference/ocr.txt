@@ -1,65 +1,5 @@
-óÊ»°¿ò
-Ô´´úÂë·Ö±ğ±£´æÔÚfinddialog.hÏàfinddialog. cppÎÄ¼şÖĞ¡£Ê×ÏÈ´Ófinddialog.hÎÄ¼şËµÆğ£º
-    µÚ1¡¢2ĞĞ£¨ÒÔ¼°ºóÃæµÄµÚ27ĞĞ£¬¼ûÏÂÒ³£©ÄÜ¹»·ÀÖ¹¶ÔÕâ¸öÍ·ÎÄ¼şµÄ¶àÖØ°üº¬¡£µÚ3ĞĞ°üº¬ÁË
-QDialogµÄ¶¨Òå£¬ËüÊÇQtÖĞ¶Ô»°¿òµÄ»ùÀà¡£QDialog´ÓQWidgetÀàÖĞÅÉÉú³öÀ´¡£¹¿£®4¡ªĞĞµ½%j_7ĞĞ¼å
-ÖÃÉùÃ÷ÁËÒ»Ğ©ÓÃÓÚÕâ¸ö¶Ô»°¿òÊµÏÖÖĞµÄÒ»g·à¡£Ç°ÖÃÉùÃ÷(forwarddecÛÔĞ©ÕÕ»áÒ¼½ü¡ê³áÅñÃ¨¸´ÅÃÅ¡
-ÀàµÄ´æÔÚ£¬¶ø²»ÓÃÌá¹©Àà¶¨ÒåÖĞµÄËùÓĞÏ¸½Ú(Í¨³£·Å²çÅı°ÙÅÃÈïºÓÏÄÂÉÖĞ)¡£¹ØÓÚÕâÒ»µã£¬½«»áÔÙ
-    ¡ª¡ª~¡«Ò»¡±¡¢£¬  Ò»-Ò»¡ª¡ª-¡«¡¢Ò»
-    Ò»¡­~Ò»¡­¡­¡°Ò»~Ò»¡ªÒ»¡£- -  -£¬Ò»
-Àö´şÉºÒ»Ğ©¡£    j
-    ½ÓÏÂÀ´¶¨ÒåFindDialog£¬²¢ÈÃËü³ÉÎªQDialogµÄ×ÓÀà£º
-I.I
-      I      I
-G G    A             .-
-oo  g       C
--J -J    o    .N    .- o
- ¡¶  r   X   FJ FJ
-I I  m  o  .- J
-o o   -l   CD .- O =
-o o   o   -it lL LU CD
-Z Z   a    u a) a) h
-I I   v   a) -o C cn
-u- u-    h ra -l =
-       a)  U _J J a_
-f a)  o  aaaa
-o  -l   r    cn cn cn cn
-C f    u    cn cn cn cn
-f a)   C   ra ra m m
--l o   -1 1~1~1~l
-** *  uuuu
-r CV    .cn     -t rn (D r-
-µÚ2ÕÂ´´½¨¶Ô»°¿ò
-    8  class FindDialog  :public QDialog
-    9  {
-    10    00BJECT
-    ii public£º
-    12    FindDialog(QWidget *parent=0);
-¶ÔÓÚËùÓĞ¶¨ÒåÁËĞÅºÅºÍ²ÛµÄÀà£¬ÔÚÀà¶¨Òå¿ª¶éóÃµ©µ©ÀïoBÃóCrI¡¯ºê¶¼ÊÇ±ØĞèµÄ¡£
-¡«Ò»ÀÚj6ialogµÄ¹¹Ôìº¯Êı¾ÍÊÇÒ»¸öµäĞÍµÄQt´°¿Ú°ïÒë¿ûÔÏÍ¢²æÀúÎáii¶şnt²ÎÊıÖ¸¶¨ÁËËüµÄ¸¸
-´°¿Ú²¿¼ş¡£¸Ã²ÎÊıµÄÄ¬ÈÏÖµÊÇÒ»¸ö¿ÕÖ¸Õë£¬ÒâÎ¶×Å¸Ã¶Ô»°¿òÃ»ÓĞ¸¸¶ÔÏó¡£
-    13 signals£º    ¡­Ò»¡ª£¬
-    14  'void findNext(c¾§st QString£¦str,Qt::CaseSensitivity cs);
-    15    void findPreVious(const QSt ring£¦st r,Qt::CaseSensitivity cs);
-    signals²¿·ÖÉùÃ÷ÁËµ±ÓÃ»§µ¥»÷Find°´Å¥Ê±¶Ô»°¿òËù·¢ÉäµÄÁ½¸öĞÅºÅ¡£Èç¹ûÏòÇ°²éÑ¯(search
-backwam)Ñ¡ÏîÉúĞ§£¬¶Ô»°¿ò¾Í·¢ÉäfmdPrevious()ĞÅºÅ£¬·ñÔòËü¾Í·¢ÉäfindNext()ĞÅºÅ¡£
-    signals¹Ø¼ü×ÖÊµ¼ÊÉÏÊÇÒ»¸öºê¡£C++Ô¤´¦ÀíÆ÷»áÔÚ±àÒë³ÌĞòÕÒµ½ËüÖ®Ç°°ÑËü×ª»»³É±ê×¼C++
-´úÂë¡£Qt£º£ºCaseSensiUvity×ãÒ»¸öÃ¶¾ÙÀàĞÍ£¬ËüÓĞQt:£ºCaseSensiUveºÍQt:£ºCaseInsensiUveÁ½¸öÈ¡Öµ¡£
-16 private slots:
-17           void  findClicked ( ) ;
-i8       void enableFindButton(const QString &text) ;
-19 private:
-20    QLabel *label;
-21    QLineEdit *lineEdit;
-22    QCheckBox *caseCheckBox;
-23    QCheckBox *backwardCheckBox; .
-24    QPushButton *findButton;
-25    QPushButton *closeButton;
-26 };
-    27 #endif
-    ÔÚÕâ¸öÀàµÄprivate¶ÎÉùÃ÷ÁËÁ½¸ö²Û¡£ÎªÁËÊµÏÖÕâÁ½¸ö²Û£¬¼¸ºõĞèÒª·ÃÎÊÕâ¸ö¶Ô»°¿òµÄËùÓĞ×Ó
-´°¿Ú²¿¼ş£¬ËùÒÔÒ²±£ÁôÁËÖ¸ÏòËüÃÇµÄÖ¸Õë¡£¹Ø¼ü×Öslots¾ÍÏñsignals -ÑùÒ²ÊÇÒ»¸öºê£¬Ò²¿ÉÒÔÀ©Õ¹
-³ÉC++±àÒë³ÌĞò¿ÉÒÔ´¦ÀíµÄÒ»ÖÖ½á¹¹ĞÎÊ½¡£
-    ¶ÔÓÚÕâĞ©Ë½ÓĞ±äÁ¿£¬ÎÒÃÇÊ¹ÓÃÁËËüÃÇµÄ·àÖØêÙÏ²µ©è·ÕâÊÇ¿ÉĞĞµÄ£¬ÒòÎªËüÃÇ¶¼ÊÇÖ¸Õë£¬¶øÇÒÃ»
+
+ÓÚÕâĞ©Ë½ÓĞ±äÁ¿£¬ÎÒÃÇÊ¹ÓÃÁËËüÃÇµÄ·àÖØêÙÏ²µ©è·ÕâÊÇ¿ÉĞĞµÄ£¬ÒòÎªËüÃÇ¶¼ÊÇÖ¸Õë£¬¶øÇÒÃ»
 ÓĞ±ØÒªÔÚÍ·ÎÄ¼şÖĞ¾ÍÈ¥·ÃÎÊËüÃÇ£¬Òò¶ø±àÒë³ÌĞòÕçÎŞĞëÕâĞ©ÀàµÄÍêÕû¶¨Òå¡£ÎÒÃÇÃ»ÓĞ°üº¬ÓëÕâ¼¸
 ¸öÀàÏà¹ØµÄÍ·ÎÄ¼ş¡¾Èç<QCheckBox>¡¢<QLabel>£¬µÈµÈ£©£¬¶øÊÇÊ¹ÓÃÁËÒ»Ğ©±ÍÖÃÖ±£®¾×¡£Õâ¿ÉÒÔÊ¹±àÒë
 ¹ıë¦ĞÍ±îĞ©¡£
@@ -74,21 +14,7 @@ QtXml¡£ÆäÖĞ£¬ÔÚ<QtGui>Í·ÎÄ¼şÖĞÎª¹¹³ÉQtCoreºÍQtGui×é³É²¿·ÖµÄËùÓĞÀà½øĞĞÁË¶¨Òå¡£ÔÚ³
     Ò»Ò»¡ª¡ª¡ª¡±Ò»¡¢¡«JPÒ»__£¬¡­
 Ê¹ÓÃQCheckBox¡¢QLabel¡¢QLineEditºÍQPushButtonµÄÇ°ÖÃÉùÃ÷¡£1È»¶ø£¬ÔÚÒ»¸öÍ·ÎÄ¼şÖĞÔÙ°üº¬Ò»¸ö
 ÄÇÃ´´óµÄÍ·ÎÄ¼ş×ÅÊµ²»ÊÇÒ»ÖÖºÃµÄ±à³Ì·ç¸ñ£¬ÓÈÆä¶ÔÓÚ±È½Ï´óµÄ¹¤³ÌÏîÄ¿¸üÊÇÈç´Ë¡£
-  .  12                                                 C++ GUI Qt 4±à³Ì(µÚ =°æ)
-  -
-8
-10
-11
-12
-13
-æÕÖ¥+Ñôrent£©¹¹¹»ÛÊÖÂ
-label = new QLabel(tr("Find &what:"¡·;
-lineEdit - =  new  QLineEdit ;
-label->setBuddy(lineEdit) ;
-caseCheckBox = new QCheckBox(ti-( "Match &case"¡· ;
-backwa rdCheckBox .=   new . QCheckBox (t r( '! Sea rch  &backwa rd " ¡· ;
-14     .    closeButton  = 'new QPushButton (tr( "Close" ¡·
-    ÔÚµÚ4ĞĞ£¬°Ñparent²ÎÊı´«µİ¸øÁË»ùÀàÅñËÜÁ¿º¯Ñûµ©È»ºó£¬´´½¨ÁË×Ó´°¿Ú²¿¼ş¡£ÔÚ×Ö·û´®ÖÜÎ§
+ÔÚµÚ4ĞĞ£¬°Ñparent²ÎÊı´«µİ¸øÁË»ùÀàÅñËÜÁ¿º¯Ñûµ©È»ºó£¬´´½¨ÁË×Ó´°¿Ú²¿¼ş¡£ÔÚ×Ö·û´®ÖÜÎ§
 µÄtr()º¯Êıµ÷ÓÃÊÇ°ÑËüÃÇ·­Òë³ÉÆäËûÓïÑÔµÄ±ê¼Ç¡£ÔÚÃ¿¸öQObject¶ÔÏóÒÔ¼°°üº¬ÓĞQ_ OBJECTºê
 µÄ×ÓÀàÖĞ¶¼ÓĞÕâ¸öº¯ÊıµÄÉùÃ÷¡£¾¡¹ÜÒ²Ğí²¢Ã»ÓĞ½«ÄãµÄÓ¦ÓÃ³ÌĞòÁ¢¿Ì·­Òë³ÉÆäËûÓïÑÔµÄ´òËã£¬µ«
 ÊÇÔÚÃ¿¶ş¸öÓÃ»§¿É¼ûµÄ×Ö·û´®ÖÜÎ§Ê¹ÓÃtr()º¯Êı»¹ÊÇÒ»¸öºÜ²»´íµÄÏ°¹ß¡££®ÔÚµÚ18ÕÂÖĞ½«¶Ô·­Òë
@@ -123,72 +49,7 @@ Find°´Å¥Ê±£¬»áµ÷ÓÃfindClicked()Ë½ÓĞ²Û¡£¶øµ±ÓÃ»§µ¥»÷CloseÊ±£¬¶Ô»°¿ò»á¹Ø±Õ¡£close(
 ÊÇ´ÓQWidgetÖĞ¼Ì³Ğ¶øÀ´µÄ£¬²¢ÇÒËüµÄÄ¬ÈÏĞĞÎª¾ÍÊÇ°Ñ´°¿Ú²¿¼ş´ÓÓÃ»§µÄÊÓÒ°ÖĞ¡¢Òş²ØÆğÀ´£¨¶øÎŞĞë
 ½«ÆäÉ¾³ı£©¡£ÉÔºó½«»á¿´µ½enableFindButtor£®()²ÛºÍfindClicked()²ÛµÄ´úÂë¡£
     ÓÉÓÚQObjectÊÇFindDialogµÄ¸¸¶ÔÏóÖ®Ò»£¬ËùÒÔ¿ÉÒÔÊ¡ÂÔconnect()º¯ÊıÇ°ÃæµÄQObject:Ç°×º¡£
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-QHBoxLayout *topLeftLayout = new QHBoxLayout
- topLeft Layout->addWidget ( label ) ;
- topLeft Layout->a d clWid get ( lineEdit )  ;
-QVBoxLayout *leftLayout . new QVBoxLayout
-left Layout->addLayout ( topLeft Layout ) ;'
-leftLayout->addWidget ('caseCheckBox) ;
-leftLayout->addWidget ( backwardCheckBox) ;
-QVBoxLayout *rightLayout = new QVBoxLayout
-rightLayout->addWidget ( findButton ) ;
-right Layout->addWidget ( closeButton ) ;
-rightLayout->addStretch( ) ;
-QHBoxLayout *mainLayout = new QHBoxLayout;
-¡ö
-l -1
- 1L t¡ª
-ra cÒ»
-ÍÂl
-ÖŞô¬
-º¹¶é
-ßµ»ÃÒ»
-Ôı80
-ÍÂ£º
--o
-¡¤1
-u-rt
- 3 4 5
--o
-u-
-:
-  IJ         . -
-o o cn
-IJ =r
- J L ro
-= J f
-co -(
-   IJ -O
- cn r  o
-P ra b
-Of  ro
-   a) t=
-:e o u_i
-arrJ rJ
-II X' ~
-      I    L
-C C {=
-ooo
-J IJ J
-4J t t
-='= =
-co co co
--o -o -o
- rl  rl : rl .
-f f f
-- --~_u -lE¡ê        a
+
      .        .
     µÚ2ÕÂ´´½¨¶Ô»°¿ò    13
     33    mainLayout->addLayout (leftLayout);
