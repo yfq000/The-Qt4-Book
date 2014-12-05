@@ -45,7 +45,7 @@ GNU/Linux以及那些诸如移动电话等小型设备在内的统一的现代�
 
 {\hfill 2007年11月}
 
-\section{序言}
+\section*{序言}
 Qt使用“一次编写，随处编译”的方式为开发跨平台的图形用户界面应用程序提供了一个完整的C++应用程序开发框架。Qt允许程序开发人员使用应用程序的单一源码树来构建可以运行在不同平台下的应用程序的不同版本；这些平台包括从Windows 98到Vista、MacOS X、Linux、Solaris、HP-UX以及其他很多基于X11的Unix。许多Qt库和工具也都是Qt/Embedded Linux的组成部分。Qt/Embedded Linux是一个可以在嵌入式Linux上提供窗口系统的产品。
 
 本书的目标就是教您如何使用Qt4来编写图形用户界面程序。本书从"Hello Qt"开始，然后很快地转移到更高级的话题中，如自定义窗口部件的创建和拖放功能的提供等。通过本书的\href{http://www.informit.com/store/c-plus-plus-gui-programming-with-qt4-9780132354165}{互联网站点}，您可以下载到一些作为本书文字补充材料的示例程序。附录A说明了如何下载和安装这些软件，其中包括一个用于Windows的C++免费编译器。
@@ -58,7 +58,7 @@ Qt使用“一次编写，随处编译”的方式为开发跨平台的图形用
 
 在写作本书的时候，是假定您已经具备了C++、Java或者C\#{}的基本知识。本书中的例子代码使用的是C++中的一个子集，从而避免了很多在Qt编程中极少使用的C++特性。在某些不可避免而必须使用C++高级结构的地方，会在使用时对其做出必要的解释。如果您对Java或者C\#{}已经非常熟悉但是对C++还知之不多甚至一无所知，那么建议您先阅读附录D。附录D提供了对C++较为充分的介绍，从而能够让您具有使用本书所必备的C++知识。对于C++中的面向对象编程更为全面的介绍，建议您阅读由P. J. Deitel和H. M. Deitel编著的"C++ How to Program"(Prentice Hall , 2007)，以及由Stanley B. Lippman , Josée Lajoie和Barhara E. Moo编著的"C++ Primer"(Addison-Wesley , 2005)这两本书。
 
-\section{Qt简史}
+\section*{Qt简史}
 Qt框架首度为公众可用是在1995年5月。它最初由Haavard Nord（奇趣科技公司的CEO）和Eirik Chambe-Eng（公司总裁）开发而成。Haavard和Eirik在位于挪威特隆赫姆的挪威科技学院相识，在那里，他们都获得了计算机科学的硕士学位。
 
 Haavard对C++图形用户界面开发的兴趣始于1988年，当时一家瑞典公司委托他开发一套C++图形用户界面框架。几年后，在1990年的夏天，Haavard和Eirik因为一个超声波图像方面的C++数据库应用程序而在一起工作。这个系统需要一个能够在UNIX、Macintosh和Windows上都能运行的图形用户界面。在那个夏天中的某天，Haavard和Eirik一起出去散步，享受阳光，当他们坐在公园的一条长椅上时，Haavard说：“我们需要一个面向对象的显示系统。”由此引发的讨论，为他们即将创建的面向对象的、跨平台的图形用户界面框架奠定了智力基础。
@@ -93,7 +93,7 @@ Matthias在1998年加入公司，并且在当年9月，发布了Qt 1系列的最
 自奇趣科技公司诞生以来，Qt的声望经久不衰，而且至今依旧持续高涨。取得这样的成绩不但说明了Qt的质量，而且也说明了人们都喜欢使用它。在过去的10年中，Qt已经从一个只被少数专业人士所熟悉的“秘密”产品，发展了到如今遍及全世界拥有数以千计的客户和数以万计的开源开发人员的产品。
 
 
-\section{编者的话}
+\section*{编者的话}
 感谢作者，感谢原中文翻译者，感谢原中文审校者。
 
 书名修改不是想标新立异，实在是github和本地文档编译方便，不支持空格。
@@ -337,6 +337,491 @@ Qt中构建用户接口的方法很容易理解并且非常灵活。Qt程序员�
 
 对于所有定义了信号和槽的类，在类定义开始处的Q\_{}OBJECT宏都是必需的。
 
+FindDialog的构造函数就是一个典型的Qt窗口部件类的定义方式。parent参数指定了它的父窗口部件。该参数的默认值是一个空指针，意味着该对话框没有父对象。
+\begin{cppline}[13]{qt4-book/chap02/find/finddialog.h}{18}{20}
+\end{cppline}
+
+signals部分声明了当用户单击Find按钮时对话框所发射的两个信号。如果向前查询(search backward)选项生效，对话框就发射findPrevious()信号，否则它就发射findNext()信号。
+
+signals关键字实际上是一个宏。C++预处理器会在编译程序找到它之前把它转换成标准C++代码。Qt::CaseSensitivity足一个枚举类型，它有\\ Qt::CaseSensitive和Qt::CaseInsensitive两个取值。
+\begin{cppline}[16]{qt4-book/chap02/find/finddialog.h}{22}{0}
+\end{cppline}
+
+在这个类的private段声明了两个槽。为了实现这两个槽，几乎需要访问这个对话框的所有子窗口部件，所以也保留了指向它们的指针。关键字slots就像signals一样也是一个宏，也可以扩展成C++编译程序可以处理的一种结构形式。
+
+对于这些私有变量，我们使用了它们的类前置声明。这是可行的，因为它们都是指针，而且没有必要在头文件中就去访问它们，因而编译程序就无须这些类的完整定义。我们没有包含与这几个类相关的头文件（<QCheckBox>、<QLabel>，等等），而是使用了一些前置声明。这可以使编译过程更快一些。
+
+现在看一下finddialog.cpp，其中包含了对FindDialog类的实现：
+\begin{cppline}[1]{qt4-book/chap02/find/finddialog.cpp}{1}{3}
+\end{cppline}
+
+首先，需要包含<QtGui>，该头文件包含了Qt Gui类的定义。Qt由数个模块构成，每个模块都有自己的类库。最为重要的模块有QtCore、QtGui、QtNetwork、QtOpenGL、QtScript、QtSql、QtSvg和QtXml。其中，在<QtGui>头文件中为构成QtCore和QtGui组成部分的所有类进行了定义。在程序中包含这个头文件，就能够使我们省去在每个类中分别包含的麻烦。
+
+在filedialog.h文件中，本可以仅简单地添加一个<QtGui>包含即可，而不用包含<QDialog>和使用QCheckBox、QLabel、QLineEdit和QPushButton的前置声明。然而，在一个头文件中再包含一个那么大的头文件着实不是一种好的编程风格，尤其对于比较大的工程项目更是如此。
+
+\begin{cppline}[3]{qt4-book/chap02/find/finddialog.cpp}{5}{19}
+\end{cppline}
+
+在第4行，把parent参数传递给了基类的构造函数。然后，创建了子窗口部件。在字符串周围的tr()函数调用是把它们翻译成其他语言的标记。在每个QObject对象以及包含有Q\_{}OBJECT宏的子类中都有这个函数的声明。尽管也许并没有将你的应用程序立刻翻译成其他语言的打算，但是在每一个用户可见的字符串周围使用tr()函数还是一个很不错的习惯。在第18章中将对翻译Qt应用程序进行详细讲述。
+
+在这些字符串中，使用了表示“与”操作的符号"\&{}"来表示快捷键。例如，笫11行创建了一个Find按钮，用户可在那些支持快捷键的平台下通过按下Alt+F快捷键来激活它。符号"\&{}"可以用来控制焦点：在第6行创建了一个带有快捷键(Alt+W)的标签，而在第8行设置了行编辑器作为标签的伙伴。所谓“伙伴”(buddy)就是一个窗口部件，它可以在按下标签的快捷键时接收焦点(focus)。所以当用户按下Alt+W（该标签的快捷键）时，焦点就会移动到这个行编辑器（该标签的伙伴）上。
+
+在第12行，通过调用setDefault(true)让Find按钮成为对话框的默认按钮。默认按钮(default button)就是当用户按下Enter键时能够按下对应的按钮。在第13行，禁用了Find按钮。当禁用一个窗口部件时，它通常会显示为灰色，并且不能和用户发生交互操作。
+
+\begin{cppline}[15]{qt4-book/chap02/find/finddialog.cpp}{21}{26}
+\end{cppline}
+
+只要行编辑器中的文本发生变化，就会调用私有槽enableFindButton(const QString \& )。当用户单击Find按钮时，会调用findClicked()私有槽。而当用户单击Close时，对话框会关闭。close()槽是从QWidget中继承而来的，并且它的默认行为就是把窗口部件从用户的视野中、隐藏起来（而无须将其删除）。稍后将会看到enableFindButton()槽和findClicked()槽的代码。
+
+由于QObject是FindDialog的父对象之一，所以可以省略connect()函数前面的QObject::前缀。
+
+\begin{cppline}[21]{qt4-book/chap02/find/finddialog.cpp}{28}{45}
+\end{cppline}
+
+接下来，使用布局管理器摆放这些子窗口部件。布局中既可以包含多个窗口部件，也可以包含其他子布局。通过QHBoxLayout、QVBoxLayout和QGridLayout这三个布局的不同嵌套组合，就可能构建出相当复杂的对话框。
+
+如图2.2所示，对于Find对话框，使用了两个QHBoxLayout布局和两个QVBoxLayout布局。外面的布局是主布局，通过第35行代码将其安装在FindDialog中，并且由其负责对话框的整个区域。其他三个布局则作为子布局。图2.2中右下角的小“弹簧”是一个分隔符（或者称为“伸展器”）。用它来占据Find按钮和Close按钮所余下的空白区域，这样可以确保这些按钮完全占用它们所在布局的上部空间。
+
+\begin{linefig}[0.8]{finddialoglayout}
+\caption{Find对话框的布局}
+\label{fig:finddialoglayout}
+\end{linefig}
+
+布局管理器类的一个精妙之处在于它们不是窗口部件。相反，它们派生自QLayout，因而也就是进一步派生自QObject，在图2.2中，窗口部件用实线轮廓来表示，布局用点线来表示，这样就能够很好地区分窗口部件和布局。在一个运行的应用程序中，布局是不可见的。
+
+当将子布局对象添加到父布局对象中时（第25、33和34行），子布局对象就会自动重定义自己的父对象。也就是说，当将主布局装到对话框中去时（第35行），它就会成为对话框的子对象了，于是它的所有子窗口部件都会重定义自己的父对象，从而变成对话框中的子对象。图2.3给出了父子层次关系的最终结果。
+
+\begin{fig}[0.8]{finddialogrelation}
+\caption{Find对话框中的父子关系}
+\label{fig:finddialogrelation}
+\end{fig}
+
+\begin{cppline}[36]{qt4-book/chap02/find/finddialog.cpp}{47}{49}
+\end{cppline}
+
+最后，设置了显示在对话框标题栏上的标题的内容，并让窗口具有一个固定的高度，这是因为在对话框的垂直方向上再没有其他窗口部件可以去占用所多出的空间了。QWidget::sizeHint()函数可以返回一个窗口部件所“理想”的尺寸大小。
+
+这样，就完成了对FindDialog对话框构造函数的分析。由于在创建这个对话框中的窗口部件和布局时使用的是new，所以需要写一个能够调用delete的析构函数，以便可以删除所创建的每一个窗口部件和布局。但是这样做并不是必需的，因为Qt会在删除父对象的时候自动删除其所属的所有子对象，也就会删除FindDialog中作为其子孙的所有子窗口部件和子布局。
+
+现在来看一下这个对话框中所用到的槽：
+
+\begin{cppline}[39]{qt4-book/chap02/find/finddialog.cpp}{51}{0}
+\end{cppline}
+
+当用户单击Find按钮时，就会调用findClicked()槽。而该槽将会发射findPrevious()或findNext()信号，这取决于Search backward选项的取值。emit是Qt中的关键字，像其他Qt扩展一样，它也会被C++预处理器转换成标准的C++代码。
+
+只要用户改变了行编辑器中的文本，就会调用enableFindButton()槽。如果在行编辑器中有文本，该槽就会启用Find按钮，否则它就会禁用Find按钮。
+
+利用这两个槽就完成了这个对话框的功能。现在，可以创建一个main.cpp文件来测试一下这个FindDialog窗口部件。
+
+\begin{cppinput}{qt4-book/chap02/find/main.cpp}
+\end{cppinput}
+
+为了编译这个程序，还像以前一样运行qmake。由于FindDialog类的定义包含Q\_{}OBJECT宏，因而由qmake生成的makefile将会自动包含一些运行moc的规则，moc就是指Qt的元对象编译器，即meta-object compiler。（会在下一节介绍Qt的元对象系统。）
+
+为了使moc能够正常运行，必须把类定义从实现文件中分离出来并放到头文件中。由moc生成的代码会包含这个头文件，并且会添加一些特殊的C++代码。
+
+必须对使用了Q\_{}OBJECT宏的类运行moc。因为qmake会自动在makefile中添加这些必要的规则，所以这并不成问题。但是如果忘记了使用qmake重新生成makefile文件，并且也没有重新运行moc，那么连接程序就会报错，指出你声明了一些函数但是却没有实现它们。这些信息可能是相当不明确的。GCC会生成像这样的出错信息：
+\begin{Verbatim}
+finddialog.o: In function `FindDialog::tr(char const*, char const*)':
+/usr/lib/qt/src/corelib/global/qglobal.h:1430: undefined reference to
+`FindDialog::staticMetaObject'
+\end{Verbatim}
+
+Visual C++输出的出错信息可能是这样的：
+\begin{Verbatim}
+finddialog.obj : error LNK2001: unresolved external symbol
+"public:~virtual int __thiscall MyClass::qt_metacall(enum QMetaObject
+::Call,int,void * *)"
+\end{Verbatim}
+
+如果曾经遇到过这种情况，那么请重新运行qmake以生成新的makefile文件，然后再重新构建该应用程序。
+
+现在来运行该程序。如果在你的系统上能够显示快捷键，那么可以检验一下快捷键Alt+w、Alt+C、Alt+B和Alt+F是不是触发了正确的行为。可以通过敲击键盎上的Tab键来遍历这些窗口部件。默认的Tab键顺序就是创建窗口部件时的顺序。要改变这个键顺序，可以使用QWidget::setTabOrder()函数。
+
+提供一种合理的Tab键顺序和键盘快捷键可以确保不愿（或者不能）使用鼠标的用户能够充分享受应用程序所提供的全部功能。完全通过键盘控制应用程序也深受快速输入人员的赞赏。
+
+在第3章，将在一个真实的应用程序中使用Find对话框，并且将会把findPrevious()信号和findNext()信号与一些槽连接到一起。
+
+
+\section{深入介绍信号和槽}
+信号和槽机制是Qt编程的基础。它可以让应用程序编程人员把这些互不了解的对象绑定在一起。前面，已经把一些信号和槽连接在了一起，也声明了自己的信号和槽，还实现了自己的槽，并且还发射了自己的信号。让我们再花一点时间，来进一步深入地了解这个机制。
+
+槽和普通的C++成员函数几乎是一样的——可以是虚函数；可以被重载；可以是公有的、保护的或者私有的，并且也可以被其他C++成员函数直接调用；还有，它们的参数可以是任意类型。唯一的不同是：槽还可以和信号连接在一起，在这种情况下，每当发射这个信号的时候，就会自动调用这个槽。
+
+connect()语句看起来会是如下的样子：
+\begin{Verbatim}
+connect(sender, SIGNAL(signal), receiver, SLOT(slot));
+\end{Verbatim}
+
+这里的\textit{sender}和\textit{receiver}是指向QObject的指针，\textit{signal}和\textit{slot}是不带参数的函数名。实际上，SIGNAL()宏和SLOT()宏会把它们的参数转换成相应的字符串。
+
+到目前为止，在已经看到的实例中，我们已经把不同的信号和不同的槽连接在了一起。但这里还需要考虑一些其他的可能性。
+
+\begin{itemize}
+\item \textbf{一个信号可以连接多个槽}：
+
+\begin{Verbatim}
+connect(slider, SIGNAL(valueChanged(int)),
+        spinBox, SLOT(setValue(int)));
+connect(slider, SIGNAL(valueChanged(int)),
+        this, SLOT(updateStatusBarIndicator(int)));
+\end{Verbatim}
+
+在发射这个信号的时候，会以不确定的顺序一个接一个地调用这些槽。
+
+\item \textbf{多个信号可以连接同一个槽}：
+\begin{Verbatim}
+connect(lcd, SIGNAL(overflow()),
+        this, SLOT(handleMathError()));
+connect(calculator, SIGNAL(divisionByZero()),
+        this, SLOT(handleMathError()));
+\end{Verbatim}
+
+无论发射的是哪一个信号，都会调用这个槽。
+
+\item \textbf{一个信号可以与另外一个信号相连接}：
+
+\begin{Verbatim}
+connect(lineEdit, SIGNAL(textChanged(const QString &)),
+        this, SIGNAL(updateRecord(const QString &)));
+\end{Verbatim}
+
+当发射个信号时，也会发射第二个信号。除此之外，信号与信号之间的连接和信号与槽之间的连接是难以区分的。
+
+\item \textbf{连接可以被移除}：
+\begin{Verbatim}
+disconnect(lcd, SIGNAL(overflow()),
+        this, SLOT(handleMathError()));
+\end{Verbatim}
+
+这种情况较少用到，因为当删除对象时，Qt会自动移除和这个对象相关的所有连接。
+\end{itemize}
+
+要把信号成功连接到槽（或者连接到另外一个信号），它们的参数必须具有相同的顺序和相同的类型：
+\begin{Verbatim}
+connect(ftp, SIGNAL(rawCommandReply(int, const QString &)),
+        this, SLOT(processReply(int, const QString &)));
+\end{Verbatim}
+
+例外地，如果信号的参数比它所连接的槽的参数多，那么多余的参数将会被简单地忽略掉：
+\begin{Verbatim}
+connect(ftp, SIGNAL(rawCommandReply(int, const QString &)),
+        this, SLOT(checkErrorCode(int)));
+\end{Verbatim}
+
+如果参数类型不匹配，或者如果信号或槽不存在，则当应用程序使用调试模式构建后，Qt会在运行时发出警告。与之相类似的是，如果在信号和槽的名字中包含了参数名，Qt也会发出警告。
+
+到现在为止，我们仅仅在窗口部件之间使用了信号和槽。但是这种机制本身是在QObject中实现的，并不只局限于图形用户界面编程中。这种机制可以用于任何QObject的子类中：
+
+\begin{Verbatim}
+class Employee : public QObject
+{
+    Q_OBJECT
+public:
+    Employee() { mySalary = 0; }
+    int salary() const { return mySalary; }
+public slots:
+    void setSalary(int newSalary);
+signals:
+    void salaryChanged(int newSalary);
+private:
+    int mySalary;
+};
+void Employee::setSalary(int newSalary)
+{
+    if (newSalary != mySalary) {
+        mySalary = newSalary;
+        emit salaryChanged(mySalary);
+    }
+}
+\end{Verbatim}
+
+注意一下setSalary()槽是如何工作的。只有在newSalary != mySalary的时候，才发射salaryChanged()信号。这样可以确保循环连接不会导致无限循环。
+
+\begin{framed}
+\vspace{-\parskip}
+\begin{center}
+\textbf{Qt的元对象系统}
+\end{center}
+
+Qt的主要成就之一就是使用了一种机制对C++进行了扩展，并且使用这种机制创建了独立的软件组件。这些组件可以绑定在一起，但任何一个组件对于它所要连接的组件的情况事先都一无所知。
+
+这种机制称为元对象系统(meta-object system)，它提供了关键的两项技术：信号－槽以及内省(introspection)。内省功能对于实现信号和槽是必需的，并且允许应用程序的开发人员在运行时获得有关QObject子类的“元信息”(meta-information)，包括一个含有对象的类名以及它所支持的信号和槽的列表。这一机制也支持属性（广泛用于Qt设计师中）和文本翻译（用于国际化），并且它也为QtScript模块奠定了基础。从Qt 4.2开始，可以动态添加属性，这一特性将会在第19章和第22章中付诸实施。
+
+标准C++没有对Qt的元对象系统所需要的动态元信息提供支持。Qt通过提供一个独立的moc工具解决了这个问题，moc解析Q\_{}OBJECT类的定义并且通过C++函数来提供可供使用的信息。由于moc使用纯C++来实现它的所有功能，所以Qt的元对象系统可以在任意C++编译器上工作。
+
+这一机制是这样工作的：
+\begin{itemize}
+\item Q\_{}OBJECT宏声明了在每一个QObject子类中必须实现的一些内省函数：metaObject()、tr()、qt\_{}metacall()，以及其他一些函数。
+\item Qt的moc工具生成了用于由Q\_{}OBJECT声明的所有函数和所有信号的实现。
+\item 像connect()和disconnect()这样的QObject的成员函数使用这些内省函数来完成它们的工作。
+\end{itemize}
+
+由于所有这些工作都是由qmake、moc和QObject自动处理的，所以很少需要再去考虑这些事情。但是如果你对此充满好奇心的话，那么也可以阅读一下有关QMetaObject类的文档和由moc生成的C++源代码文件，可以从中看出这些实现工作是如何进行的。
+\end{framed}
+
+
+\section{快速设计对话框}
+Qt的设计初衷就是为了能够直观并且友好地进行手工编码，并且对于程序员来说，纯粹通过编写C++源代码来开发整个Qt应用程序并不稀奇。尽管如此，许多程序员还是喜欢使用可视化的方法来设计窗体，因为他们发现使用可视化方式会比手工编码显得更自然、更快速，并且也希望能够通过可视化方法，对那些手工编码所设计的窗体，进行更快速、更容易的测试和修改。
+
+Qt设计师(Qt Designer)为程序员们提供了可供使用的新选择，它提供一种可视化的设计能力。Qt设计师可用于开发应用程序中的所有或部分窗体。使用Qt设计师所创建的窗体最终仍旧是C++代码，因此，可把Qt设计师看作是一个传统的工具集，并且不会对编译器强加其他特殊要求。
+
+\begin{fig}{gotocell}
+\caption{Go to Cell对话框}
+\label{fig:gotocell}
+\end{fig}
+
+在这一节，将使用Qt设计师来创建如图2.4所示的Go to Cell对话框。并且无论是使用手工编码还是使用Qt设计师，在创建对话框时总是要包含以下这几个相同的基本步骤：
+
+\begin{enumerate}
+\item 创建并初始化子窗口部件。
+\item 把子窗口部件放到布局中。
+\item 设置Tab键顺序。
+\item 建立信号－槽之间的连接。
+\item 实现对话框中的自定义槽。
+\end{enumerate}
+
+要启动Qt设计师，在Windows下，可单击“开始”菜单中的Qt by Trolltech v4.x.y→Designer；在UNIX下，在命令行中输入"designer"；在Mac OS X Finder中，直接双击designer。当Qt设计师开始运行后，它会弹出一个多种模板的列表。单击Widget模板，然后再单击Create。（"Dialog with Buttons Bottom"模板看起来可能更具诱惑力，但是对于这个例子来说，为了能够看到是如何完成OK和Cancel按钮的，所以需要采用手工方式来创建它们。）现在应该会看到一个名为"Untitled"的窗口。
+
+默认情况下，Qt设计师的用户界面由多个顶级窗口构成。如果你更喜欢像图2.5所示的那种多文档(MDI)界面风格，即只有一个顶级窗口和多个子窗口构成的界面，则可以单击Edit→Preferences，然后将用户界面模式设置为Docked Window（停靠窗口）即可。
+\begin{linefig}[0.8]{designer}
+\caption{Windows Vista中显示为停靠窗口模式的Qt设计师}
+\label{fig:designer}
+\end{linefig}
+
+第一步是创建子窗口部件并且把它们放置到窗体中。创建一个标签、一个行编辑器、一个水平分隔符和两个按钮。对于这里的每一项，可先从Qt设计师的窗口部件工具箱中拖拽其名字或者图标并将其放到窗体中的大概位罩。在Qt设计师中，分隔符会显示为一个蓝色的弹簧，但在最终结果的窗体中它是不可见的。
+
+现在，向上拖动窗体的底部使它变短一些，这样将会产生一个类似于图2.6的窗体。不要在窗体上为确定这些项的位置而花费太多的时间，会在稍后使用Qt的布局管理器，它可以把这些项摆放得恰到好处。
+\begin{fig}[0.7]{designer2-6}
+\caption{带一些窗口部件的窗体}
+\label{fig:designer2-6}
+\end{fig}
+
+使用Qt设计师的属性编辑器可以设置每一个窗口部件中的属性：
+\begin{enumerate}
+\item 单击文本标签。确保此时objectName的属性是"label"，那么就可以将它的text属性设置成"\&{}Cell Location:"。
+\item 单击行编辑器。确保objectName属性是"lineEdit"。
+\item 单击第一个按钮。将它的objectName属性设置成"okButton"，将它的enabled属性设置成"false"，将它的text属性设置成"OK"，并且把它的default属性设置成"true"。
+\item 单击第二个按钮。将它的objectName属性设置成"cancelButton"，并且将它的text属性设置成"Cancel"。
+\item 单击这个窗体中空白的地方，选中窗体本身。将objectName属性设置成"GoToCellDialog"，并且将它的windowTitle属性设置成"Go to Cell"。
+\end{enumerate}
+
+现在，除了文本标签，所有的窗口部件看起来都很不错，文本标签仍显示为"\&{}Cell Location:"。单击Edit→Edit Buddies进入一种允许设置窗口部件伙伴(buddy)的特殊模式。然后，单击这个标签并把红色箭头拖到行编辑器上，释放鼠标按键。现在标签看起来应该显示为"\uline{C}ell Location:"，如图2.7所示，同时，它还会把行编辑器看成是自己的伙伴。单击Edit→Edit Widgets离开伙伴设置模式。
+
+\begin{fig}[0.7]{designer2-7}
+\caption{带属性设置的窗体}
+\label{fig:designer2-7}
+\end{fig}
+
+下一步是在窗体中摆放这些窗口部件，步骤如下：
+\begin{enumerate}
+\item 单击"\uline{C}ell Location:"标签并且当单击与之相邻的行编辑器时按下Shift键，这样就可以同时选择它们。单击Form→Lay Out Horizontally。
+\item 单击分隔符，然后在单击窗体的OK按钮和Cancel按钮时一直按下Shift键。单击Form→Lay Out Horizontally。
+\item 单击窗体中的空白，取消对所有已选中项的选择，然后单击Form→Lay Out Vertically。
+\item 单击Form→Adjust Size，重新把窗体的大小定义为最佳形式。
+\end{enumerate}
+
+在窗体上出现的红线就是已经创建的布局，如图2.8所示。但是在窗体运行的时候，它们是绝不会出现的。
+\begin{fig}[0.7]{designer2-8}
+\caption{带布局的窗体}
+\label{fig:designer2-8}
+\end{fig}
+
+现在，单击Edit→Edit Tab Order。在每一个可以接受焦点的窗口部件上，都会出现一个带蓝色矩形的数字，如图2.9所示。按照你所希望的接受焦点的顺序单击每一个窗口部件，然后单击Edit→Edit Widget，离开Tab键顺序设置模式。
+
+\begin{fig}[0.7]{designer2-9}
+\caption{设置窗体的Tab键顺序}
+\label{fig:designer2-9}
+\end{fig}
+
+要预览这个对话框，可单击Form→Preview菜单选项。通过重复按下Tab键来检查对话框Tab键的顺序。使用窗体标题栏上的Close按钮，可以关闭对话框。
+
+把对话框保存到gotocell目录下，另存为gotocelldialog.ui，然后使用一个纯文本编辑器在同一目录下创建一个main.cpp文件，内容如下：
+\begin{cppinput}{qt4-book/chap02/gotocell1/main.cpp}
+\end{cppinput}
+
+现在运行qmake，生成一个.pro文件和一个makefile文件（命令分别是：qmake-project; qmake gotocell.pro）。qmake工具非常智能，它可以自动检测到用户界面文件gotocelldialog.ui并且可以生成适当的makefile规则来调用Qt的用户界面编译器(user interface compiler , uic)。uic工具会将gotocelldialog.ui文件转换成C++并且将转换结果存储在ui\_{}gotocelldialog.h文件中。
+
+所生成的ui\_{}tocelldialog.h文件中包含了类Ui::GoToCellDialog的定义，该类是一个与gotocelldialog.ui文件等价的C++文件。这个类声明了一些成员变量，它们存储着窗体中的子窗口部件和子布局，以及用于初始化窗体的setupUi()函数。生成的类看起来如下所示：
+\begin{Verbatim}
+class Ui::GoToCellDialog
+{
+public:
+    QLabel *label;
+    QLineEdit *lineEdit;
+    QSpacerItem *spacerItem;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
+    ...
+    void setupUi(QWidget *widget) {
+    ...
+    }
+};
+\end{Verbatim}
+
+生成的类没有任何基类。当在main.cpp文件中使用该窗体时，可以创建一个QDialog对象，然后把它传递给setupUi()函数。
+
+如果现在运行该程序，对话框也可以工作，但它并没有正确地实现所想要的那些功能：    
+\begin{itemize}
+\item OK按钮总是失效的。
+\item Cancel按钮什么也做不了。
+\item 行编辑器可以接受任何文本，而不是只能接受有效的单元格位置坐标。
+\end{itemize}
+
+通过写一些代码，就可以让对话框具有适当的功能。最为简捷的做法是创建一个新类，让该类同时从QDialog和Ui::GoToCellDialog中继承出来，并且由它来实现那些缺失的功能（从而也证明了这句话：通过简单地增加另外一个间接层就可以解决软件的任何问题）。命名惯例是：将该类与uic所生成的类具有相同的名字，只是没有Ui::前缀而已。
+
+使用文本编辑器，创建一个名为gotocelldialog.h的文件，其中所包含的代码如下所示：
+\begin{cppinput}{qt4-book/chap02/gotocell2/gotocelldialog.h}
+\end{cppinput}
+
+
+在这里，使用了public继承，这是因为我们想在该对话框的外面访问该对话框的窗口部件。包含在gotocelldialog.cpp文件中的实现代码如下所示：
+\begin{cppinput}{qt4-book/chap02/gotocell2/gotocelldialog.cpp}
+\end{cppinput}
+
+在构造函数中，调用setupUi()函数来初始化窗体。正是由于使用了多重继承关系，可以直接访问Ui::GoToCellDialog中的成员。创建了用户接口后，setupUi()函数还会自动将那些符合on\_{}objectName\_{}signalName()命名惯例的任意槽与相应的objectName的signalName()信号连接到一起。在这个例子中，这就意味着setupUi函数将建立如下所示的信号－槽连接关系：
+\begin{Verbatim}
+connect(lineEdit, SIGNAL(textChanged(const QString &)),
+        this, SLOT(on_lineEdit_textChanged()));
+\end{Verbatim}
+
+同样还是在构造函数中，设置了一个检验器来限制输入的范围。Qt提供了三个内置检验器类：QIntValidator、QDoubleValidator和QRegExpValidator。在这里使用检验器类QRegExpValidator，让它
+带一个正则表达式\\ \verb+"[A-Za-z][1-9][0-9]{0,2}"+，它的意思是：允许一个大写或者小写的字母，后面
+跟着一个范围为1～9的数字，后面再跟0个、1个或2个0～9的数字。（对于正则表达式的介绍，请查看参考文档中的QRegExp类。）
+
+通过把this传递给QRegExpValidator的构造函数，使它成为GoToCellDialog对象的一个子对象。这样，以后就不用担心有关删除QRegExpValidator的事情了：当删除它的父对象时，它也会被自动删除。
+
+Qt的父－子对象机制是在QOject中实现的。当利用一个父对象创建一个子对象（一个窗口部件，一个检验器，或是任意的其他类型）时，父对象会把这个子对象添加到自己的子对象列表中。当删除这个父对象时，它会遍历子对象列表并且删除每一个子对象。然后，这些子对象再去删除它们自己所包含的每个子对象。如此反复递归调用，直至清空所有子对象为止。这种父－子对象机制可在很大程度上简化内存管理工作，降低内存泄漏的风险。需要明确删除的对象是那些使用new创建的并且没有父对象的对象。并且，如果在删除一个父对象之前先删除了它的子对象，Qt会自动地从它的父对象的子对象列表中将其移除。
+
+对于窗口部件，父对象还有另外一层含义：子窗口部件会显示在它的父对象所在的区域中。当删除这个父窗口部件时，不仅子对象会从内存中消失，而且它也会在屏幕上消失。
+
+在构造函数的最后部分，我们将OK按钮连接到QDialog的accept()槽，将Cancel按钮连接到reject()槽。这两个槽都可以关闭对话框，但accept()槽可以将对话框返回的结果变量设置为QDialog::Accepted（其值等于1），而reject()槽会把对话框的值设置为QDialog::Rejected（其值等于0）。当使用这个对话框的时候，可以利用这个结果变量判断用户是否单击了OK按钮，从而执行相应的动作。
+
+根据行编辑器中是否包含了有效的单元格位置坐标，on\_{}lineEdit\_{}textChang\linebreak ed()槽可以启用或者禁用OK按钮。QLineEdit::hasAcceptableInput()会使用在构造函数中设置的检验器来判断行编辑器中内容的有效性。
+
+这样，就完成了这个对话框。现在可以通过重写main.cpp文件来使用这个对话框：
+\begin{cppinput}{qt4-book/chap02/gotocell3/main.cpp}
+\end{cppinput}
+
+使用qmake -project命令重新生成gotocell.pro文件（因为已经在工程中添加了源文件），使用qmake gotocell.pro命令更新makefile文件，然后再次构建并运行应用程序。在行编辑器中输入"A12"，这时可以注意到OK按钮已经变为启用了。尝试输入一些随机文本来看看检验器是如何完成它的工作的。单击Cancel按钮关闭对话框。
+
+这个对话框工作得很好，但对于Mac OS X用户，这些按钮却显得不够圆润。在前面采用了单独添加每个按钮的方法，这是为了可以让我们看出是如何完成这些步骤的，但我们本来的确是应当使用QDialogButtonBox的，它是一个可以容纳给定的按钮的窗口部件，可以让那些按钮以正确方式呈现在应用程序所运行的平台上，如图2.10所示。
+\begin{fig}[0.7]{designer2-10}
+\caption{Windows Vista和Mac OS X上的Go to Cell对话框}
+\label{fig:designer2-10}
+\end{fig}
+
+要使用QDialogButtonBox来制作这个对话框，必须同时修改设计过程和上述代码。在Qt设计师中，一共需要4步：
+\begin{enumerate}
+\item 单击窗体（不是任何窗口部件或者布局），然后单击Form→Break Layout。
+\item 单击并删除OK按钮、Cancel按钮、水平分隔符以及（现在为空的）水平布局。
+\item 在窗体上拖放一个“按钮盒”(Button Box)，放在标签和行编辑器单元的下方。
+\item 单击窗体，然后单击Form →Lay Out Vertically。
+\end{enumerate}
+
+如果只打算修改设计，比如修改对话框的布局和窗口部件的属性等，那么只要重新构建应用程序即可。但在这里是移除了一些窗口部件并且添加了一个新的窗口部件，所以在这种情况下，通常还必须对代码进行修改。
+
+我们所必须做的修改都在gotocelldialog.cpp文件中。这里给出的是其构造函数的新版本：
+\begin{cppline}[3]{qt4-book/chap02/gotocell3/gotocelldialog.cpp}{5}{16}
+\end{cppline}
+
+在前一版本中，一开始在Qt设计师中禁用了OK按钮。但是在使用QDialogButtonBox之后就不能那样做了，因而可以在代码中调用setupUi()之后，再立即禁用OK按钮，这样也可以达到同样的效果。类QDialogButtonBox有一组标准按钮的枚举值，并且可以利用这一点来访问这些特殊的按钮，本例就是访问OK按钮。
+
+非常方便的是Qt设计师对于QDialogButtonBox的默认名称就是buttonBox。双方的连接会从按钮盒而不是从按钮自己创建出来。在单击一个带AcceptRole的按钮时，就会发射accepted()信号，这一点与单击一个带RejectRole的按钮会发射rejected()信号的情况相似。默认情况下，标准的QDialogButtonBox::Ok按钮具有AcceptRole属性，而标准的QDialogButtonBox::Cancel按钮具有RejectRole属性。
+
+还需要在\verb+on_lineEdit_textChanged+槽中做一处修改：
+\begin{cppline}[13]{qt4-book/chap02/gotocell3/gotocelldialog.cpp}{18}{22}
+\end{cppline}
+
+与之前的唯一不同之处在于不是对存储为成员变量的特殊按钮进行引用，而是直接去访问按钮盒中的OK按钮。
+
+使用Qt设计师的一个好处就在于它为程序员在修改自己设计的窗体时提供了很大的自由，并且不必再强迫自己去修改源代码。当完全通过手写C++代码开发窗体时，对窗体设计的修改将会相当耗时。利用Qt设计师，由于uic会自动为那些发生了改变的窗体重新生成源代码，所以就不会再浪费时间了。对话框的用户交互界面会被保存为.ui文件（一种基于XML的文件格式），而通过对uic所生成的类进行子类化，就可以实现自定义的函数功能。
+
+\section{改变形状的对话框}
+我们已经看到了如何创建对话框，无论何时使用它们，这些对话框永远只会显示出一些相同的窗口部件。在某些情况下，人们非常希望能够提供一些可以改变形状的对话框。最常见的可改变形状的对话框有两种：扩展对话框(extension dialog)和多页对话框(multi-page dialog)。在Qt中，不论是纯粹使用代码还是使用Qt设计师，都可以实现这两种对话框。
+
+扩展对话框通常只显示简单的外观，但是它还有一个切换按钮(toggle button)，可以让用户在对话框的简单外观和扩展外观之间来回切换。扩展对话框通常用于试图同时满足普通用户和高级用户需要的应用程序中，这种应用程序通常会隐藏那些高级选项，除非用户明确要求看到它们。在这一节中，将使用Qt设计师来创建如图2.11所示的扩展对话框。
+\begin{fig}{sortdialog}
+\caption{具有简单外观和扩展外观的Sort对话框}
+\label{fig:sortdialog}
+\end{fig}
+
+这个对话框是一个用于电子制表软件应用程序的排序对话框（Sort对话框），在这个对话框中，用户可以选择一列或多列进行排序。在这个简单外观中，允许用户输入一个单一的排序键，而在扩展外观下，还额外提供了两个排序键。More按钮允许用户在简单外观和扩展外观之间切换。
+
+我们将在Qt设计师中创建这个对话框的扩展外观，并且在运行时根据需要隐藏排序的第二键和第三键。这个窗口部件看起来有些复杂，但在Qt设计师中可以轻而易举地完成它。简单的诀窍是首先完成主键部分，然后再复制并且粘贴两次就可以获得第二键和第三键所需的内容。
+
+\begin{enumerate}
+\item 单击File→New Form，并选择"Dialog without Buttons"模板。
+\item 创建OK按钮并把它拖放到窗体的右上角。将它的objectName修改为"okButton"，并将它的default属性设置为"true"。
+\item 创建Cancel按钮并把它拖放到OK按钮的下方。将它的objectName修改为"cancelButton"。
+\item 创建一个垂直分隔符并把它拖放到Cancel按钮的下方，然后再创建一个More按钮。并将它放在垂直分隔符的下方。将More按钮的objectName修改为"moreButton"，text属性设置成"\&{}More"，checkable属性设置为"true"。
+\item 单击OK按钮，按下Shift键后再单击Cancel按钮、垂直分隔符和More按钮，然后单击Form→Lay Out Vertically。
+\item 创建一个群组框、两个标签、两个组合框以及一个水平分隔符，然后把它们放到窗体上的任意位置。
+\item 拖动群组框的右下角使它变大一些。然后，把其他窗口部件移到群组框中，并且按照如图2.12(a)所示的那样把它们放置到适当位置。
+\item 拖动第二个组合框的右边缘，使它的宽度大约为第一个组合框的两倍。
+\item 将群组框的title属性设置为"\&{}Primary Key"，第一个标签的text属性设置为"Column:"，第二个标签的text属性设置为"Order:"。
+\item 右键单击第一个组合框。从Qt设计师弹出的上下文菜单的组合框编辑器中选择EditItems。用文本"None"创建一个项。
+\item 右键单击第二个组合框并且同样选择Edit Items。创建一个"Ascending"项和一个"Descending"项。
+\item 单击群组框，然后单击Form-Lay Out in a Grid。再次单击群组框，并且单击Form→Adjust Size。此时将会产生一个如图2.12(b)所示的布局。
+\end{enumerate}
+
+\begin{fig}{sortlayout}
+\caption{将群组框的子对象摆放到网格中}
+\label{fig:sortlayout}
+\end{fig}
+
+如果没能生成你所希望的那种布局效果，或者是不小心做错了，那么总是可以随时先通过单击Edit→Undo或Form→Break Layout，然后再重新放置这些要摆放的窗口部件，最后再试着对它们重新布局，直到满意为止。
+
+  
+%附录
+\appendix
+
+\part{附录}
+\chapter{面向Java和C\#{}程序员的C++简介}
+这个附录为已经熟知Java或者C\#{}的开发人员提供一个关于C++的简短介绍。这里假定你已经熟悉了面向对象中的那些概念，如继承和多态，并且认为你也的确是想学习C++。为了不让本书变成一部厚达1500页的涵盖全部C++入门知识的不实用的“大部头”，所以要把这个附录仅仅限定在基本知识的范围内：只给出用来理解本书其他部分所示例子的基本知识和方法，但这些知识也足以使用Qt开发跨平台的C++图形用户界面应用程序。
+
+在编写这本书的时候，C++是开发跨平台、高性能、面向对象的图形用户界面应用程序的唯一现实选择。而一些别有用心的批评者也可能会指出，Java或者C\#{}具有更好的可用性，而C++则降低了C的兼容性。实际上，作为C++发明人的Bjarne Stroustrup，他在"The Design and Evolution of C++"(Addison-Wesley，1994)一书中早就指出：“即使有C++，还可以找出更小、更简洁的语言”。
+
+幸运的是，在使用Qt进行编程的时候，我们通常只关注于C++的子类，这非常接近于Stroustrup所设想的“乌托邦”式的编程语言，从而能够让我们集中精力去解决手头的问题。此外，通过Qt独创性的“信号和槽”机制、对统一字符编码标准的支持以及foreach关键字，Qt也在多个方面扩展了C++。
+
+在这个附录的第一节中，将会看到如何使用C++的源文件产生一个可执行程序。这将可以引导我们探索C++的一些核心概念，如编译单元、头文件、目标文件、库等，并且也可以让我们逐步熟悉C++的预处理器、编译器和连接器。
+
+然后，会转到对C++、Java和C\#{}这些主要语言不同点的说明上：如何定义类，如何使用指针和引用，如何重载运算符，如何使用预处理器，等等。尽管C++语法从表面上看与Java或者C\#{}的语法很相似，但从深层意义上来讲，这些概念却稍微显得不尽相同。同时，作为Java和C\#{}的创意之源，C++语言也与这两种语言有着诸多相同之处，包括相似的数据类型，同样的数学运算符，以及同样的基本控制流语句等。
+
+最后一节专门用于说明标准C++库，该库提供了可用于任意C++程序中的完善功能。这个库是30多年来演化的结果，并且因此提供了涵盖程序、面向对象、函数编程风格以及宏和模板等方面的诸多方法。与Java和C\#{}提供的库相比，标准C++库的范围显得有些窄。比如，标准C++库不支持图形用户界面程序设计、多线程、数据库、国际化、网络、XML或者统一字符编码标准。要在这些领域进行开发，C++程序员则可能要使用各种各样（通常是与平台相关的）的库。
+
+这就是为什么说Qt可以节约时间的原因。Qt首先作为跨平台的图形用户界面工具包（一个让编写可移植图形用户界面应用程序成为可能的类的集合）而起步，但很快发展成为一个成熟的程序开发框架，它对标准C++库进行了部分扩展和部分替换。尽管本书使用的是Qt，但是如果能够知道标准C++库到底提供了哪些功能也是很有用的，因为你有可能需要去处理一些使用了那些功能的代码。
+
+\section{C++入门}
+一个C++程序由一个或者多个编译单元(compilation unit)构成。每个编译单元都是一个独立的源代码文件，通常是一个带.cpp扩展名（其他常用的扩展名还有.cc和.cxx）的文件，编译器每次可以处理一个这样的文件。对于每一个编译单元，编译器都会产生一个目标文件，它的扩展名是.obj（在Windows中）或者.o（在UNIX和Mac OS X中）。这个目标文件是一个二进制文件，其中包含了系统架构方面的机器代码，而程序则要运行在此基础之上。  
+
+一旦所有的.cpp文件都已编译完成，那么我们就可以使用一个称为连接器的特殊程序，把这些目标文件连接在一起，生成一个可执行程序。连接器会连接这些目标文件，并且会解析函数和编译单元中引用到的其他符号的内存地址。
+
+在构建一个程序时，必须确保其中的某个编译单元包含一个main()函数，它是程序入口的标志。这个函数不属于任何类，它是一个全局函数(global function)。图D.1给出了这一过程的原理图。
+\begin{fig}[0.8]{c++compilation}
+\caption{C++的编译过程（在Windows中）}
+\label{fig:c++compilation}
+\end{fig}
+
+不像Java的每一个源文件都必须严格包含一个类那样，C++可以按我们想要的形式组织各个编译单元。我们可以在同一个.cpp文件中实现多个类，或者也可以把一个类的实现分散到多个.cpp文件中，并且还可以把这些源文件命名为我们所喜欢的任意名字。当在某一个特殊的.cpp文件中进行修改时，只需要重新编译那个文件，然后再重新连接这个应用程序就可以生成一个新的可执行程序。
+
+在进一步深入学习之前，让我们快速看一个C++小程序的源代码，该程序可以计算一个整数的平方。这个程序由两个编译单元构成：main.cpp和square.cpp。
+
+这是square.cpp文件中的内容：
+\begin{cppinput}{qt4-book/appendixD/square/square.cpp}
+\end{cppinput}
+
+这个文件只简单包含了一个称为square()的全局函数，它可以返回所带参数的平方值。
+
+这里是main.cpp文件中的内容：
+\begin{cppinput}{qt4-book/appendixD/square/main.cpp}
+\end{cppinput}
+
+源文件main.cpp包含了main()函数的定义。在C++中，这个函数的参数是一个int和一个char * 数组（一个字符串数组）。可以从argv[0]中获取程序的名字，命令行参数则分别放在argv[1]、argv[2]、$\cdots$、argv[argc-1]中。把参数命名为argc（argument count，参数个数）和argv（argument values，参数值）是一种习惯性的做法。如果这个程序不能使用命令行参数，那么可以把main()定义成不带参数的形式。
+ 
+ 这个main()函数使用标准C++库中的strtod()（即“string转换到double”)、cout（c++的标准输出流），和cerr（c++的标准错误信息输出流），把命令行参数转换成double，并且以文本的形式打印到终端控制台。字符串、数字和行尾标记符(endl)都是使用<<操作符的输出流，该操作符也用于移位操作(bit-shifting)中。为了可以使用这一标准功能，我们需要在第1行和第2行中加入\verb+#inlcude+指示符。
+
 
 
 %这里空一行
@@ -345,9 +830,226 @@ Qt中构建用户接口的方法很容易理解并且非常灵活。Qt程序员�
 \end{document}
 
 
+现在来添加其他两个群组框：Secor/dmy Key和Teffiary Key：
+  1．让对话框窗口足够高，以便可’以容纳另外两个部分。
+  2．按下Ctrl键（在Mac中按下Alt键），然后单击并拖动Primary Key群组框，这样就可以在原群
+    组框（以及它所包含的所有组件）的上方复制出一个新的群组框。仍旧按下Ctrl键（或Alt
+    链），把复制的这个群组框拖动到原群组框的下方。重复以上步骤，就可以生成第三个群组
+    框，然后把它拖动到第二个群组框的下方。    。
+  3．将它们的title属性分别修改为“&Secondary Key”和“&TerUary Key”。
+  _4．创建一个垂直分隔符，并且把它放到Prima工y Key群组框和Secondmy Key群组框的中间。
+  5．把这些窗口部件按图2.13(a)所示的那样排列成网格状。
+    (a)布局前    (b)布局后    ；
+    图2.13把窗体的各个子对象摆放到网格中  +
+6．单击窗体，取消对任意选中窗口部件的选择，然后单击Fonn一Lay．Out in a Grid。现在，向上
+  和向左拖动窗体的右下角，以便让窗体变得尽可能地小。现在，窗体应该和图2,13(b)中
+。  显示的一样了
+ 7．把两个垂直分隔符的sizeHint属性设置为[20，0]。
+C++ GUI Qt 4编程（第二版）
+    最终的网格布局是4行2列，一共有8个单元格。Primary Key群组框、最左边的垂直分隔符、
+Secoridary Key群组框和Tertiary Key群组框各占一个单独的单元格。包含OK、Cancel和More按钮
+的垂直布局占用了两个单元格。最后，会在对话框的右下角剩下两个空白单元格。如果你做出来
+的对话框不是这样，那么请撤销布局，重新放置窗口部件的位置，然后再重新试试。
+  把这个窗体重命名为“SortDialog”，并且把它的标题修改为“Sort”。根据图2.14修改各个子窗
+  
+图2.14重新命名窗体中的各个窗口部件
+    单击Edit-+Edit Tab Order，从窗体的最上面到最下面依次单击每个组合框，然后单击窗体
+右侧的OK、Cancel和More按钮。单击Edit-+Edit Widgets离开Tab键顺序设置模式。
+图2.15连接窗体的各个部件
+    现在，窗体已经设计完成，可以开始着手设置一些信
+号一槽的连接来实现窗体的功能了。Qt设计师允许我们
+在构成同一窗体的不同部分内的窗口部件之间建立连接。
+我们需要建立丙个连接。
+    单击Edit-+Edit Signals/Slots，进入Qt设计师的设置连
+接模式。窗体中各个窗口部件之间的连接用蓝色箭头表
+示，如图2.15所示，并且它们也会同时在Qt设计师的sig-
+nal/slot编辑器窗口中显示出来。要在两个窗口部件之间
+建立连接，可以单击作为发射器的窗口部件并且拖动所产
+生的红色箭头线到作为接收器的窗口部件上，然后松开鼠
+标按键。这时会弹出一个对话框，可以从中选择建立连接
+的信号和槽。
+    要建立的第一个连接位于okButton按钮和窗体的ac-
+cept()槽之间。把从okButton按钮开始的红色箭头线拖动
+到窗体的空白区域，然后松开按键，这样会弹出如图2．】6
+所示的设置连接对话框(Configure Connection dialog)。从该对话框中选择clicked()作为信号，选择
+accept()作为槽，然后单击OK按钮。
 
+第2章创建对话框
+    对于第二个连接，把从cancelButton按钮开始的红色箭头线拖动到窗体的空白区域，然后在设
+置连接对话框中连接按钮的clicked()信号和窗体的reject()槽j
+    要建立的第三个连接位于moreButton按钮和secondayGroupBox群组框之间。在这两个窗口部
+件之间拖动红色箭头线，然后选择toggled( bool)作为信号，选择setVisible( bool)作为槽。默认情况
+下，setVisible( bool)槽不会显示在Qt设计师的槽列表中，但如果选中了“Show all signals and slots”选
+项，就可以看到这个槽了。
+图2.16 Qt设计师的连接编辑器
+    第四个也是最后一个要建立的连接是moreButton按钮的toggled( bool)信号和tertiaryGr；oupBox
+群组框的setVisible( bool)槽之间的连接。这些连接一旦完成，就可以单击Edit-  Edit Widgets而离开
+创建连接模式。
+    将这个对话框保存在sort目录中，文件名为sortdialog.ui。要给这个窗体添加代码，同样将使用
+在前一节的Go to Cell对话框设计中B经便用过的多重继承的方法。
+    首先，用如下内容创建一个sortdialog.h文件：
 
-窗口部件。该参数的默认值是一个空指针，意味着该对话框没有父对象。
+  然后再创 ]建 sortdialog.cpp文件 :
 
-    signals部分声明了当用户单击Find按钮时对话框所发射的两个信号。如果向前查询(search
-backwam)选项生效，对话框就发射fmdPrevious()信号，否则它就发射findNext()信号。
+杓造函数隐藏了对话框的第二键和第三键这两个部分。它也把有关窗体布局的sizeConstraint
+第二键和第三键的组合框选项中插入了一个“None”选项。
+第19行和第20行给出了布局中的一个特殊习惯用语
+~系统试图迅凰递蔓婆墅奎小。’这也
+浮舔件簧彝手会被布局系统芬面蚕芋习硐
+解释了为什么不同的
+。．QWidget::sizeHint() ~ia#f砸以返回布
+订南薪艳露李    ≠畦溺瓣
+的尺寸大小。对于这些组合框，这里指的是第二键组合框和
+第三键组合框，由于它们包含了_个“None”选项，所以它们要比只包含了一个单字符项目的主键
+组合框显得宽一些。为了避免这种不一致性，需
+的理想大小。
+＼／／葛羲；科再
+这个对话框：
+测试效果的main()函数，它首先设置了列的范围为从“C’！到“F”，然后再显示
+#include <QApplication>
+y #include "sortdialog.h
+int main(int argc, char *argv[l)
+{
+      QApplication app(argc,  argv) ;         .
+   SortDialog *dialog = new SortDialog;
+  dialog->setColumnRange('C', 'F'); :
+       dialog->show( ) ;
+, . return app.exec()r    '
+71／f．，
+第2章创建对话框
+    这样就完成了这个扩展对话框。就像这个实例所显示的那样，设计一个扩展对话框并不比设
+计一个简单对话框难：所需要的就是一个切换按钮、一些信号一槽连接以及一个不可以改变尺寸大，
+    际的应用程序中，控制扩展对话框的按钮通常会在只豆岽亍囊苯寿话程爵豆杀另一
+兰是要鬻示了扩展对话框时才显示为Advanced《。这在Qt中实现起来非常容易，只需
+在单击这个按钮时调用QPushButton中的setText()函数即可完成这一功能。
+    在Qt中，无论是使用手工编码的方式还是使用Qt设计师，都可以轻松地创建另二种常用的可
+以改变形状的对话框：多页对话框。可以通过多种不同的方式创建这种对话框：
+    oQTabWidget的用法就像它自己的名字一样。它提供了一个可以控制内置QStackedWidge的
+    Tab栏。
+    ·QListWidget和QStackedWidget可以一起使用，将QList.Widget：：currentRowChanged()信号与
+    QStackedWidget：：setCurrendndex()槽连接，然后再利用QListWidget的当前项就可以确定应该
+    显示QStackedWidget中的哪～页。
+    。与上述QListWidget的用法相似，也可以将QTreeWidget和QStackedWidget -起使用：
+    第6章将讲解QStackedWidget类。
+    ：    ‘
+2.5动态对话框    ？
+    动态对话框(dynanuc dialog)就是在程序运行时使用的从Qt设计师的．ui文件创建而来的那些
+对话框。动态对话框不需要通过LUC把．ui文件转换成C++代码，相反，苔是在程序运行的时候使
+用QUiLoader类载人该文件的，就像下面这种方式：
+QUiLoader uiLoader; '    .
+QFile  file ( "so rtdialog. ui'r ) ;            ,               '
+QWidget *sortDialog = uiLoader.load(&file);
+if (sortDialog) {'
+}
+可以使用QObject: ;findChild<D()来访问这个窗体中的各个子窗口部件：
+   , QComboBox *'primaryColumnCombo =
+                               so rtDialog->findChild<QComboBox  *> ( " p rima ryColumnCombo " )
+--.. r'if (primaryColumnCombo) {
+      }
+    这里的findChild<T>()函数足一个模板成员函数，它可以返回与给定的名字和类型相匹配的
+    ，    J
+子对象。由于受编译器的制约，还不能在MSVC 6中使用该函数。如果需要使用MSVC 6．编译器，
+那么可以通过调用全局函数qFindChild<D()来代替该函数，这个全局函数同样也可以完全相同
+的方式工作。
+    QUiLoader类放在一个独立的库中。为了在Qt应用程序中使用QUiLoader，必须在这个应用程
+序的．pro文件中加入这一行内容：
+    动态对话框使不重新编译应用程序而可以改变窗体布局的做法成为可能。动态对话框也同
+  样可用于创建小型终端应用程序，这些程序只有一个内置的前端窗体，并且只是在需要的时候才
+、会去创建所有的其他窗体。
+曩。。’
+I
+C++ GUI Qt 4编程（第二版）
+2.6  内置的窗口部件类和对话框类
+    Qt提供了一整套内置的窗口部件和常用对话框，这可以满足绝大多数情况。在这一节，几乎
+给出了它们所有的屏幕截图。会在稍后提供那些少量的特殊窗口部件：第3章会讲到用于主窗口
+的那些窗口部件，如QMenuBar、QToolBar和QStatusBar等；第6章会讲到与布局相关的那些窗口部
+件，如QSplitter和QScroⅡArea等。在本书提供的实例中将会用到绝大多数内置窗口部件和对话框。
+所有这些窗口部件都会使用Plastique风格显示在从图2.17到图2.26的屏幕截图中。
+    如图2.17所示，Qt'提供了4种类型的按钮：QPushButton、QToolButton、QCheckBox和QRadio-
+Button。，最常使用的就是QPushButton和QToolButton，当单击时，它们就能够发起一个动作，但它们
+也可以具有像切换按钮（按钮单击一次被按下，再单击一次会还原）一样的行为。复选框QCheck-
+Box可用于打开／关闭单独的那些选项，而单选按钮QRadioButton通常用于需要互斥条件的地方。
+图2,17 Qt的按钮窗日部件
+    Qt的容器窗口部件是一种可以包含其他窗口部件的窗口部件。图2.18和图2.19给出了这些
+容器窗口部件。QFrne也可用于它自身，这只是为了绘制一些直线，它也可以用作许多其他窗口
+部件的基类，如QToolBox和QIabel等。
+图2.18 Qt的单页容器窗口部件
+    QTabWidget和QToolBox是多页窗口部件。在多页窗口部件中，每一页都是一个子窗口部件，
+    并从0开始编号这些页。对于一个QTabWidget，它的每个Tab标签的形状和位置都可以进行设置。
+    如图2.20所示，为处理较大的数据量，这些项视图已经进行了优化，并且会经常使用它们的
+    滚动条( scroll bar)。滚动条机制是在QAbsUactScroⅡArea中实现的，它是所有项视图和其他类型的
+    可滚动窗口部件的基类。    ，
+迨．  Qt库含有一个富文本引擎(rich text engine)，它可用于格式化文本的显示和编辑。该引擎支持
+    字体规范、文本对齐、列表、表格、图片和超文本链接等。可以通过编程的方式一个元素一个元素
+    地生成富文本文档i或者也可以通过所提供的HTML格式的文本来生成富文本文档。至于该引擎
+    所支持的HTMI．标记和CSS属性的详细说明．请参见文档http：//doc．trolltech．com/4. 3/richtext-Jm一】l—
+    subset．html。    i：
+    第2章创建对话框    31
+    __----h......_...---..__。一
+    —————I_____-__．_．--一
+QTabWidget
+图2.19 Qt的多页容器窗口部件
+QListView（列表形式）
+QListView（图标形式）
+QToolBox
+QTreeView
+QTableView
+    图2.20 Qt的项视图窗口部件
+    虫口图2.21所示，Qt提供了一些纯粹用于显示信息的窗口部件。QLabel是这些窗口部件中最
+重要的一个，并且它也可以用来显示普通文本、HTML和图片。
+QLabel（文本）
+QLabel（图片）
+QProgressBar
+QTextBrowser
+图2.21 Qt的显示窗口部件
+C++ GUI Qt:4编程（第二版）
+    QTextBrowser是0个只读型QTextEdit子类，它可以显示带格式的文本。这个类优先用于处理
+大型格式化文本文档的QLabel中，因为它与QLabel不同，它会在必要时自动提供滚动条，同时还提
+供了键盘和鼠标导航的广泛支持。？Qt 4_.3助手就是使用QTextBrowser来为用户呈现文档的。
+    Qt提供了数个用于数据输入的窗口部件，如图2.22所示。QLineEdit可以使用一个输入掩码、
+一个检验器或者同时使用两者对它的输入进行限定。QTextEdjt是QAbsUactScrollArea的子类，具有
+处理大量文本的能力j二个QTextEdit可设置用于编辑普通文本或者富文本。在编辑富文本的时
+候，它可以显示Qt富文本引擎所支持的所有元素。QLineEdit和QTextEdit两者都对剪贴板提供完
+美支持。    二
+    QScrollBar
+ Emall is a wonded:ulthing to
+people whose role in life is to
+ lie置囊鬟鬟l               . But not for
+me; my role is to be on the
+bottom of thmgs.
+QSlider
+    图2.22 Q[的输入窗口部件
+    如图2.23所示，Qt提供了一个通用消息框和一个可以记住它所显示的消息内容的错误对话框。
+可以使用QPro~TessDialog或者使用图2.21中显示的QPto~TessBar来对那些非常耗时的操作进度进行
+指示。当用户只需要输入一行文本或者一个数字的时候，使用QInputDialog会显得非常方便。
+图2.23 QL的反馈对话框
+    第2章-创建对话框    33
+    --—————_-____-__.*_____-_______---__-__一
+    ________-____-h___-_一
+    ———_——————______-______________一
+    _-‘---_-_--_.-________.---.--.--_一
+    Qt提供了一套标准的通用对话框，这样可以让用户很容易地选择颜色、字体、文件或者文档打
+印。图2. 24和图2.25'显示了这些对话框。    ：
+图2.24 Qt的颜色对话框和字体对话框
+    图2.25 Qt的文件对话框和打印对话框
+    在Windows和Mac OS x上，．Qt有可能会使用本地系统的对话框，而不是它自己的通用对话框。
+  颜色的选取也可以使用Qt Soludons的某个颜色选择窗口部件来完成，而字体也可以使用内置的
+  QFontComboBox来选择。  』
+    最后，QWizaId为生成向导（wizard，在Mac OS x上也称为助手）提供了一个基本框架。对于那
+  些用户可能会难于理解的复杂或者不常见的工作，向导会非常有用。图2,26给出了使用向导的
+  一个例子。
+    ，  ‘  ^_  ‘？
+    内置窗口部件和常用对话框为用户提供了很多可以直接使用的功能。。通过设置窗口部件的
+属怯，或者是通过把信号和槽连接起来并在槽里实现自定义的行为，通常就可以满足许多更为复
+杂的需求。    ：
+    如果Qt所提供的窗口部件或者常用对话框没有一个合适，那/_可以从Qt SoluUon，或者从商
+业或非商业的第三方软件中找到一个可用的。Qt Solution。提供了许多额外的窗口部件，包括各种
+颜色选择器1、一个手轮控制器、许多饼状图菜单以及属性浏览器等，还有一个复制对话框。
+，  、在某些情况下，你可能希望手动创建一个自定义窗口部件。Qt使这种工作变得很简单，并且
+j    1
+j
+  34    C++ GUI Qt 4编程（第二版）
+自定义窗口部件也可以像Qt's4J内置窗口部件一样获得与平台无关的所有相同绘制功能。自定义
+窗口部件甚至可以集成到Qt设计师中，这样就可以像使用Qt的内置窗口部件一样来使用它们。
+第5章将讲述如何创建自定义窗口部件。
+图2.26 Qt的QWizard对话框
