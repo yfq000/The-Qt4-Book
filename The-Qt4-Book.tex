@@ -1086,6 +1086,90 @@ Qt通过“动作”的概念简化了有关菜单和工具栏的编程。一个
 \begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{195}{198}
 \end{cppline}
 
+这个Exit动作与目前为止所看到的那些动作稍微有些不同。由于没有用于终止应用程序的标准化键序列，所以需要在这里明确指定键序列。另外一个不同之处是我们连接的是窗口的close()槽，而它是由Qt提供的。
+
+现在，可以跳到Select All动作中：
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{241}{246}
+\end{cppline}
+
+由于槽selectAll()是由QTabelWidget的父类之一的QAbstractItemView提供的，所以就没有必要再去亲自实现它。
+
+现在，不妨进一步跳到Options菜单中的Show Grid动作中去：
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{273}{279}
+\end{cppline}
+
+Show Grid是一个复选(checkable)动作。复选动作在菜单中显示时会带一个复选标记，并且在工具栏中它可以实现成切换(toggle)按钮。当启用这个动作时，Spreadsheet组件就会显示一个网格。我们用Spreadsheet组件的默认值来初始化这个动作，这样它们就可以从一开始就同步起来。然后，把Show Grid动作的toggled(bool)信号和Spreadsheet组件的setShowGrid(bool)槽连接起来，这个槽继承自QTableWidget。一旦把这个动作添加到菜单或者工具栏中，用户就可以对网格的显示与否进行切换了。
+
+Show Grid动作和Auto-Recalculate动作是相互独立的两个复选动作。通过QActionGroup类的支持，Qt也可以支持相互排斥的动作。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{298}{301}
+\end{cppline}
+
+对于About Qt动作，通过访问qApp全局变量，我们可以使用QApplication对象的aboutQt()槽。这个动作会弹出一个如图3.4所示的对话框。
+\begin{linefig}[0.8]{spreadsheet3-4}
+\caption{About Qt对话框}
+\label{fig:spreadsheet3-4}
+\end{linefig}
+
+现在已经创建了这些动作，还可以继续构建一个包含这些动作的菜单系统：
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{303}{314}
+\end{cppline}
+
+在Qt中，菜单都是QMenu的实例。addMenu()函数可以用给定的文本创建一个QMenu窗口部件，并且会把它添加到菜单栏中。QMainWindow::menuBar()函数返回一个指向QMenuBar的指针。菜单栏会在第一次调用menuBar()函数的时候就创建出来。
+
+从创建File菜单开始，然后再把New、Open、Save、Save As动作添加进去。插入一个间隔器(separator)，可以从视觉上把关系密切的这些项放在一起。使用一个for循环从recentFileActions数组中添加一些动作（最初是隐藏起来的），然后在最后添加一个exitAction动作。
+
+我们已经让一个指针指向了这些间隔器中的某一个。这样就可以允许隐藏（如果没有最近文件的话）或者显示那个间隔器，因为不希望出现在两个间隔器之间什么都没有的情况。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{316}{329}
+\end{cppline}
+
+现在来创建Edit菜单，就像在File菜单中所做的那样使用QMenu::addMenu\linebreak ()函数添加各个动作，并且在希望出现子菜单的地方使用QMenu::addMenu()函数添加子菜单。一个子菜单与它所属的菜单一样，也是一个QMenu。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{331}{344}
+\end{cppline}
+
+通过类似的方式创建Tools、Options和Help菜单。在Options菜单和Help菜单之间插入一个间隔器。对于Motif和CDE风格，这个间隔器会把Help菜单放到菜单栏的最右端；对于其他的风格，则将会忽略这个间隔器。图3.5是这两种情况的示意图。
+
+\begin{linefig}[0.8]{spreadsheet3-5}
+\caption{Motif和Windows风格下的菜单栏}
+\label{fig:spreadsheet3-5}
+\end{linefig}
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{346}{352}
+\end{cppline}
+
+任何Qt窗口部件都可以有一个与之相关联的QActions列表。要为该应用程序提供一个上下文菜单，可以将所需要的动作添加到Spreadsheet窗口部件中，并且将那个窗口部件的上下文菜单策略(context menu policy)设置为一个显示这些动作的上下文菜单。当用户在一个窗口部件上单击鼠标右键，或者是在键盘上按下一个与平台相关的按键时，就可以激活这些上下文菜单。Spreadsheet中的上下文菜单如图3.6所示。
+\begin{fig}[0.6]{spreadsheet3-6.png}
+\caption{Spreadsheet应用程序中的上下文菜单}
+\label{fig:spreadsheet3-6.png}
+\end{fig}
+
+一种更为高级的提供上下文菜单方法是重新实现QWidget::contextMenuEve-nt()函数，创建一个QMenu窗口部件，在其中添加所期望的那些动作，并且再对该窗口部件调用exec()函数。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{354}{368}
+\end{cppline}
+
+创建工具栏与创建菜单的过程很相似，我们据此创建一个File工具栏和一个Edit工具栏。就像菜单一样，工具栏也可以有多个间隔器，如图3.7所示。
+\begin{linefig}[0.6]{spreadsheet3-7.png}
+\caption{Spreadsheet应用程序的工具栏}
+\label{fig:spreadsheet3-7.png}
+\end{linefig}
+
+
+\section{设置状态栏}
+随着菜单和工具栏的完成，已经为设置Spreadsheet应用程序的状态栏做好了准备。在程序的普通模式下，状态栏包括两个状态指示器：当前单元格的位置和当前单元格中的公式。状态栏也用于显示状态提示和其他一些临时消息。图3.8给出了各种情况下的状态栏。
+\begin{linefig}[0.7]{spreadsheet3-8.png}
+\caption{Spreadsheet应用程序的状态栏}
+\label{fig:spreadsheet3-8.png}
+\end{linefig}
+
+MainWindow的构造函数会调用createStatusBar()来设置状态栏。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{370}{388}
+\end{cppline}
+
+QMainWindow::statusBar()函数返回一个指向状态栏的指针。\footnote{在第一次调用statusBar()函数的时候会创建状态栏。}状态栏指示器是一些简单的QLabel，可以在任何需要的时候改变它们的文本。已经在formulaLabel中添加了一个缩进格式，以便让那些在它里面显示的文本能够与它的左侧边有一个小的偏移量。当把这些QLabel添加到状态栏的时候，它们会自动被重定义父对象，以便让它们成为状态栏的子对象。
+
+图3.8所示的两个标签都有不同的空间需求。单元格定位指示器只需要非常小的空间，并且在重新定义窗口大小时，任何多余的空间都会分配给位于右侧的单元格公式指示器。这是通过在公式标签的QStatusBar::addWidget()调用中指定一个伸展因子$ 1 $而实现的。位置指示器的默认伸展因子为$ 0 $，这也就意味着它不喜欢被伸展。
+
+
+
 %附录
 \appendix
 
@@ -1141,62 +1225,6 @@ Qt通过“动作”的概念简化了有关菜单和工具栏的编程。一个
 \end{common-format}
 \end{document}
 
-
-
-
-Grid动作和Auto．Recalculate动作是相互独立的两个复选动作。通过QActionGroup类的支
-持，Qt也可以支持相互排斥的动作。    ，，．
-
-Qt动作，通过访问qApp全局变量，我们可以使用QApplication对象的aboutQt()槽。
-这个动作会弹出一个如图3.4所示的对话框。  ’    ，  ．    ．．
-
-图3:4  About Qt对话框
-现在已经创建了这些动作，还可以继续构建一个包含这些动作的菜单系统0
-．在Qt中，菜单都是QMenu的实例。addMenu()函数可以用给定的文本创建一个QMenu窗口部
-
-件，并且会把它添酾蓟菜覃翟牵。QMainWindow：：menuBar()函数返回一个指向，QMenuBar的指针。
-出来：
-和Save As动作添加进去。插入一个间隔器
-(separator)，可以从视觉上把关系密切的这些项放在一起。使用二个for循环从recentFiieAcUons数
-组中添加一些动作（最初是隐藏起来的），然后在最后添加一个exitAct/on动作。    ；
-。  我们已经让一个指针指向了这些间隔器中的某一个。这样就可以允许隐藏（如果设有最近文
-件的话）或者显示那个间隔器，因为不希望出现在两个间隔器之间什么都没有的情况。
-  。现在来创建Edit菜单，就像在File菜单中所做的那样使用QMenu:：addMenu()函数添加各个动
-、  作，并且在惹望出现子菜单的地方使用．Menu:：addMemr()函数添加子菜单。一个子菜单与它所
-
-
-    通过类似的方式创建Tools、Options和Help菜单。在Options菜单和Help菜单之间插入一个间
-隔器。对于Motif和CDE风格，这个间隔器会把Help菜单放到菜单栏的最右端；对于其他的风格，
-则特会忽略这个间隔器。图3.5是这两种情况的示意图。
-
-．ext葡商q避巧了设置为二个显示这些动作的上下文菜单。‘当用户在一
-图3:6 Spreadsheet应用程个窗口部件上单击鼠标右键，或者是在键盘上按下一个与平台相关的
-    序中的上下文莱单按键时，就可以激活这些上下文菜单。Spreadsheet中的上下文菜单如
-    图3.6所示。
-    ‘种更为高级的提供上下文菜单方法是重新实
-QMenu窗口部件，在其中添加所期望的那些动作，并
-
-创建工具栏与创建菜单的过程很相似，我们据此创建一个File工具栏和一个Edit工具栏。就
-像菜单一样，工具栏也可以有多个间隔器，如图3.7所示。
-蒸■蠢羹
-3.3设置状态栏
-图3.7 Spreadsheet应用程序的工具栏
-
-    随着菜单和工具栏的完成，已经为设置Spreadsheet应用程序的状态栏做好了准备。在程序的
-普通模式下，状态栏包括两个状态指示器：当前单元格的位置和当前单元格中的公式。状态栏也
-用于显示状态提示和其他一些临时消息。图3.8给出了各种情况下的状态栏。
-常规
-    状态提示
-    临时消息    。
-OMainWind刚：：。tat衄ar()函数返回一个指向状态栏的指针。[在第一次调用statusBar()函数
-  的时候会创建状态栏。]状态栏指示器是一些笸单的Q垫b哄』亘以在任何需要瞧盟候旦鍪霹它们且氢三殳
-  本。已经在fon—1ulaLabel史鋈塑工=仝鱼童磅苎土鎏便让那些在它里面显示的文本能够与它的左
-  侧边看二不习滴碥衫匿：当把这些QLabe1添加到状态栏的时候，它们会自动被重定义父对象一，一丛
-  便让它们成为状态栏的手对象。    ．
-    图3.8所宗萌两个标签都有不同的空间需求。单元格定位指示器只需要非常小的空间，并且
-  在重新定义窗口大小时．任何多余的空间都会分配给位于右侧的单元格公式指示器。这是通过在
-  公式标签的oStatusBar：：add珊dget()调用中指定一个伸展因子1而实现的。位置指示器的默认伸
-i，展因子为0，这也就意味着它不喜欢被伸展。    ．
 
 当QStatusBar摆放这些指示器窗口部件时，它会尽量考虑由QWidget：：sizeHint()提供的每一个
 窗口部件的理想大小，然后再对那些可伸展的任意窗．口部件进行伸展以填满全部可用空间。一个
