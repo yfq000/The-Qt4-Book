@@ -131,13 +131,13 @@ Matthias在1998年加入公司，并且在当年9月，发布了Qt 1系列的最
 
 第1行和第2行包含了类QApplication和QLabel的定义。对于每个Qt类，都有一个与该类同名（且大写）的头文件，在这个头文件中包括了对该类的定义。
 
-第5行创建了一个QApplication对象，用来管理整个应用程序所用到的资源。这个QApplication构造函数需要两个参数，分别是argc和argv，因为Qt支持它自己的一些命令行参数。
+第6行创建了一个QApplication对象，用来管理整个应用程序所用到的资源。这个QApplication构造函数需要两个参数，分别是argc和argv，因为Qt支持它自己的一些命令行参数。
 
-第6行创建了一个显示“Hello Qt!”的QLabel窗口部件(widget)。在Qt和UNIX的术语(tenninology)中，窗口部件就是用户界面中的一个可视化元素。该词起源于“window gadget”（窗口配件）这两个词，它相当于Windows系统术语中的“控件”(control)和“容器”(container)。按钮、菜单、滚动条和框架都是窗口部件。窗口部件也可以包含其他窗口部件，例如，应用程序的窗口通常就是一个包含了一个QMenuBar、一些QToolBar、一个QStatusBar以及一些其他窗口部件的窗口部件。绝大多数应用程序都会使用一个QMainWindow或者一个QDialog来作为它的窗口，但Qt是如此灵活，以至于任意窗口部件都可以用作窗口。在本例中，就是用窗口部件QLabel作为应用程序的窗口的。   
+第7行创建了一个显示“Hello Qt!”的QLabel窗口部件(widget)。在Qt和UNIX的术语(tenninology)中，窗口部件就是用户界面中的一个可视化元素。该词起源于“window gadget”（窗口配件）这两个词，它相当于Windows系统术语中的“控件”(control)和“容器”(container)。按钮、菜单、滚动条和框架都是窗口部件。窗口部件也可以包含其他窗口部件，例如，应用程序的窗口通常就是一个包含了一个QMenuBar、一些QToolBar、一个QStatusBar以及一些其他窗口部件的窗口部件。绝大多数应用程序都会使用一个QMainWindow或者一个QDialog来作为它的窗口，但Qt是如此灵活，以至于任意窗口部件都可以用作窗口。在本例中，就是用窗口部件QLabel作为应用程序的窗口的。   
 
-第7行使QLabel标签(label)可见。在创建窗口部件的时候，标签通常都是隐藏的，这就允许我们可以先对其进行设置然后再显示它们，从而避免了窗口部件的闪烁现象。
+第8行使QLabel标签(label)可见。在创建窗口部件的时候，标签通常都是隐藏的，这就允许我们可以先对其进行设置然后再显示它们，从而避免了窗口部件的闪烁现象。
 
-第8行将应用程序的控制权传递给Qt。此时，程序会进入事件循环状态，这是一种等待模式，程序会等候用户的动作，例如鼠标单击和按键等操作。用户的动作会让可以产生响应的程序生成一些事件（event，也称为“消息”），这里的响应通常就是执行一个或者多个函数。例如，当用户单击窗口部件时，就会产生一个“鼠标按下”事件和一个“鼠标松开”事件。在这方面，图形用户界面应用程序和常规的批处理程序完全不同，后者通常可以在没有人为干预的情况下自行处理输入、生成结果和终止。
+第9行将应用程序的控制权传递给Qt。此时，程序会进入事件循环状态，这是一种等待模式，程序会等候用户的动作，例如鼠标单击和按键等操作。用户的动作会让可以产生响应的程序生成一些事件（event，也称为“消息”），这里的响应通常就是执行一个或者多个函数。例如，当用户单击窗口部件时，就会产生一个“鼠标按下”事件和一个“鼠标松开”事件。在这方面，图形用户界面应用程序和常规的批处理程序完全不同，后者通常可以在没有人为干预的情况下自行处理输入、生成结果和终止。
 
 为简单起见，我们没有过多关注在main()函数末尾处对QLabel对象的delete操作调用。在如此短小的程序内，这样一点内存泄漏(memory  leak)问题无关大局，因为在程序结束时，这部分内存是可以由操作系统重新回收的。
 \begin{fig}{helloqt}
@@ -226,13 +226,13 @@ qmake quit.pro
 \begin{cppinput}{qt4-book/chap01/age/age.cpp}
 \end{cppinput}
 
-第8行和第9行创建了QWidget对象，并把它作为应用程序的主窗口。我们通过调用setWindowTitle()函数来设置显示在窗口标题栏上的文字。
+第10行和第11行创建了QWidget对象，并把它作为应用程序的主窗口。我们通过调用setWindowTitle()函数来设置显示在窗口标题栏上的文字。
 
-第10行和第11行分别创建了一个QSpinBox和一个QSlider，并分别在第12行和第13行设置了它们的有效范围。我们可以放心地假定用户的最大年龄不会超过130岁。本应把这个窗口传递给QSpinBox和QSlider的构造函数，以说明这两个窗口部件的父对象都是这个窗口，但在这里没有这个必要，因为布局系统将会自行得出这一结果并自动把该窗口设置为微调框和滑块的父对象，下面将会很快看到这一点。
+第13行和第14行分别创建了一个QSpinBox和一个QSlider，并分别在第15行和第16行设置了它们的有效范围。我们可以放心地假定用户的最大年龄不会超过130岁。本应把这个窗口传递给QSpinBox和QSlider的构造函数，以说明这两个窗口部件的父对象都是这个窗口，但在这里没有这个必要，因为布局系统将会自行得出这一结果并自动把该窗口设置为微调框和滑块的父对象，下面将会很快看到这一点。
 
-从第14行到第17行，调用了两次QObject::connect()，这是为了确保能够让微调框和滑块同步，以便它们两个总是可以显示相同的数值。一旦有一个窗口部件的值发生了改变，那么就会发射它的valueChanged(int)信号，而另一个窗口部件就会用这个新值调用它的setValue(int)槽。
+从第18行到第21行，调用了两次QObject::connect()，这是为了确保能够让微调框和滑块同步，以便它们两个总是可以显示相同的数值。一旦有一个窗口部件的值发生了改变，那么就会发射它的valueChanged(int)信号，而另一个窗口部件就会用这个新值调用它的setValue(int)槽。
 
-第18行将微调框的值设置为35。当发生这种情况时，QSpinBox就会发射valueChanged(int)信号，其中，int参数的值是35。这个参数会被传递给QSlider的setValue(int)槽，它会把这个滑块的值设置为35。于是，滑块就会发射valueChanged(int)信号，因为它的值发生了变化，这样就触发了微调框的setValue(int)槽。但在这一点上，setValue(int)并不会再发射任何信号，因为微调框的值已经是35了。这样就可以避免无限循环的发生。图1.5对这种情况进行了图示概述。
+第22行将微调框的值设置为35。当发生这种情况时，QSpinBox就会发射valueChanged(int)信号，其中，int参数的值是35。这个参数会被传递给QSlider的setValue(int)槽，它会把这个滑块的值设置为35。于是，滑块就会发射valueChanged(int)信号，因为它的值发生了变化，这样就触发了微调框的setValue(int)槽。但在这一点上，setValue(int)并不会再发射任何信号，因为微调框的值已经是35了。这样就可以避免无限循环的发生。图1.5对这种情况进行了图示概述。
 \begin{fig}[0.8]{ageapplication2}
 \caption{改变一个窗口部件的值会使两个窗口部件都发生变化}
 \label{fig:ageapplication2}
@@ -262,14 +262,14 @@ qmake quit.pro
 还有另外一种风格QtDotNet，它来自于Qt Solutions模块。创建自定义风格也是可能的，这会在第19章中加以阐述。
 \end{framed}
 
-在源程序的第19行到第22行，使用了一个布局管理器对微调框和滑块进行布局处理。布局管理器(layout manager)就是一个能够对其所负责窗口部件的尺寸大小和位置进行设置的对象。Qt有三个主要的布局管理器类：
+在源程序的第24行到第27行，使用了一个布局管理器对微调框和滑块进行布局处理。布局管理器(layout manager)就是一个能够对其所负责窗口部件的尺寸大小和位置进行设置的对象。Qt有三个主要的布局管理器类：
 \begin{itemize}
 \item QHBoxLayout。在水平方向上排列窗口部件，从左到右（在某些文化中则是从右向左）。
 \item QVBoxLayout。在竖直方向上排列窗口部件，从上到下。
 \item QGridLayout。把各个窗口部件排列在一个网格中。
 \end{itemize}
 
-第22行的QWidget::setlayout()函数调用会在窗口上安装该布局管理器（见图1.7）。从软件的底层实现来说，QSpinBox和QSlider会自动“重定义父对象”，它们会成为这个安装了布局的窗口部件的子对象。也正是基于这个原因，当创建一个需要放进某个布局中的窗口部件时，就没有必要为其显式地指定父对象了。
+第27行的QWidget::setlayout()函数调用会在窗口上安装该布局管理器（见图1.7）。从软件的底层实现来说，QSpinBox和QSlider会自动“重定义父对象”，它们会成为这个安装了布局的窗口部件的子对象。也正是基于这个原因，当创建一个需要放进某个布局中的窗口部件时，就没有必要为其显式地指定父对象了。
 
 \begin{linefig}[0.8]{agelayout}
 \caption{Age应用程序中的窗口部件和布局}
@@ -328,23 +328,23 @@ Qt中构建用户接口的方法很容易理解并且非常灵活。Qt程序员�
 \end{cppline}
 
 
-第1、2行（以及后面的第27行，见下页）能够防止对这个头文件的多重包含。第3行包含了QDialog的定义，它是Qt中对话框的基类。QDialog从QWidget类中派生出来。第4行到第7行前置声明了一些用于这个对话框实现中的Qt类。前置声明(forward declaration)会告诉C++编译程序类的存在，而不用提供类定义中的所有细节(通常放在它自己的头文件中)。关于这一点，将会再简单地多讲一些。
+第1、2行（以及后面的第27行，见下页）能够防止对这个头文件的多重包含。第4行包含了QDialog的定义，它是Qt中对话框的基类。QDialog从QWidget类中派生出来。第6行到第9行前置声明了一些用于这个对话框实现中的Qt类。前置声明(forward declaration)会告诉C++编译程序类的存在，而不用提供类定义中的所有细节(通常放在它自己的头文件中)。关于这一点，将会再简单地多讲一些。
 
 接下来定义FindDialog，并让它成为QDialog的子类：
-\begin{cppline}[8]{qt4-book/chap02/find/finddialog.h}{11}{16}
+\begin{cppline}{qt4-book/chap02/find/finddialog.h}{11}{16}
 \end{cppline}
 
 
 对于所有定义了信号和槽的类，在类定义开始处的Q\_{}OBJECT宏都是必需的。
 
 FindDialog的构造函数就是一个典型的Qt窗口部件类的定义方式。parent参数指定了它的父窗口部件。该参数的默认值是一个空指针，意味着该对话框没有父对象。
-\begin{cppline}[13]{qt4-book/chap02/find/finddialog.h}{18}{20}
+\begin{cppline}{qt4-book/chap02/find/finddialog.h}{18}{20}
 \end{cppline}
 
 signals部分声明了当用户单击Find按钮时对话框所发射的两个信号。如果向前查询(search backward)选项生效，对话框就发射findPrevious()信号，否则它就发射findNext()信号。
 
 signals关键字实际上是一个宏。C++预处理器会在编译程序找到它之前把它转换成标准C++代码。Qt::CaseSensitivity足一个枚举类型，它有\\ Qt::CaseSensitive和Qt::CaseInsensitive两个取值。
-\begin{cppline}[16]{qt4-book/chap02/find/finddialog.h}{22}{0}
+\begin{cppline}{qt4-book/chap02/find/finddialog.h}{22}{0}
 \end{cppline}
 
 在这个类的private段声明了两个槽。为了实现这两个槽，几乎需要访问这个对话框的所有子窗口部件，所以也保留了指向它们的指针。关键字slots就像signals一样也是一个宏，也可以扩展成C++编译程序可以处理的一种结构形式。
@@ -352,35 +352,35 @@ signals关键字实际上是一个宏。C++预处理器会在编译程序找到�
 对于这些私有变量，我们使用了它们的类前置声明。这是可行的，因为它们都是指针，而且没有必要在头文件中就去访问它们，因而编译程序就无须这些类的完整定义。我们没有包含与这几个类相关的头文件（<QCheckBox>、<QLabel>，等等），而是使用了一些前置声明。这可以使编译过程更快一些。
 
 现在看一下finddialog.cpp，其中包含了对FindDialog类的实现：
-\begin{cppline}[1]{qt4-book/chap02/find/finddialog.cpp}{1}{3}
+\begin{cppline}{qt4-book/chap02/find/finddialog.cpp}{1}{3}
 \end{cppline}
 
 首先，需要包含<QtGui>，该头文件包含了Qt Gui类的定义。Qt由数个模块构成，每个模块都有自己的类库。最为重要的模块有QtCore、QtGui、QtNetwork、QtOpenGL、QtScript、QtSql、QtSvg和QtXml。其中，在<QtGui>头文件中为构成QtCore和QtGui组成部分的所有类进行了定义。在程序中包含这个头文件，就能够使我们省去在每个类中分别包含的麻烦。
 
 在filedialog.h文件中，本可以仅简单地添加一个<QtGui>包含即可，而不用包含<QDialog>和使用QCheckBox、QLabel、QLineEdit和QPushButton的前置声明。然而，在一个头文件中再包含一个那么大的头文件着实不是一种好的编程风格，尤其对于比较大的工程项目更是如此。
 
-\begin{cppline}[3]{qt4-book/chap02/find/finddialog.cpp}{5}{19}
+\begin{cppline}{qt4-book/chap02/find/finddialog.cpp}{5}{19}
 \end{cppline}
 
-在第4行，把parent参数传递给了基类的构造函数。然后，创建了子窗口部件。在字符串周围的tr()函数调用是把它们翻译成其他语言的标记。在每个QObject对象以及包含有Q\_{}OBJECT宏的子类中都有这个函数的声明。尽管也许并没有将你的应用程序立刻翻译成其他语言的打算，但是在每一个用户可见的字符串周围使用tr()函数还是一个很不错的习惯。在第18章中将对翻译Qt应用程序进行详细讲述。
+在第6行，把parent参数传递给了基类的构造函数。然后，创建了子窗口部件。在字符串周围的tr()函数调用是把它们翻译成其他语言的标记。在每个QObject对象以及包含有Q\_{}OBJECT宏的子类中都有这个函数的声明。尽管也许并没有将你的应用程序立刻翻译成其他语言的打算，但是在每一个用户可见的字符串周围使用tr()函数还是一个很不错的习惯。在第18章中将对翻译Qt应用程序进行详细讲述。
 
-在这些字符串中，使用了表示“与”操作的符号"\&{}"来表示快捷键。例如，笫11行创建了一个Find按钮，用户可在那些支持快捷键的平台下通过按下Alt+F快捷键来激活它。符号"\&{}"可以用来控制焦点：在第6行创建了一个带有快捷键(Alt+W)的标签，而在第8行设置了行编辑器作为标签的伙伴。所谓“伙伴”(buddy)就是一个窗口部件，它可以在按下标签的快捷键时接收焦点(focus)。所以当用户按下Alt+W（该标签的快捷键）时，焦点就会移动到这个行编辑器（该标签的伙伴）上。
+在这些字符串中，使用了表示“与”操作的符号"\&{}"来表示快捷键。例如，笫15行创建了一个Find按钮，用户可在那些支持快捷键的平台下通过按下Alt+F快捷键来激活它。符号"\&{}"可以用来控制焦点：在第8行创建了一个带有快捷键(Alt+W)的标签，而在第10行设置了行编辑器作为标签的伙伴。所谓“伙伴”(buddy)就是一个窗口部件，它可以在按下标签的快捷键时接收焦点(focus)。所以当用户按下Alt+W（该标签的快捷键）时，焦点就会移动到这个行编辑器（该标签的伙伴）上。
 
-在第12行，通过调用setDefault(true)让Find按钮成为对话框的默认按钮。默认按钮(default button)就是当用户按下Enter键时能够按下对应的按钮。在第13行，禁用了Find按钮。当禁用一个窗口部件时，它通常会显示为灰色，并且不能和用户发生交互操作。
+在第16行，通过调用setDefault(true)让Find按钮成为对话框的默认按钮。默认按钮(default button)就是当用户按下Enter键时能够按下对应的按钮。在第17行，禁用了Find按钮。当禁用一个窗口部件时，它通常会显示为灰色，并且不能和用户发生交互操作。
 
-\begin{cppline}[15]{qt4-book/chap02/find/finddialog.cpp}{21}{26}
+\begin{cppline}{qt4-book/chap02/find/finddialog.cpp}{21}{26}
 \end{cppline}
 
 只要行编辑器中的文本发生变化，就会调用私有槽enableFindButton(const QString \& )。当用户单击Find按钮时，会调用findClicked()私有槽。而当用户单击Close时，对话框会关闭。close()槽是从QWidget中继承而来的，并且它的默认行为就是把窗口部件从用户的视野中、隐藏起来（而无须将其删除）。稍后将会看到enableFindButton()槽和findClicked()槽的代码。
 
 由于QObject是FindDialog的父对象之一，所以可以省略connect()函数前面的QObject::前缀。
 
-\begin{cppline}[21]{qt4-book/chap02/find/finddialog.cpp}{28}{45}
+\begin{cppline}{qt4-book/chap02/find/finddialog.cpp}{28}{45}
 \end{cppline}
 
 接下来，使用布局管理器摆放这些子窗口部件。布局中既可以包含多个窗口部件，也可以包含其他子布局。通过QHBoxLayout、QVBoxLayout和QGridLayout这三个布局的不同嵌套组合，就可能构建出相当复杂的对话框。
 
-如图2.2所示，对于Find对话框，使用了两个QHBoxLayout布局和两个QVBoxLayout布局。外面的布局是主布局，通过第35行代码将其安装在FindDialog中，并且由其负责对话框的整个区域。其他三个布局则作为子布局。图2.2中右下角的小“弹簧”是一个分隔符（或者称为“伸展器”）。用它来占据Find按钮和Close按钮所余下的空白区域，这样可以确保这些按钮完全占用它们所在布局的上部空间。
+如图2.2所示，对于Find对话框，使用了两个QHBoxLayout布局和两个QVBoxLayout布局。外面的布局是主布局，通过第45行代码将其安装在FindDialog中，并且由其负责对话框的整个区域。其他三个布局则作为子布局。图2.2中右下角的小“弹簧”是一个分隔符（或者称为“伸展器”）。用它来占据Find按钮和Close按钮所余下的空白区域，这样可以确保这些按钮完全占用它们所在布局的上部空间。
 
 \begin{linefig}[0.8]{finddialoglayout}
 \caption{Find对话框的布局}
@@ -389,14 +389,14 @@ signals关键字实际上是一个宏。C++预处理器会在编译程序找到�
 
 布局管理器类的一个精妙之处在于它们不是窗口部件。相反，它们派生自QLayout，因而也就是进一步派生自QObject，在图2.2中，窗口部件用实线轮廓来表示，布局用点线来表示，这样就能够很好地区分窗口部件和布局。在一个运行的应用程序中，布局是不可见的。
 
-当将子布局对象添加到父布局对象中时（第25、33和34行），子布局对象就会自动重定义自己的父对象。也就是说，当将主布局装到对话框中去时（第35行），它就会成为对话框的子对象了，于是它的所有子窗口部件都会重定义自己的父对象，从而变成对话框中的子对象。图2.3给出了父子层次关系的最终结果。
+当将子布局对象添加到父布局对象中时（第33、43和44行），子布局对象就会自动重定义自己的父对象。也就是说，当将主布局装到对话框中去时（第45行），它就会成为对话框的子对象了，于是它的所有子窗口部件都会重定义自己的父对象，从而变成对话框中的子对象。图2.3给出了父子层次关系的最终结果。
 
 \begin{fig}[0.8]{finddialogrelation}
 \caption{Find对话框中的父子关系}
 \label{fig:finddialogrelation}
 \end{fig}
 
-\begin{cppline}[36]{qt4-book/chap02/find/finddialog.cpp}{47}{49}
+\begin{cppline}{qt4-book/chap02/find/finddialog.cpp}{47}{49}
 \end{cppline}
 
 最后，设置了显示在对话框标题栏上的标题的内容，并让窗口具有一个固定的高度，这是因为在对话框的垂直方向上再没有其他窗口部件可以去占用所多出的空间了。QWidget::sizeHint()函数可以返回一个窗口部件所“理想”的尺寸大小。
@@ -405,7 +405,7 @@ signals关键字实际上是一个宏。C++预处理器会在编译程序找到�
 
 现在来看一下这个对话框中所用到的槽：
 
-\begin{cppline}[39]{qt4-book/chap02/find/finddialog.cpp}{51}{0}
+\begin{cppline}{qt4-book/chap02/find/finddialog.cpp}{51}{0}
 \end{cppline}
 
 当用户单击Find按钮时，就会调用findClicked()槽。而该槽将会发射findPrevious()或findNext()信号，这取决于Search backward选项的取值。emit是Qt中的关键字，像其他Qt扩展一样，它也会被C++预处理器转换成标准的C++代码。
@@ -723,7 +723,7 @@ Qt的父－子对象机制是在QOject中实现的。当利用一个父对象创
 如果只打算修改设计，比如修改对话框的布局和窗口部件的属性等，那么只要重新构建应用程序即可。但在这里是移除了一些窗口部件并且添加了一个新的窗口部件，所以在这种情况下，通常还必须对代码进行修改。
 
 我们所必须做的修改都在gotocelldialog.cpp文件中。这里给出的是其构造函数的新版本：
-\begin{cppline}[3]{qt4-book/chap02/gotocell3/gotocelldialog.cpp}{5}{16}
+\begin{cppline}{qt4-book/chap02/gotocell3/gotocelldialog.cpp}{5}{16}
 \end{cppline}
 
 在前一版本中，一开始在Qt设计师中禁用了OK按钮。但是在使用QDialogButtonBox之后就不能那样做了，因而可以在代码中调用setupUi()之后，再立即禁用OK按钮，这样也可以达到同样的效果。类QDialogButtonBox有一组标准按钮的枚举值，并且可以利用这一点来访问这些特殊的按钮，本例就是访问OK按钮。
@@ -731,7 +731,7 @@ Qt的父－子对象机制是在QOject中实现的。当利用一个父对象创
 非常方便的是Qt设计师对于QDialogButtonBox的默认名称就是buttonBox。双方的连接会从按钮盒而不是从按钮自己创建出来。在单击一个带AcceptRole的按钮时，就会发射accepted()信号，这一点与单击一个带RejectRole的按钮会发射rejected()信号的情况相似。默认情况下，标准的QDialogButtonBox::Ok按钮具有AcceptRole属性，而标准的QDialogButtonBox::Cancel按钮具有RejectRole属性。
 
 还需要在\verb+on_lineEdit_textChanged+槽中做一处修改：
-\begin{cppline}[13]{qt4-book/chap02/gotocell3/gotocelldialog.cpp}{18}{22}
+\begin{cppline}{qt4-book/chap02/gotocell3/gotocelldialog.cpp}{18}{22}
 \end{cppline}
 
 与之前的唯一不同之处在于不是对存储为成员变量的特殊按钮进行引用，而是直接去访问按钮盒中的OK按钮。
@@ -840,7 +840,7 @@ Qt的父－子对象机制是在QOject中实现的。当利用一个父对象创
 
 setColumnRange()槽根据电子制表软件中选择的列初始化了这些组合框的内容。在（可选的）第二键和第三键的组合框选项中插入了一个"None"选项。
 
-第19行和第20行给出了布局中的一个特殊习惯用语。QWidget::sizeHint()函数可以返回布局系统试图认同的“理想”大小。这也解释了为什么不同的窗口部件或者具有不同内容的类似窗口部件通常会被布局系统分配给不同的尺寸大小。对于这些组合框，这里指的是第二键组合框和第三键组合框，由于它们包含了一个"None"选项，所以它们要比只包含了一个单字符项目的主键组合框显得宽一些。为了避免这种不一致性，需要把主键组合框的最小大小设置成第二键组合框的理想大小。
+第26行和第27行给出了布局中的一个特殊习惯用语。QWidget::sizeHint()函数可以返回布局系统试图认同的“理想”大小。这也解释了为什么不同的窗口部件或者具有不同内容的类似窗口部件通常会被布局系统分配给不同的尺寸大小。对于这些组合框，这里指的是第二键组合框和第三键组合框，由于它们包含了一个"None"选项，所以它们要比只包含了一个单字符项目的主键组合框显得宽一些。为了避免这种不一致性，需要把主键组合框的最小大小设置成第二键组合框的理想大小。
 
 这里是一个用于测试效果的main()函数，它首先设置了列的范围为从"C"到"F"，然后再显示这个对话框：
 \begin{cppinput}{qt4-book/chap02/sort/main.cpp}
@@ -968,8 +968,123 @@ Qt提供了一套标准的通用对话框，这样可以让用户很容易地选
 
 
 \chapter{创建主窗口}
+这一章讲解如何使用Qt创建主窗口。在本章的最后部分，你将能够创建一个应用程序的完整用户界面，包括菜单、工具栏、状态栏以及应用程序所需的足够多的对话框。
+
+应用程序的主窗口提供了用于构建应用程序用户界面的框架。如图3.1所示的Spreadsheet（电子制表）应用程序的主窗口将构成本章的基础。这个Spreadsheet应用程序使用了在第2章中创建的三个对话框：Find、Go to Cell和Sort。
+\begin{linefig}[0.9]{spreadsheet}
+\caption{Spreadsheet应用程序}
+\label{fig:spreadsheet}
+\end{linefig}
+
+在绝大多数图形用户界面应用程序的后台，都有一套提供底层功能的代码——例如，用于读写文件或者用于处理用户界面中的数据的代码。在第4章，将会再次把Spreadsheet应用程序当作实例，看看如何实现这些功能。
+
+\section{子类化QMainWindow}
+通过子类化QMainWindow，可以创建一个应用程序的主窗口。由于QDialog和QMainWindow都派生自QWidget，所以在第2章中看到的许多创建对话框的技术，对于创建主窗口也同样适用。
+
+可以使用Qt设计师创建应用程序的主窗口，但是在这一章，将使用代码来完成所有的功能，以便可以说明它们是如何完成的。如果你更喜欢可视化的方式，可以参考Qt设计师在线手册中的"Creating a Main Window Application"一章。
+
+Spreadsheet应用程序主窗口的源代码分别放在mainwindow.h和mainwindow.cpp中。先从头文件开始分析：
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.h}{1}{19}
+\end{cppline}
+
+我们将MainWindow类定义为QMainWindow类的子类。由于类MainWindow提供了自己的信号和槽所以它包含了Q\_{}OBJECT宏。
+
+closeEvent()函数是QWidget类中的一个虚函数，当用户关闭窗口时，这个函数会被自动调用。类MainWindow中重新实现了它，这样就可以向用户询问一个标准问题"Do you want to save your changes?"，并且可以把用户的一些偏好设置保存到磁盘中。
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.h}{21}{29}
+\end{cppline}
+
+像File→New和Help→About这样的菜单项，在MainWindow中会被实现为私有槽。除了save()槽和saveAs()槽返回一个bool值以外，绝大多数的槽都把void作为它们的返回值。当槽作为一个信号的响应函数而被执行时，就会忽略这个返回值；但是当把槽作为函数来调用时，其返回值对我们的作用就和调用任何一个普通的C++函数时的作用是相同的。
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.h}{30}{47}
+\end{cppline}
+
+为了能够对用户界面提供支持，主窗口需要更多的私有槽以及数个私有函数。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.h}{49}{0}
+\end{cppline}
+
+除了它自己的私有槽和私有函数以外，MainWindow类还有很多私有变量。当用到这些私有槽和私有函数时，将再对它们进行解释。
+
+现在来看看实现文件：
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{1}{7}
+\end{cppline}
+
+我们包含了<QtGui>头文件，其中包含了在子类中所要用到的所有Qt类的定义。我们也包含了一些自定义头文件，特别是来自第2章的finddialog.h、gotocelldialog.h和sortdialog.h三个头文件。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{9}{26}
+\end{cppline}
+
+在这个构造函数中，先从创建一个Spreadsheet窗口部件并且把它设置为这个主窗口的中央窗口部件开始。中央窗口部件会占用主窗口的中央区域部分（如图3.2所示）。Spreadsheet类是QTableWidget类的一个子类，并且也具有一些电子制表软件的功能，如对电子制表软件公式的支持等。将会在第4章中实现这一功能。
+
+私有函数createActions()、createMenus()、createContextMenu()、createToolBars()和createStatusBar()创
+建主窗口中的其余部分，readSettings()则读取这个应用程序存储的一些设置。
+\begin{linefig}[0.8]{spreadsheet3-2}
+\caption{QMainWindow中的区域分配}
+\label{fig:spreadsheet3-2}
+\end{linefig}
+
+我们把findDialog指针初始化为空(null)指针。在第一次调用MainWindow::find()函数时，将会创建该FindDialog对象。
+
+在构造函数的最后部分，把窗口的图标设置为icon.png，它是一个PNG格式的文件。Qt支持很多图像格式，包括BMP、GIF、JPEG、PNG、PNM、SVG、TIFF、XBM和XPM。调用QWidget::setWindowIcon()函数可以设置显示在窗口左上角的图标。遗憾的是，还没有一种与平台无关的可在桌面上显示应用程序图标的设置方法。与平台相关的桌面图标设置方法在\href{http://doc.trolltech.com/4.3/appicon.html}{这个网页}中进行了阐述。
 
 
+图形用户界面(GUI)应用程序通常会使用很多图片。为应用程序提供图片的方法有多种，如下是一些最常用的方法：
+\begin{itemize}
+\item 把图片保存到文件中，并且在运行时载入它们。
+\item 把XPM文件包含在源代码中。（这一方法之所以可行，是因为XPM文件也是有效的C++文件。）
+\item 使用Qt的资源机制(resource mechanism)。
+\end{itemize}
+
+这里，使用了Qt的资源机制法，因为它比运行时载入文件的方法更方便，并且该方法适用于所支持的任意文件格式。我们将选中的图片存放在源代码树中名为images的子目录下。
+
+为了利用Qt的资源系统(resource system)，必须创建一个资源文件(resource file)，并且在识别该资源文件的.pro文件中添加一行代码。在这个例子中，已经将资源文件命名为spreadsheet.qrc，因此只需在.pro文件中添加如下一行代码：
+\begin{Verbatim}
+RESOURCES = spreadsheet.qrc
+\end{Verbatim}
+
+资源文件自身使用了一种简单的XML文件格式。这里给出的是从已经使用的资源文件中摘录的部分内容：
+\begin{Verbatim}
+<RCC>
+<qresource>
+    <file>images/icon.png</file>
+    ...
+    <file>images/gotocell.png</file>
+</qresource>
+</RCC>
+\end{Verbatim}
+
+所有资源文件都会被编译到应用程序的可执行文件中，因此并不会弄丢它们。当引用这些资源时，需要使用带路径前缀\verb+:/+（冒号斜线）的形式，这就是为什么会将图标表示成:/images/icon.png的形式。资源可以是任意类型的文件（并非只是一些图像），并且可以在Qt需要文件名的大多数地方使用它们。第12章将对此做进一步说明。  
+
+\section{创建菜单和工具栏}
+绝大多数现代图形用户界面应用程序都会提供一些菜单、上下文菜单和工具栏。菜单可以让用户浏览应用程序并且可以学会如何处理一些新的事情，上下文菜单和工具栏则提供了对那些经常使用的功能进行快速访问的方法。图3.3展示的是Spreadsheet应用程序的菜单。
+\begin{linefig}[0.9]{spreadsheet3-3}
+\caption{Spreadsheet应用程序中的菜单}
+\label{fig:spreadsheet3-3}
+\end{linefig}
+
+Qt通过“动作”的概念简化了有关菜单和工具栏的编程。一个动作(action)就是一个可以添加到任意数量的菜单和工具栏上的项。在Qt中，创建菜单和工具栏包括以下这些步骤：
+\begin{itemize}
+\item 创建并且设置动作。
+\item 创建菜单并且把动作添加到菜单上。
+\item 创建工具栏并且把动作添加到工具栏上。
+\end{itemize}
+
+在这个Spreadsheet应用程序中，动作是在createActions()函数中创建的：
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{163}{169}
+\end{cppline}
+
+动作New有一个加速键(\uline{N}ew)、一个父对象（主窗口）、一个图标、一个快捷键和一个状态提示。大多数窗口系统都有用于特定动作的标准化的键盘快捷键。例如，在Windows、KDE和GNOME中，这个New动作就有一个快捷键Ctrl+N，而在Mac OS X中则是Command+N。通过使用适当的QKeySequence::StandardKey枚举值，就可以确保Qt能够为应用程序在其运行的平台上提供正确的快捷键。
+
+把这个动作的triggered()信号连接到主窗口的私有槽newFile()——将会在下一节实现它。这个连接可以确保在用户选择File→New菜单项、选择工具栏上的New按钮或者按下Ctrl+N时，都可以调用newFile()槽。
+
+由于菜单中的Open、Save和Save As动作与New动作非常相似，所以将会直接跳到File菜单中的"recently opened files"（最近打开的文件）的部分。
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{188}{193}
+\end{cppline}
+
+我们为recentFileActions数组添加动作。每个动作都是隐式的，并且会被连接到openRencentFile()槽。稍后，将会看到如何读这些最新文件中的动作变得可见并且可用。
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{195}{198}
+\end{cppline}
 
 %附录
 \appendix
@@ -1028,193 +1143,6 @@ Qt提供了一套标准的通用对话框，这样可以让用户很容易地选
 
 
 
-    图3.1 Spreadsheet应用程序
-    在绝大多数图形用户界面应用程序的后台，都有一套提供底层功能的代码——例如，用于读
-写文件或者用于处理用户界面中的数据的代码。在第4章，将会再次把Spreadsheet应用程序当作
-实例，看看如何实现这些功能。
-3.1  子类化QMainWindow
-    通过子类化QMainWindow，可以创建一个应用程序的主窗口。由于QDialog和QMainWindow都
-派生自QWidget，所以在第2章中看到的许多创建对话框的技术，对于创建主窗口也同样适用。
-    可以使用Qt设计师创建应用程序的主窗口，但是在这一章，将使用代码来完成所有的功能，
-以便可以说明它们是如何完成的。如果你更喜欢可视化的方式，可以参考Qt设计师在线手册中
-的“Creating a Main Window Application”一章。
-    Spreadsheet应用程序主窗口的源代码分别放在maimvindow.h和mainwindow. cpp中。先从头文
-件开始分析：
-36    C++ GUI Qt 4编程（第二版）
-群ifndef MAINWINDOW_H
-群define MAINWINDOW H
-#include <QMainWindow>
-class
-class
-class
-class
-QAction ;
-QLabel;
-FindDialog ;
-Spreadsheet;
-class MainWindow : public QMainWindow
-{
-   Q_OBJECT  .
-public:
-        MainWindow( ) ;
-protected:
-   void closeEvent(QCloseEvent *event);
-    、我们将MainWindow类定义为QMainWindow类的子类。由于类MainWindow提供了自己的信号
-和槽i所以它包含了Q_OBJECT宏。
-    closeEvent()函数是.QWidget类中的一个虚函数，当用户关闭窗口时，这个函数会被自动调用。
-类MzunWindow中重新实现了它，这样就可以向用户询问一个标准问题“Do you want to save your
-changes?”，并且可以把用户的一些偏好设置保存到磁盘中。
-p rivate  slots :
-        void  newFile( ) ;
-       void open () ;
-        bool  save ( ) ;
-       bool  saveAs () ;
-        void  find ( ) ;
-   void goToCell()
-      void soc.t() ; .
- ' \/oid a'bout(};
-    +  ：
-    像File-*New和Help-*About这样的菜单项，在MainWindow中会被实现为私有槽。除了save()
-槽和saveAs()槽返回一个bool值以外，绝大多数的槽都把void作为它们的返回值。当槽作为一个
-信号的响应函数而被执行时，就会忽略这个返回值；但是当把槽作为函数来调用时，其返回值对我
-们的作用就和调用任何一个普通的C++函数时的作用是相同的。
-void openRecentFile() ;    .
-void updateStatusBar() ;
-void  spreadsheetModified( )
-private:
-       void  createActions ( ) ;
-        void  createMenus ( ) ;
-        void  createContextMenu ( ) ;
-   void createToolBars();
-       void createStatusBar() ;
-        void  readSettings ( ) ;
-   /  ’void writeSetting,i() ;  .
-    bool okToContinue();        ,             .    ' t
-  ' bool410adFile(const QString;&fileName);  ,
-    bool saveFile(const QString &fileName);
- .' .  void' setCurrentFile(-const QStririg &fikName) ;
- .      void  updateRecentFileActions ( ) ;
-         ost ring  st rippedName ( const  QSt ring &fullFileName) ;
-力了能够对用户界面提供支持，主窗口需要更多的私有槽以及数个私有函数。
-f
-＼鞋
-Spreadsheet *spreadsheet
-FindDialog *findDialog;
-QLabel *locationLabel;
-QLabel *formulaLabel;
-QStringList recentFiles;
-QString curFile;
-第3章创建主窗口．    ．    37
-enum { MaxRecentFiles = 5 };
-QAction  *.recentFileActions [MaxRecentFiles ] ;
-QAction *separatorAction;
-QMenu *fileMenu;
-QMenu *editMenu;
-QToolBar *fileToolBar;
-QToolBar *editToolBar;
-QAction *newAction;
-QAction *openAction;
-   QAction *aboutQtAction;;
-};
-#endif
-    除了它自己的私有槽和私有函数以外，MainWindow类还有很多私有变量。
-    _    ‘
-和私有函数时，将再对它们进行解释。
-现在来看看实现文件：
-#include <QtGui>
-#include
-#include
-#include
-#include
-#include
-" finddialog . h "
-"gotocelldialog.h"
-"mainwindow.h"
-"sortdialog.h"
-"spreadsheet.h"
-驾用到这些私有槽
-我们包含了<QtGui>头文件，其中包含了在子类中所要用到的所有Qt类的定义。我们也包含
-了一些自定义头文件，特别是来自第2章的finddialog.h、
-MainWindow: :MainWindow()
-{
-   spreadsheet :. new.Spreadsheet;
-          setCent ralWidget ( spreadsheet) ;
-createActions () ;
-createMenus () ;
-'createContextMenu() ;
-createToolBa rs ( ) ;
-createStatusBar() ;
-readSettings-( ) ;
-findDialog = o;
-setWindowlcon (QIcon ( " :/images/icon . png " 》 ;
-setCurrentFile( " ") ;
-dialog.h和sortdialog.h三个头文件。
-    一    ，：一
-    在这个构造函数中，先从创建一个Spreadsheet窗口部件并且把它设置为这个主窗口的中央窗
-口部件开始。中央窗口部件会占用主窗日的中央区域部分（如图3.2所示）。Spreadsheet类是
-QTableWidget类的一个子类，并且也具有一些电子制表软件的功能，如对电子制表软件公式的支持
-等。将会在第4章中实现这一功能。    ~
-    私有函数createAct/ons()、createMenus()、createContexdVIenu()、createToolBars()和createStatusBar()创
-建主窗口中的其余部分，readSettings()则读取这个应用程序存储的一些设置。
-。＼i飞3，
-C++ GUI Qt4编程（第二版）
-图3.2 QMainWindow中的区域分配
-    我们把findDialog指针初始化为空(nuⅡ)指针。在第一次调用MainWindow:：find()函数时，将会
-创建该FindDialog对象。
-    在构造函数的最后部分，把窗口的图标设置为icon. png，它是一个PNG格式的文件。Qt支持
-很多图像格式，包括BMP、GIF、JPEG、PNG、PNM、SVG、TIFF、XBM和XPM。调用QWidget：：setWindow-
-Icon()函数可以设置显示在窗口左上角的图标。遗憾的是，还没有一种与平台无关的可在桌面上
-显示应用程序图标的设置方法。与平台相关的桌面图标设置方法在http：//doc.trolltech.com/4.3/
-appicon. html中进行了阐述。
-    图形用户界面( GUI)应用程序通常会使用很多图片。．为应用程序提供图片的方法有多种，如
-下是一些最常用的方法：
-●把图片保存到文件中，并且在运行时载人它们。
-●把XPM文件包含在源代码中。（这一方法之所以可行，是因为XPM文件也是有效的C++
-文件。）
-o使用Qt的资源机制(resource mechanism)。
-    达里，使用了Qt的资源机制法，因为它比运行时载人文件的方法更方便，并且该方法适用于
-所支持的任意文件格式。我们将选中的图片存放在源代码树中名为images的子目录下。
-    为了利用Qt的资源系统(resource system)，必须创建一个资源文件(resource file)，并且在识别该
-资源文件的．pro文件中添加一行代码。在这个例子中，已经将资源文件命名为spreadsheet. qrc，因
-此只需在．pro文件中添加如下一行代码：
-    资源文件自身使用了一种简单的XML文件格式。这里给出的是从已经使用的资源文件中摘
-录的部分内容：
-<file>images/icon.png</file>
-               <file>iWiages/goto cell . png</file>
-<／qresource>
-<／RCC>
-第3章创建主窗口
-    所有资源文件都会被编译到应用程序的可执行文件中，因此并不会弄丢它们。当引用这些资
-源时，需要使用带路径前缀：，（冒号斜线）的形式，这就是为什各会将图标表示成：/images/icon.png
-    J    '
-的形式。资源可以是任意类型的文件（并非只是一些图像），并且可以在Qt需要文件名的大多数
-地方使用它们。第12章将对此做进一步说明。    ’’
-3.2创建菜单和工具栏
-    绝大多数现代图形用户界面应用程序都会提供一些菜单、上下文菜单和工具栏。菜单可以让
-用户浏览应用程序并且可以学会如何处理一些新的事情，上下文菜单和工具栏则提供了对那些经
-常使用的功能进行快速访问的方法。图3.3展示的是Spreadsheet应用程序的菜单。
-
-图3.3 Spreadsheet应用程序中的菜单
-    Qt通过“动作”的概念简化了有关菜单和工具栏的编程。一个动作(action)就是一个可以添加
-  到任意数量的菜单和工具栏上的项。在Qt中，创建菜单和工具栏包括以下这些步骤：
-    o创建并且设置动作。
-    ●创建菜单并且把动作添加到菜单上o    j    ：+。
-．    o创建工具栏并且挹动作添加到工具栏上。
-    在这个Spreadsheet应用程序中，动作是在createActions()函数中创建的：
-    动作New有一个加速键(New)、一个父对象（主窗口）、一个图标、一个快捷键和一个状态提示。
-  大多数窗口系统都有用于特定动作的标准化的键盘快捷键。例如，在Windows、KDE和CNOME中，
-  这个New动作就有一个快捷键C仕l+N，而在Mac oS X中则是Co眦蛐d+N。通过使用适当的
-  QKeySequence：：S协dard】细枚举值，就可以确保Qt能够为应用程序在其运行的平台上提供正确的
-  快捷键。    ，／
-    把这食动焦勘迫瓷葛秦S篡耋连接到主窗口的私有堕竺篓烈丞三：-将会在下一节实现它。这
-  个连接可以确保在用户：≥媳丽砑强弱敷麓雳茳其翟上的New按钮或者按下ctrl+N时，都
-  可以调用newF1丑e()槽。
-一．    由于菜单中的0pn、Save和Save As动作与№w动作非常相似，所以将会直接跳到瑚e菜单中
-  的“recendy openedlles”（最近打开的文件）的部分。
-
-    我们为recentFileActions数组添加动作。，每个动作都是隐式的，并且会被连接到
-File()槽。稍后，将会看到如何读这些最新文件中的动作变得可见并且可用。
-
 
 Grid动作和Auto．Recalculate动作是相互独立的两个复选动作。通过QActionGroup类的支
 持，Qt也可以支持相互排斥的动作。    ，，．
@@ -1225,10 +1153,9 @@ Qt动作，通过访问qApp全局变量，我们可以使用QApplication对象�
 图3:4  About Qt对话框
 现在已经创建了这些动作，还可以继续构建一个包含这些动作的菜单系统0
 ．在Qt中，菜单都是QMenu的实例。addMenu()函数可以用给定的文本创建一个QMenu窗口部
-    ’‘    一  +
+
 件，并且会把它添酾蓟菜覃翟牵。QMainWindow：：menuBar()函数返回一个指向，QMenuBar的指针。
-出来：‘    。  1
-    ，    ‘．，、：    ‘
+出来：
 和Save As动作添加进去。插入一个间隔器
 (separator)，可以从视觉上把关系密切的这些项放在一起。使用二个for循环从recentFiieAcUons数
 组中添加一些动作（最初是隐藏起来的），然后在最后添加一个exitAct/on动作。    ；
@@ -1323,7 +1250,7 @@ C++ GUI.Qt 4编程（第二版）
 
 我们让它成为一个独立的函
 如果载人成功，会调用setCurrenOile()
-    -√———、—————、、______________√__——__、一
+
 会通过一个消息框把遇到的问题通知
 
     save()槽对File一Save做出响应。如果因为这个文件是之前打开的文件或者它是一个已经保

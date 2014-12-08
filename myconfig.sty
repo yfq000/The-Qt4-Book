@@ -1,4 +1,3 @@
-
 % 一种书籍的风格，对中文处理较好。
 %
 % by wanze
@@ -225,14 +224,16 @@ text-micro = μ
 
 \newtcblisting{tcbcode}[1][text]{listing engine=minted,minted language=#1,minted options={fontsize=\footnotesize,frame=none},listing only,breakable=true,colback=codeback,boxrule=0.4pt,boxsep=0pt}
 
+\newtcbinputlisting{tcbinput}[2][text]{listing engine=minted,minted language=#1,minted options={fontsize=\footnotesize,frame=none},listing only,breakable=true,colback=blue!5!white,boxrule=0.4pt,boxsep=0pt,listing file={#2}}
+
 
 \tcbuselibrary{skins}
 
-\newtcbinputlisting{cppinput}[2][]{listing engine=minted,minted language=cpp,minted options={numberblanklines=False,fontsize=\footnotesize,frame=none,linenos,numbersep=3mm},listing only,breakable=true,colback=blue!5!white,left=5mm,boxrule=1pt,boxsep=5pt,#1,listing file={#2},enhanced,overlay={\begin{tcbclipinterior}\fill[red!20!blue!20!white] (frame.south west)
-rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}}}
+\newtcbinputlisting{cppinput}[2][]{listing engine=minted,minted language=cpp,minted options={fontsize=\footnotesize,frame=none,linenos=true,numbersep=3mm},listing only,breakable=true,colback=blue!5!white,left=5mm,boxrule=1pt,boxsep=6.5pt,#1,listing file={#2},enhanced,overlay={\begin{tcbclipinterior}\fill[red!20!blue!20!white] (frame.south west)
+rectangle ([xshift=5.2mm]frame.north west);\end{tcbclipinterior}}}
 
-\newtcbinputlisting{cppline}[4][1]{listing engine=minted,minted language=cpp,minted options={numberblanklines=False,fontsize=\footnotesize,frame=none,linenos,numbersep=3mm,firstline=#3,firstnumber=#1,lastline=#4},listing only,breakable=true,colback=blue!5!white,left=5mm,boxrule=1pt,boxsep=5pt,listing file={#2},enhanced,overlay={\begin{tcbclipinterior}\fill[red!20!blue!20!white] (frame.south west)
-rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}}}
+\newtcbinputlisting{cppline}[4][]{listing engine=minted,minted language=cpp,minted options={fontsize=\footnotesize,frame=none,linenos=true,numbersep=3mm,firstline=#3,firstnumber=#3,lastline=#4},listing only,breakable=true,colback=blue!5!white,left=5mm,boxrule=1pt,boxsep=6.5pt,#1,listing file={#2},enhanced,overlay={\begin{tcbclipinterior}\fill[red!20!blue!20!white] (frame.south west)
+rectangle ([xshift=5.2mm]frame.north west);\end{tcbclipinterior}}}
 
 
 
