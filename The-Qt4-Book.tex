@@ -1168,6 +1168,111 @@ QMainWindow::statusBar()函数返回一个指向状态栏的指针。\footnote{�
 
 图3.8所示的两个标签都有不同的空间需求。单元格定位指示器只需要非常小的空间，并且在重新定义窗口大小时，任何多余的空间都会分配给位于右侧的单元格公式指示器。这是通过在公式标签的QStatusBar::addWidget()调用中指定一个伸展因子$ 1 $而实现的。位置指示器的默认伸展因子为$ 0 $，这也就意味着它不喜欢被伸展。
 
+当QStatusBar摆放这些指示器窗口部件时，它会尽量考虑由QWidget::size-Hint()提供的每一个窗口部件的理想大小，然后再对那些可伸展的任意窗口部件进行伸展以填满全部可用空间。一个窗口部件的理想大小取决于这个窗口部件的内容以及改变内容时的变化大小。为了避免对定位指示器连续不断地重定义大小，设置它的最小尺寸大小为它所能包含的最大字符数("W999")和一些空格的总大小。还把它的对齐方式设置为Qt::AlignHCenter，以便可以在水平方向上居中对齐它的文本。
+
+在函数结尾的附近，把Spreadsheet的两个信号和MainWindow的两个槽，updateStatusBar()和spreadsheetModified()，连接了起来。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{151}{155}
+\end{cppline}
+
+updateStatusBar()槽可以更新单元格定位指示器和单元格公式指示器。只要用户把单元格光标移动到一个新的单元格，这个槽就会得到调用。该槽也可以作为一个普通函数而在createStatusBar()的最后用于初始化这些指示器。因为Spreadsheet不会在一开始的时候就发射currentCellChanged()小心，所以还必须这样做。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{157}{161}
+\end{cppline}
+
+spreadsheetModified()槽把windowModified属性设置为true，用以更新标题栏。这个函数也会更新位置和公式指示器，以便可以让它们反映事件的当前状态。
+
+\section{实现File菜单}
+在这一节中，将实现那些能够让File菜单项正常工作并且能够对最近打开文件进行管理的槽函数和私有函数。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{38}{44}
+\end{cppline}
+
+当用户点击File→New菜单项或者单击工具栏上的New按钮时，就会调用newFile()槽。如果存在还没有被保存的信息，okToContinue()私有函数就会弹出如图3.9所示的对话框："Do you want to save your changes?"。如果用户选择Yes或者No（保存文档应该选择Yes），这个函数会返回true；如果用户选择Cancel，它就返回false。Spreadsheet::clear()函数会清空电子制表软件中的全部单元格和公式。setCurrentFile()私有函数会更新窗口的标题，以说明正在编辑的是一个没有标题的文档，它还会设置curFile私有变量并且更新最近打开文件的列表。  
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{416}{431}
+\end{cppline}
+
+在okToContinue()函数中，会检测windowModified属性的状态。如果该属性的值是true，就显示一个如图3.9所示的消息框。这个消息框包含一个Yes按钮、一个No按钮和一个Cancel按钮。
+\begin{linefig}[0.8]{spreadsheet3-9}
+\caption{"Do you want to save your changes?"消息框}
+\label{fig:spreadsheet3-9}
+\end{linefig}
+
+QMessageBox提供了许多标准按钮，并且会自动尝试着让其中的一个成为默认的确认按钮（在用户按下Enter键时会得到激活），一个成为默认的退出按钮（在用户按下Esc时会得到激活）。选择一些特殊的按钮作为默认的确认按钮和退出按钮也是有可能的，用户还可以自定义按钮中将要显示的文本内容。
+
+当首次看到warning()函数调用时，可能会觉得它有点复杂，但这种常用语法实际上是相当简单的：
+\begin{Verbatim}
+QMessageBox::warning(parent, title, message, buttons);
+\end{Verbatim}
+
+除了warning()之外，QMessageBox还提供了information()、question()和critical()函数，它们每一个都有自己特定的图标，这些图标如图3.10所示。
+\begin{linefig}[0.8]{spreadsheet3-10.png}
+\caption{Windows风格下的消息框图标}
+\label{fig:spreadsheet3-10.png}
+\end{linefig}
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{46}{55}
+\end{cppline}
+
+open()槽对File→Open做出响应。就像newFile()一样，它首先调用okToContinue()函数来处理任何没有被保存的变化。然后它使用方便的QFileDialog::getOpenFileName()静态函数从用户那里获得一个新的文件名。这个函数会弹出一个文件对话框，让用户选择一个文件，并且返回这个文件名——或者，如果用户单击了Cancel按钮，则返回一个空字符串。
+
+传递给QFileDialog::getOpenFileName()函数的第一个参数是它的父窗口部件。用于对话框和其他窗口部件的这种父子对象关系意义并不相同。对话框通常都拥有自主权，但是如果它有父对象，那么在默认情况下，它就会居中放到父对象上。一个子对话框也会共用它的父对象的任务栏。
+
+第二个参数是这个对话框应当使用的标题。第三个参数告诉它应当从哪一级目录开始，在这个例子中就是当前目录。
+
+第四个参数指定了文件过滤器。文件过滤器(filter)由一个描述文本和一个通配符组成。如果除了要支持Spreadsheet本地文件格式以外，还需要支持采用逗号分隔的数据文件和Lotus 1-2-3文件，就应当使用如下的文件过滤器：
+\begin{Verbatim}
+tr("Spreadsheet files (*.sp)\n"
+"Comma-separated values files (*.csv)\n"
+"Lotus 1-2-3 files (*.wk1 *.wks)")
+\end{Verbatim}
+
+loadFile()私有函数是在open()中得到调用的，它用来载入文件。我们让它成为一个独立的函数，是因为会在载入最近打开的文件中使用同样的功能。
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{433}{443}
+\end{cppline}
+
+我们使用Spreadsheet::readFile()函数从磁盘中读取文件。如果载入成功，会调用setCurrentFile()函数来更新这个窗口的标题；否则，Spreadsheet::readFile()将会通过一个消息框把遇到的问题通知给用户。在通常情况下，让底层组件来报告错误消息是一个不错的习惯，这是因为它们可以提供准确的错误细节信息。
+
+在上述两种情况下，都会在状态栏中显示一个消息2秒（2000毫秒），这样可以通知用户应用程序正在做什么。
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{57}{64}
+\end{cppline}
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{445}{455}
+\end{cppline}
+
+save()槽对File→Save做出响应。如果因为这个文件是之前打开的文件或者它是一个已经保存过的文件，这样已经有了一个名字，那么save()函数就会用这个名字调用saveFile()函数；否则，它只是简单地调用saveAs()函数。
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{66}{75}
+\end{cppline}
+
+saveAs()槽对File→Save As做出响应。调用QFileDialog::getSaveFileName()函数来从用户那里得到一个文件名。如果用户单击了Cancel，则返回false，这将会使这个结果向上传递给它的调用者[save()或者okToContinue()]。
+
+如果给定的文件已经存在，getSaveFileName()函数将会要求用户确认是否需要覆盖该文件。但通过给getSaveFileName()函数传递一个QFileDialog::DontConfirmOverwrite附加参数，则可以改变这一行为。
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{28}{36}
+\end{cppline}
+
+当用户单击File→Exit或者单击窗口标题栏中的关闭按钮时，将会调用QWidget::close()槽。该槽会给窗口部件发射一个“close”事件。通过重新实现QWidget::closeEvent()函数，就可以中途截取对这个主窗口的关闭操作，并且可以确定到底是不是真的要关闭这个窗口。
+
+如果存在未保存的更改并且用户选择了Cancel，就会“忽略”这个关闭事件并且让这个窗口不受该操作的影响。一般情况下，我们会接受这个事件，这会让Qt隐藏该窗口。也可以调用私有函数writeSettings()来保存这个应用程序的当前设置。
+
+当最后一个窗口关闭后，这个应用程序就结束了。如果需要，通过把QApplication的quitOnLastWindowClosed属性设置为false，可以禁用这种行为。在这种情况下，该应用程序将会持续保持
+运行，直到调用QApplication::quit()函数，程序才会结束。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{457}{472}
+\end{cppline}
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{497}{500}
+\end{cppline}
+
+
+在setCurrentFile()中，对保存正在编辑的文件名的curFile私有变量进行了设置。在把这个文件名显示在标题栏中之前，需要使用strippedName()函数移除文件名中的路径字符，这样可以使文件名看起来更友好一些。   
+
+每个QWidget都有一个windowModified属性，如果该窗口的文档存在没有保存的变化，则应当把它设置为true，否则应当将其设置为false。在Mac OS X下，未保存的文档是通过窗口标题栏上关闭按钮中的一个点来表示的；在其他平台下，则是通过文件名字后跟一个星号来表示的。Qt会自动处理这一行为，只要始终让windowModified属性保持为当前最新状态，并且当需要显示星号的时候，把"[*]"标记放在窗口的标题栏上即可。
+
+传递给setWindowTitle()函数的文本是：
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{470}{471}
+\end{cppline}
+
+
+
 
 
 %附录
@@ -1226,90 +1331,6 @@ QMainWindow::statusBar()函数返回一个指向状态栏的指针。\footnote{�
 \end{document}
 
 
-当QStatusBar摆放这些指示器窗口部件时，它会尽量考虑由QWidget：：sizeHint()提供的每一个
-窗口部件的理想大小，然后再对那些可伸展的任意窗．口部件进行伸展以填满全部可用空间。一个
-窗口部件的理想大小取决于这个窗口部件的内容以及改变内容时的变化大小。为了避免对定位
-指示器连续不断地重定义大小，设置它的最小尺寸大小为它所能包含的最大字符数(“W999”)和一
-些空格的总大小。还把它的对齐方式设置为Qt：：AlignHCenter，以便可以在水平方向上居中对齐它
-的文本。
-    在函数结尾的附近，把Spreadsheet':.的两个信号和MainWindow的两个槽，upda
-    upd批s诅t璐Bar()槽可以罂堑差垂揸塞垄遵强强题韭包型每公誊塑示器。只要用户把单元格光
-标移动到一个新的单元格，这个槽就会得到调用。该槽也可以作为一个普通函数而在cre批s诅‘us—
-Bar()的最后用于初始化这些指示器。因为印论adsheet。不会在一开始的时候就发射c峨n
-
-槽把而hd曲Modified属性设置为姗e，用以更新标题栏。这个函数也会更
-新位置和公式指示器，以便可以让它们反映事件的当前状态。
-3.4实现File菜单
-    在这一节中，将实现那些能够让File菜单项正常工作并且能够对最近打开文件进行管理的槽
-函数和私有函数。
-
-    当用户点击File+  New菜单项或者单击工具栏上的New按钮时，就会调用newFile()槽。如果
-存在还没有被保存的信息，okToCondnue()私有函数就会弹出如图3,9所示的对话框：“Do you、vant
-to save your change。？”。如果用户选择Yes或者No(保存文档应该选择Yes)，这个函数会返回true；
-如果用户选择Cancel，它就返回fal。e。Spreadsheet：：clear()函数会清空电子制表软件中的全部单元
-格和公式j setCurrentFile'()私有函数会更新窗口的标题，。以说明正在编辑的是一个没有标题的文
-档，它还会设置curFile私有变量并耳更新最近打开文件的列表。    ‘  ．    ’
-
-return true;
-    在okToContinue()函数中，会检测windowModified属性的状态。如果该属性的值是true，就显示
-    f    ．    ‘    ．
-一个如图3‘：9所示的消息框。这个消息框包含一个Yes按钮、二个No按钮和一个Caricel按钮。
-．／
-图3.9   "Do ypu want to save your changes?”消息框
-显示的文本内容。
-    当首次看到warning()函数调用时，可能会觉得它有点复杂，但这种常用语法实际上是相当简
-单的：    ，  。    ．
-    QMessageBox::warning(parent, t/tLe, message, buttons);
-    除了warning()之外，QMessageBox还提供了infoImation()、question()和cnticai()函数j它们每一
-个都有自己特定的图标，这些图标如图3.10历示。~    。
-
-    open()槽对File_一Open做出响应。就像newFile() -样，’它首先调用okToContir/ue()函数来处理
-任何没有被保存的变化。然后它使用方便的QFileDialog:：getOpenFdeName()静态函数从用户那里
-获得一个新的文件名。这个函数会弹出一个文件对话框，让用户选择一个文件，并且返回这个文
-件名——或者，如果用户单击了Cancel按钮，则返回一个空字符串。    。
-    传递给QFileDialog：：getOpenFileName.()函数的第一个参数是它的父窗口部件j用于财话框和
-其他窗口部件的这种父子对象关系意义并不相同。对话框通常都拥有自主权，，但是如果它有父x寸，
-C++ GUI.Qt 4编程（第二版）
-象，那么在默认情况下，它就会居中放到父对象上。一个子对话框也会共用它的父对象的任务栏。
-    第二个参数是这个对话框应当使用的标题。第三个参数告诉它应当从哪一级目录开始，在这
-个例子中就是当前目录。
-    第四个参数指定了文件过滤器。文件过滤器( filter)由一个描述文本和一个通配符组成。如果
-除了要支持Spreadsheet本地文件格式以外，还需要支持采用逗号分隔的数据文件和Lotus l-2-3文
-
-我们让它成为一个独立的函
-如果载人成功，会调用setCurrenOile()
-
-会通过一个消息框把遇到的问题通知
-
-    save()槽对File一Save做出响应。如果因为这个文件是之前打开的文件或者它是一个已经保
-存过的文件，这样已经有了一个名字，那么save()函数就会用这个名字调用saveFile()函数；否则，
-它只是简单地调用saveAs()函数。
-
-调用QFileDialog:：getSaveFileName()函数来从用户那里
-得到一个文件名。如果用户单击了Cancel，则返回~alse，这将会使这个结果向上传递给它的调用者
-[ save()或者okToContinue()]。
-  如果给定的文件已经存在，ge:t{SayeFeN翼丛韭i数
-    ＼，1一一一、’———一
-但通过给getSaveFileName()函数传递_个QFileDialog:：
-这一行为 o .
-
-当用户单击File—Exit或者单啬窗口标题栏中的差塑按钮时，将会调旦QWidget:.！close()擅n、
-受该操作的影响。一般情况下，我们会接受这个事件，这会让Qt隐藏该窗口。也可以调用私有函
-数writeSetUngs()来保存这个应用程序的当前设置。
-    当最后一个窗百美丽硌j匿下厦鬲程序就结束了。如果需要，通过把QApplication的quitOn-
-IatWindowClosed属性设置为false，可以禁用这种行为。在这种情况下，该应用程序将会持续保持
-运行 ,直到调用  QApplication:  : quit()函数,程序才会结束。
-
-    在。etCurrentFile()中，对保存正在编辑的文件名的curFile私有变量进行了设置。在把这个文
-件名显示在标题栏中之前，需要使用strippedName()函数移除文件名中的路径字符，这样可以使文
-件名看起来更友好一些。    ：
-
-每个QWidget都有一个windowModified属性，如果该窗．口的文档存在没有保存的变化，则应当
-把它设置为kue，否则应当将其设置为false。在Mac OS X下，未保存的文档是通过窗口标题栏上
-关闭按钮中的一个点来表示的；在其他平台下，则是通过文件名字后跟一个星号来表示的。Qt会
-自动处理这一行为，只要始终让windowModified属性保持为当前最新状态，并且当需要显示星号的
-时候，把“[*]”标记放在窗口的标题栏上即可。
-    传递给setWindowTitle()函数的文本是：
 
 QString：：喵()函数将会使用自己的参数替换最小数字的“%n”参数，并且会用它的参数返回
 结果“%n”字符和最终的结果字符串。在本例中，喵()被用于两个“%n”参教中。第一个arg()调
@@ -1321,27 +1342,25 @@ QString：：喵()函数将会使用自己的参数替换最小数字的“%n”
 从列表中移除任何已经出现过的文件名‘；从而避免该文件名的重复。然后，可以调用prepend()把
 这个文件名作为文件列表的第一项添加进去。在更新了文件列表之后，可以调用私有函数upda
 
-
-使用一个Jai;a风格的迭代器，可以移除任何不再存在的文件。一些文件或许已经在前面的会
+使用一个风格的迭代器，可以移除任何不再存在的文件。一些文件或许已经在前面的会
 话中使用过，但在此之前还没被删除掉。recentFiles交量的类型是QStringU。t（QString型列表）。第
 11章会详细说明一些像QStringJjst -样的容器类，其中将会说明它们与C++标准模板库（Standard
-    。    t    }    -
 Template LibraIy，STL)之间的关系，也会说明Qt的Java风格迭代器类的用法。
     然后，再遍历一次文件列表，这_次使用数组风格的索引形式。对于每一个文件，创建一个由
 一个与操作符、一位数字（j斗1）、一个空格和该文件名（不带路径）组成的字符串。我们要为使用这
-种文本设置相应的动作。例如，如果第一个文件是C：\M Documents\tab04.。p，那么第一个动作的文
+种文本设置相应的动作。例如，如果第一个文件是C：那么第一个动作的文
 本将会是“&1
 
     每一个动作都可以带一个与之相关的QVariant型data项。QVanaHt类型可以保存许多C++和
 Qt型变量，第11章将说明这一点。这里，将文件的全名保存在动作的data项中，以便随后可以方
-便地找到它。还要将这个动作设置为可见。    。．：’：‘  _‘    j二’，
+便地找到它。还要将这个动作设置为可见。 
     如果有比最新文件更多的文件动作；那么只需隐藏那些多余的动作即可。‘最后，如果至少还
-存在一个最近打开的文件，那么就应该把间隔器设置为可见：  j r’  ．一_．‘0
+存在一个最近打开的文件，那么就应该把间隔器设置为可见：
 
     当用户选择了一个最近打开的文件，就会调用oper，RecentFile()槽。只要有任何未保存的变
 化，就会调用okToContinue()西数，并且假定用户没有取消，还可以使用QObject：：sende。()查出是哪
     ？    ‘
-个特有动作调用了这个槽。    ，  ，  ，
+个特有动作调用了这个槽。   
     qobject_cast <T>()函数可在Qt的moc(meta-object compiler，元对象编译器)所生成的元信息基
 础上执行动态类型强制转换(dynamid cast)。它返回一个指向所需QObject子类的指针，或者是在
 该对象不能被转换成所需的那种类型时返回0。与标准C++的：dynamic．．cast <T>()不同，Qt的
@@ -1359,11 +1378,9 @@ qobject_cast<D()可正确地跨越动态库边界。在例子中，使用qobject
 
 
 们从如图3.12所示的Find对话框开始。’由于希望用户能够在Spreadsheet窗口和Find对话
-50
-C++ GUI Qt 4编程（第二版）
+
 框之间进行切换，所以Find对话框必须
 中对于任何其他窗口都独童数宣旦一
-、__——————————／———一
 。非模态窗口就是运行在应用程序
 
     Find对话框是一个可以让用户在电子制表软件中搜索文本的窗口。当用户单击Edit—Find
@@ -1374,16 +1391,13 @@ C++ GUI Qt 4编程（第二版）
   ．  如果Find对话框还不曾存在过，就可以创建它并且把它的findNext()信号和findPrevious()信号
   与Spreadsheet中相对应的那些槽连接起来嗵迥嘤盛啦噔道垫宝剑蕉这个对话框，
   但是推迟对话框的创建过程将可哒德堡壁釜囊鬓茎磊蓑篓还d如果从-hr使用到这不对话
-    ——————_——_一
-谁骊活耐溪示裔厕蔓受匦塑堕型塑剐丝脚焱
-  一‘褒詹习爵-赫舐5：；se()和ac曲ateWindow()来确保窗口位于其他寥且之占羞县墨酉见的和激
+
+se()和ac曲ateWindow()来确保窗口位于其他寥且之占羞县墨酉见的和激
 活的。只调用sh6w(．)就足以让一个隐藏窗口变为可见的、位于最上方并且是激活的，但是也有可
 1粒是在Find对话框窗口已经是可见的时候又再次调用了它，在这种情况下，。how()调用可能什么
 也不做，那么就必须调用raise()和acdvateWindow()让窗口成为顶层窗口和激活状态。还有另外一
 种方法，本可以写成：
 
-
-    第3章创建主窗口    51
 但这样的程序就好像明明在穿越单行道却又同时去看这条单行道的两个方向一样，显得多余。
     现在看一下如图3.13所示的Go to Cell对话框。我们希望用户可以弹出、使用和关闭它，但是
 却不希望让这个窗白能够与应用程序中的其他窗口相互切换。也就是说，Go to Cell对话框窗口必
@@ -1391,7 +1405,7 @@ C++ GUI Qt 4编程（第二版）
 从调用发生开始起妨碍其他的任意处理或者交互操作，直到关闭该窗口为止。前面使用的文件对
 话框和消息框就是模态的。    。
     图3.13 Spreadsheet应用程序的G0 to CeU对话框
-  ＼／履Ⅱ桌对话框是通过show()调用的，那么它就是非模态对话框[除非此后又调甩：setModal()，芨会一
+桌对话框是通过show()调用的，那么它就是非模态对话框[除非此后又调甩：setModal()，芨会一
 让它变为模态对话框]。但是，如果它是通过e）【ec()调用的，那么该对话框就会是模态X适k
 
     如果对话框被接受，函数QDialog：：exec()可返回一个true值（QDi抛：：Accep州），否则就会返
@@ -1413,22 +1427,19 @@ C++ GUI Qt 4编程（第二版）
 热现在转到Sort对话框上。Sort对ia:攥是-.个模态对话框，它允许用户在当前的选定区域中使
 
 用给定的列进行排序。图3 .14给出了-个排序的实例，用列，B作为排序的主键，列A作为排序的
-第二键（两个都采用升序）。=．：。0’，．
-    ，    、    t    ’
+第二键（两个都采用升序）。
 (a)排序前
 
 sort()函数中的代码使用了一种和goToCell()豳数中用到的类似模式：
-  t    ．    j  ．
+
 。在堆栈中创建对话框并且对其进行初始化。
 。使用.exec()弹出对话框。．
 o如果用户单击0
 setColuiwnRange()调用将那些可用于排序的列变量设置为选定的列。例如，使用图
 的选择，range .leftColumn(')将返回值
-曛，即‘A’+0=‘A’，并且
+曛，即，并且
 range. rightColunu/()将返回
-‘A’+2：‘C’。    t
- 3.14中
-值2，即
+
 compare对象储存了主键、第二键和第三键以及它们的排序顺序。（将会在下一章中看到
 SpreadsheetCompare类的定义。）这个对象会由
 Spreadsheet:：sort()使用，用于两行的比较。keys数组
@@ -1523,16 +1534,16 @@ MainWindow实例，而不是使用new来创建它。当函数结束时，MainWin
     ●利用File—Exit关闭所有窗口。
     在File菜单的最初版本中，并没有aose选项’i这只是因为当时它
 还和Exit -样具有相同的功能j+新的File菜单如图3.16所示。一
-    -    。-
-‘新的'main()函数为：，    ：    。‘
+
+‘新的'main()函数为：
 图3.16新的File菜单
 
  具有多窗口功能后，现在就需要使用菜单中的new来创建MainWindow。考虑到节省内存，可
-    —。——’’’—————_—_H——h二__一
+
 以在工作塞垦骞垣堡塑壁塑te操(~删除主窗口。
 
 
-。我们只创建了一个新的-\MainWindow实例。这看起来有些奇怪；因为没有保留指向这个新窗
+。我们只创建了一个新的MainWindow实例。这看起来有些奇怪；因为没有保留指向这个新窗
 口的任何    }际上这鲞丕星仕么闽题，因趁Q笠逐塑堕的窗口耋箜跟踪。  ’    一t
 
 
@@ -1547,21 +1558,17 @@ MainWindow实例，而不是使用new来创建它。当函数结束时，MainWin
 保存了newFile()中创建的MamWindow窗口部件，但是从没有删除它们。当用户关闭一个主窗口时，
 默认行为是隐藏它，所以它还会保留在内存中。对于如此多的主窗口：的确会造成一定的问题。
     解决办法是在构造函数中对Qt:：WA_DeleteOnClose的属性进行设置、：
-Ma'inWindow::MainWindow()
-{
-                                                                                ,*
-          setAtt ributAQt :/_WA  DekteOnClo:ej
-      N盟曼坚班  se); . .
+
   这样做就会告诉Qt在关闭窗口时将其删除。Qt：：WA_DeleteOnOose;属性是可以在QWidget上
 进行设置并用来影响这个窗口部件的行为的诸多标记之一。‘  ：
-    1 r    一，
+
     内存泄漏并不是必须处理的唯一问题。最初的应用程序设计包含了一个隐含的假设，也就是
 它仅有一个主窗口。对于多窗口，每一个主窗·口都有它自己的最近打开文件列表和它自己的一些
   选项。很明显，最近打开文件列表对于整个应用程序来说应该是全局的
   声明为静态鸾藿。可以相当容易地解决这个问题，这样对王墼仝应用程序
   丐鼯露萌亘旦堡随后必须礴傈丽廷专适壑塑丽鄙盯≤j：磊磊鬲n堪阻eActio璐()
-    —+’—‘’’。-____～
-  必须是在所有的圭重且土翅/a！≥这是实现这一做法的代码：
+
+  必须是在所有的这是实现这一做法的代码：
 。通过把recentFiles变量
 
 函数来更新File菜单，都
@@ -1573,16 +1580,14 @@ Ma'inWindow::MainWindow()
 应用程序。在Wind0、vS系统下，一种常用的替代方法是多文档界面(mul邱le docurnent inte出ce，
 MDI)，这种应用程序只有一个单一的主窟口：，但可以对主窗口中央区域的多个文档窗口进行管理。
 Qt可以在它支持的所有平台上创建SDI和MDI应用程序。图3；．17给出了使用这两种方法的
-Spreadsheet应用程序。第6章将对肋I进行说明。    ’，，≯    √：．    +i
-    ．    ’
+Spreadsheet应用程序。第6章将对肋I进行说明。
+ 
     图3.17单文档界面和多文档界面    ．
+许多应用程序都会在启动的时候显示一个程序启动画面（splash screen），图3118给出的就是这
 
-＼  7 I!许多应用程序都会在启动的时候显示一个程序启动画面（splash screen），图3118给出的就是这
-I  ，
-58    C++ GUI Qt 4编程（第二版）
 样的一个实例。一些程序员使用程序启动画面对缓慢的启动过程进行掩饰，而另外一些人则是用
 于满足市场部门的要求。使用QSplashScreen类，可以非常容易地为Qt应用程序添加一个程序启
-动画面。    一
+动画面。    
 图3.18程序启动画面
     类QSplashScreen会在应用程序的主窗口出现之前显示一个图片。它也可以在这个图片上显
 示一些消息，用来通知用户有关应用程序初始化的过程。通常，程序启动画面的代码会放在main()函
@@ -1597,8 +1602,8 @@ I  ，
 前两章说明了如何创建Spreadsheet应用程序的用户界面。在这一章中；将通过编写它的底层
 功能函数来完成这个程序。此外，还将看到如何载人鸭保存文件，女哜旺莓内存中存储数据，如何实
 现剪贴板操作，以及如何向QTableWidget中舔加对电子制表软件公式的支持等功能。
-    j，  H    '
-4:1  中央窗口部件    7，
+
+中央窗口部件 
     QMainWindow的中央区域可以被任意种类的窗口部件所占用。下面给出的是x所有可能情形
 的概述。
 1．使用一个标准的Qt窗口部件
@@ -1627,7 +1632,7 @@ Widget已经提供了我们所需要的绝大多数电子制表软件的功能�
 窦现这些缺少的功能。
 
 
-    类Spreadsheet派生自QTableWidget，如图4.1所示。    i。
+    类Spreadsheet派生自QTableWidget，如图4.1所示。 
     eView
 QTableWidget是一纽格子，可以非常有效地用来表达二维  oT86下vj
 稀疏数组。它可以在规定的维数内显示用户滚动到的任'iLQTableWidget    QTabLeWidgetltem i
@@ -1639,14 +1644,9 @@ QTableWidgedtem。    _
     QTableWidget派生自QTableView，它是模型／视图类之一，我们将在第10章进一步了解它。对
 于另外一个表QicsTable，它有更多的非常规功能，可以从http：//www.ics. com/中获取：
     让我们一起来实现Spreadsheet，首先从它的头文件歼始：    ‘    ．
-#ifndef SPREADSHEET H
-#define SPREADSHEET:H
-#include <QTableWidget>
-class Cell; ,
-class SpreadsheetCompare;
-    ÷  ，‘、
+
 头文件是从Cell和SpreadsheetCompare类的前置声明开始的。
-    -  。
+
     QTableWidget单元格的属性，比如它的文本和对齐方式等，都存储在QTableWjdgeⅡtem中。与
 QTableWidget不同的是，QTableWidgedtem不是一个窗口部件类，而是一个纯粹的数据类：Cell类派
 生自QTableWidgeⅡtem，会在本章的最后一节对这个Cell类进行解释。
@@ -1661,9 +1661,8 @@ MainWindow:：newFile()中调用clear()来重置电子制表软件。也使用�
 
     Spreadsheet提供了许多实现Edit、’rools和Options菜单中的动作酌槽：并且它也提供了一个
 modified()信号，用来告知用户，可能已经发生的任何变化。
-private slots:                                   . .'   :  :     . . t'
-   void somethingChanged(';  .    ,       '       '
-还定义了一个由Spreadsheet类内部使用的私有槽：    ．．
+
+还定义了一个由Spreadsheet类内部使用的私有槽： 
 
 在这个类的私有段中，声明了3伞常量、4个函数和1个变量。
 
@@ -1674,16 +1673,16 @@ private slots:                                   . .'   :  :     . . t'
 通常情况下，当用户在一个空单元格中输入一些文本的时候，QTableWidget将会自动创建一个
   QTableWidgetltem来保存这些文本。在电子制表软件中，我们想利用将要创建的Cell项来代替
   QTableWidgedtem。这可以通过在构造函数中调用sedtemPrototype()来完成。实际上，QTableWidget
-  会在每次需要新项的时候把所传递的项以原型的形式克隆出来。    七    ．
+  会在每次需要新项的时候把所传递的项以原型的形式克隆出来。
     同样是在构造函数中，我们将选择模式设置为QAbstracdtemView：：ConUguousSelection，从而可以
   允许简单矩形选择框方法。我们把表格窗口部件的ite．nChanged()信号连接到私有槽s
 
-C“GUI of：4编程（第互版）
+
 Changed()上，这可以确保在用户编辑一个单元格的时候，somethingChanged()槽可以得到调用。最
 后，调用clear()来重新调整表格的尺寸大小并且设置列标题。
 
 clear()函数是从Spreadsheet构造函数中得到调用的，用来初始化电子制表软件。它也会在
-Ma/nWindow:：newFile()中得到调用。  i    、  '、  ，
+Ma/nWindow:：newFile()中得到调用。  
     我们原本使用qLableWidget：：clear()来清空所有项和任意选择，但是那样儆的话，这些标题将会
 以当前大小的尺寸而被留下。相反的是，我们要把表格向下调整为Ox0。这样就可以完全清空整个
 表格，包括这些标题。然后，，重新调整表的大小为ColumnCount×RowCount(26×999)，并且把QIable-
@@ -1731,7 +1730,6 @@ currentFonnula()函数返回当前单元格的公式。它是从MainWindow:：up
 用的。
 
 如果启用了“引ito-recalculate”（自动重新计算），那么somethingChanged()私有槽就会重新计算整
-    -1    +
 个电子制表软件。它也会发射modified()信号。
 4.3载入和保存
   现在，我们将使用一种自定义的二进制数格式来实现Spreadsheet文件的载人和保存。将使用
@@ -1749,10 +1747,10 @@ QFile和QDaLaStream来完成这一工作．由它们共同提供与平台无关�
 且一旦所有的数据输出完毕，就需要把这个应用程序的光标重新恢复为普通光标。在函数的最
 后，文件会由QFile对象的析构函数自动关闭。    。一    ．  ．：  。，◆  ．
     QDataStream既可以支持C++基本类型，也可以支持多种Qt类型。该语法模仿了标准C++的
-<iostream>中的那些类的语法。例如：，    ．    ，
-    ’OUt<<X<<．y<<Z；
+<iostream>中的那些类的语法。例如：
+
 会把变量x、y和z输出到一个流中，而：
-    ln>>X>>y>>Z；
+
 会从流中读出它们。因为C++的基本类型在不同平台上可能会有不同的大小，所以把这些变量
 强制转换成qint8、quint8、qint16、quint16、qint32、quint32、qint64以及quint64中的一个是最安全的做
 法，这样做可以确保它们能够获得应有的大小（按位计算）。  。  。    ‘
@@ -1788,11 +1786,7 @@ QIODevice.:：ReadOnly标记，而不是QIODevice：：WriteOnly标记。1然后
 的单元格。
 4:4实现Edit菜单
     现在，我们已经为实现响应应用程序Edit菜单中的各个槽做好了准备。Spreadsheet应用程序
-中的'Edit菜单如图4.4所示。    t
-
-
-第4章  实现应用程序的功能
-
+中的'Edit菜单如图4.4所示。    
 
     cut()槽可以对Edit_+ Cut菜单做出响应。由于Cut的执行效果与Copy之后再加上一个Delete
 的执行效果相同，所以其实现代码很简单。    、
@@ -1800,9 +1794,7 @@ QIODevice.:：ReadOnly标记，而不是QIODevice：：WriteOnly标记。1然后
 copy()槽能够对Edit_+C叩y做出响应。它会遍历当前选择（如果没有明确的选择，那么就认为
 选择的只是当前单元格）。每一个选中单元格的公式都会被添加到一个QStri坞中，行与衍之间利
 用换行符“＼n”分隔，列与列之间则以制表符“＼t”来分隔。图4.5给出了这一实现方法的示意图。
-"Red \t Green \t Blue\n Cyan \t- Magenta\t Yellow"
     图4.4 Spreadsheet应用程序的Edit菜单    图4.5’把选择复制到剪贴板中
-    ‘    ^
     在Qt中，通过调用QApplication：：clipboard()静态函数可以使用系统的剪贴板。通过调用
 QClipboard：：setText()，就既可以在本应用程序中又可以在其他应用程序中使用放在剪贴板上的这
 些文本。这种使用制表符“＼t”和换行符“＼n”作为文件分隔符的形式可以被包括微软Excel在内的
@@ -1813,28 +1805,23 @@ QClipboard：：setText()，就既可以在本应用程序中又可以在其他�
 
 
 如果只有．个选择，则只需简单地返回第一个（并且也只有这一个）选择即可。没有选择的。隋
-  68    C++ GUI Qt 4编程（第二版）
-    _    ．  t
+
 况应该永远不会发生，因为ContiguousSelection模式至少可以把当前单元格当作是已经选中的选
 择。但是，为了避免使程序出现缺陷的可能性，还是需要对这种当前没有选中单元格的情况进行
 单独处理。    。
 
-
-{
 paste()槽对Edit—Paste菜单选项做出响应。我们从剪贴板中取回文本，并且调甩静态函数
-制表符“\t"字符的个数再加上1。如果只选中了一个单元格，‘就把这个单元格作为粘贴区域放在
+制表符“"字符的个数再加上1。如果只选中了一个单元格，‘就把这个单元格作为粘贴区域放在
 左上角；否则，就把当前选择作为要粘贴的区域。
 为了执行粘贴操作，我们遍历所有行并且再次使用
 QString:：spht()把它们分隔到每一个单元
-格中，但是这一次要把制表符“\t"当作分隔符。图4.6给出了这一过程中所使用的步骤。
+格中，但是这一次要把制表符当作分隔符。图4.6给出了这一过程中所使用的步骤。
 
 :rDelete菜单选项做出响应。7如果有选’中的项，那么该函数就会ff/l.l除它们并且
 调用gmethingChanged(:)函数。，对选择中的每一个CeR对象使用.delete足以清空所有这些单元格j
 当删除QTableWidget的QTableWidgetlte蹬的时候，凹abKWidget就会注意到这一情况的发生，而如果
 这些项中有可见的任意项，QTableWidget将会自动对自己进行重绘。如果在一个已经删除过thj单
-元格位置上又调用了cell()，那么该函数将会返回。个空指针。。    。一    ~
- void  Sp readsheet: :selectCurrentRow ( )
-
+元格位置上又调用了cell()，那么该函数将会返回。个空指针。
 
 项做出响应。这些实现分别依赖于QTableWidget的selJectRow()和selectColumn()函数。+我们不必再
 去实现Edit  Select- All菜单选项的功能，因为该功能可以由QTableWidget从QAbstiactItemView：：
@@ -1887,9 +1874,7 @@ thingChanged()函数。
 Sp”eadsheetCompare类有些特殊，因为它实现了一个“()”操作符。这样就允许把这个类像函数
 一样使用。把这样的类称为函数对象(function object)，或者称为仿函数(fun。to。)o为了理解仿函数
 是如何工作的，首先从一个简单的例子开始：
-class Square
-pubLjc:                        -. . .  l
- " 'int 'operator()(int x) const { return x * x;
+
     Square粪提供了一个函数，operator() (int)函数，它返回其参数的平方值。通过把这个函数命名
 为operator() (int)，而不是将其命名为compute(int)之类的函数，就可以把一个类型为Square的对象
 当作一个函数。
@@ -1920,20 +1905,17 @@ QTableWidgetltem没有任何特殊的依赖关系，所以在理论上讲，它�
 类中。这里给出的是Cell类的头文件：
 
 遁过增加两个私有变量，Cell类对QTableWidgetltem进行了扩展：
-74
-C+'+ GUI Qt 4编程（第二版）
+
 ●cachedValue把单元格的值缓存为QV撕ant。
 ．如果缓存的值不是最新的，那么就把cacheIsDirty设置为true。
 之所以使用QVanant，是因为有些单元格是double型值，另外一些单元格则是QString型值。
     在声明cachedValue和cacheIsDirt.y变量时使用了C++的mutable关键字，这样就可以在const
 函数中修改这些变量。或者，在每次调用text()时，本应当重新计算这个值，但是这样做是不必要
-    ，    ‘    j
 的，因为它的效率非常低下。  ？
     我们注意到，在该类的定义中并没有使用Q- OBJECT宏。这是因为，Cell是-个普通的C’++
 类，它没有使用任何信号或者槽。实际上，因为QTableWidgetltem不是从QObject派生而来的，所以
 就不能让Cell拥有信号和槽。为了使QL‘的项(item)类的开销降到最低，它们就不是从QObject派
 生的。如果需要信号和槽，可以在包含项的窗口部件中实现它们，或者在特殊情况下，可以通过对
-    。j    ．
 QObject进行多重继承的方式来实现它们。    ．    ．
 在构造函数中，只需要将缓存设置为dirty。没有必要传递父对象，当用setltem()把单元格插
 人到一个QTableWidget中的时候，QTableWidget将会自动对其拥有所有权。
@@ -1951,7 +1933,6 @@ setFormula()函数用来设置单元格中的公式。它只是一个对编辑�
 
     formula()函数会从Spreadsheet:：fonnula()中得到调用。就像setFormula() -样，它也是一个简
 便函数，这次是重新获得该项的Ed/tRole数据。
-第4章  实现应用程序的功能    75
 
     如果有一个新的公式，就可以把cacheIsDirty设置为true，以确保在下一次调用text()的时候可
 以重新计算该单元格。
@@ -1959,7 +1940,6 @@ setFormula()函数用来设置单元格中的公式。它只是一个对编辑�
 text()函数是一个由QTableWidgetltem提供的简便函数。这相当于调用data(
     调用setDnty()函数可以用来对该单元格的值强制进行重新计算。它只是简单地把cachels -
 Dirty设置为true，也就意味着cachedValue不再是最新值了。除非有必要，否则不会执行这个重新
-    ，    -
 计算操作。
 data()豳数是从QTableWidgetltem中重新实现的。如果使用Qt:：DiBplayRole调用这个函数，那
 么它返回在电子制表软件中应该显示的文本；如果使用Qt:：EditRole调用这个函数，那么它返回该
@@ -1991,24 +1971,19 @@ toDouble()把ok设置为false并且返回0.0。
     value()函数声明为const函数。，我们不得不把cachedValue和cacheIsValid声明为mutable变量，
 以便编译器可以让我们在．const。函数中修改它们。当然，如果能够把value()声明为一个非const函
 数并且移除mutable哭键掌可能会更吸引火些，但是这将会导致无法编译，因为是从一个const函数
-的data()函数中调用value()的。一    ‘
-    _    一
+的data()函数中调用value()的。
     除了要解析这些公式之外：现在已经完成了整个Spreadsheet应用程序。这一节的剩余部分将
 说明evalExpression()以及evalTerm()和evalFactor()这两个帮助函数。这些代码有一些复杂，但是把
 它们放在这里是为了能够让整个应用程序显得更完善些。由于这些代码和图形用户界面编程无
 关，所以你可以非常放心地略过这一部分，从第5章继缤阅读下去。
     evalExpression()函数返回一个电子制表软件表达式的值。表达式可以定义为：一个或者多个
 通过许多“+”或者“一”操作符分隔而成的项。这些项自身可以定义为：由“*”或者“／”操作符分
-    第4章  实现应用程序的功能    77
-    J-    _    r    t    、
 隔而成的一个或者多个因子( factor)。通过把表达式分解成项，再把项分解成因子，就可以确保以
 正确的顺序来使用这些操作符了。
-    ：．    。  ：    …
     例如，“2*C5+D6”就是一个表达式，它由作为第一项的j'2*G5”和作为第二项的“D6”构成。项
 “2 x-C5”是由作为第一个因子的“2”和作为第二个因子的“C5”组成的，而项“D6”则由一个单一的因
 子“D6”组成。一个因子可以是一个数(“2”)、一个单元格位置(‘！c5”)，或者是一个在圆括号内的表
 达式，在它们的前面可以有负号。
-    、    ：
     在图4.10中，定义了电子制表软件表达式的语法。对于语法（表达式、项和因子）中的每一个
 符号，都对应一个解析它的成员函数，并且函数的结构严格遵循语法。通过这种方式写出的解析
 器称为递归渐降解析器( recursive-descent parser)。
@@ -2051,7 +2026,7 @@ cachedValue设置为Invalid。如果evalExpression()对同一个单元格循环�
 使用它们了。最后，将通过展示一个使用了双缓冲技术（一种用于快速绘制的强大技术）的自定义
 窗白部件来结束这一章的内容。
 
-5.1  自定义'ot窗口部件
+5.1  自定义t窗口部件
   ’在某些情况下，我们发现Qt窗口部件需要更多的自定义定制，这些定制可能要比它在Qt设计
 师里可设置的属性或者对它调用的那些函数更多一些。一个简单而直接的解决方法就是对相关
 的窗口部件类进行子类化并且使它能够满足我们的需要。
@@ -2066,7 +2041,6 @@ cachedValue设置为Invalid。如果evalExpression()对同一个单元格循环�
     用户可以通过单击微调框的向上和向下箭头或者在它的行编辑器中输人数值来修改微调框
 的当前值。在后一种情况中，我们想要严格控制用户输入的数据必须是合法的十六进制数字。为
 了实现这一点，我们使用一个QRegExpValidator，它可以接受1到8个字符，所有这些字符都必须是
-集合{‘0’，…，‘9’，‘A’，…，‘F’，‘a’，…，‘f’}中的一个。
 
     这个函数由QSpinBox调用，用来检查目前为止用户输入文本的合法性。有三种结果可能会出
 现：Invalid(无效，输入的文本与常规表达式不匹配)、Intennediate（部分有效部分无效，输入的文本是
@@ -2088,7 +2062,7 @@ toUpper()，使其成为大写格式的结果。
 择一个合适的Qt窗口部件，对它进行子类化，并且通过重新实现一些虚函数来改变它的行为即
 可。如果我们想做的全部就是对一个已经存在的窗口部件的外观进行自定义设置，那么只需对其
 应用一个样式表或者重新实现一种自定义风格即可，而不必对其进行子类化，就像第19章中说明
-的那样。    ～一
+的那样。  
 5.2子类化QWidget
     许多自定义窗口部件都是对现有窗口部件的简单组合，不论它们是内置的Qt窗口部件，
 其他一些像HexSpinBox这样的自定义窗口部件。通过对现有窗口部件的组合构建而成的自定义
@@ -2194,8 +2168,7 @@ setZoomFactor()函数设置图像的缩放因子。为了避免在其他地方�
   处理。
     当产生～个绘制事件并且调用pa/ntEverit()函数的时候，会出现如下几种情况：
     ●在窗口部件第一次显示时，系统会自动产生一个绘制事件，从而强制绘制这个窗口部件
-    。本身。
-    ‘    i
+
     ●当重新调整窗口部件大小的时候，系统也会产生一个绘制事件。
     ·当窗口部件被其他窗口部件遮挡，然后又再次显示出来的时候，就会对那些隐藏的区域产
     生一个绘制事件（除非这个窗口系统存储了整个区域）。
@@ -2323,19 +2296,14 @@ name()函数返回由该插件提供的这个窗口部件的名字。
 
 toolTip()圈数返回一个工具提示信息，可在鼠标悬停在Qt设计师窗口部件工具箱中的自定义
 窗口部件上时显示该信息。
-QSt ring  IconEdito rPlugin: :whatsThis ( )  const
-{
 whatsThis()函数返回用于Qt设计师“What's Tlus?”中显示的文本。
 
 如果该窗口部件还可以包含其他窗口部件，isContainer()函数就返回true；否则；它就返回false。
 例如，QFrame就是一个可以包含其他窗口部件的窗口部件。一般情况下，任何窗口部件都可以再
-    ’    j
+
 包含其他窗口部件，但是当isContainer()返回false时，Qt设计师则不会允许它再包含其他的窗口
 部件。
-QWidget   *IconEditorPlugin : : createWidget ( QWidget  *pa rent )
-{.
-       return new IconEditor(parent) ;
-}
+
 Qt设计师会调用createWidget()函数，利用给定的父对彖创建该窗口部件类的一个实例。
 
 
@@ -2343,7 +2311,7 @@ Qt设计师会调用createWidget()函数，利用给定的父对彖创建该窗�
 中使用这个插件。第一个参数是希望给插件的名字，第二个参数是实现该插件类的名字。
     用于构建该插件的．pro文件看起来如下所示：
 
-qmake构建工具已经构建了一些预定义变量。．$$[QT_INSTALL_PLUGINS]就是它们当中的一
+qmake构建工具已经构建了一些预定义变量。．就是它们当中的一
 个，它保存了指向Qt安装目录中plugins目录所在的路径。当键人make或者nmake来构建该插件
 时，它就会自动把自己安装到Qt设计师的plugins/designer目录中。插件二旦构建宪毕，在Qt设计
 师中就可以像使用其他内置的Qt窗口部件一样来使用IconEditor窗口部件。
@@ -2596,8 +2564,7 @@ wheemvent()。
 水平线和沿y轴方向上的标记符。最后，沿空白区域绘制一个长方形。drawText()函数用于绘制两
 个坐标轴上与记号相对应的那些数字。
     对于drawText()的调用遵循下面的语法形式：
-    painter->d rawText(x.y,width, height, alignment, text);
-萁中，（菇，），，wtath，height）定义了一个矩形，alignmenL是在这个矩形中文本的位置，而text就是要
+定义了一个矩形，alignmenL是在这个矩形中文本的位置，而text就是要
 绘制的文本。在本例中，已经人工计算出了用于绘制文本的矩形。另外一种具有更好适应性的方
 法或许应当是使用QFontMetrics，其中包含了文本边界框的计算。  ，
 drawCurves()函数在网格上绘制这些曲线。我们从调用setClipRect()开始，它为包含这些曲线
@@ -2614,7 +2581,7 @@ maxX、minY和maxY的值。这个函数在Plotter:：keyPressEvent()中用来实
 处理一个坐标轴。
 
 。adjustAxis()函数把它的nun和max参数转换成“合适的”数值，并且在给定的【nun，max]范围内
-计算出合适的标记符个数，然后把它的numTicks参数设置成该值。因为、a\djllStA:as()需要对变量
+计算出合适的标记符个数，然后把它的numTicks参数设置成该值。因为、需要对变量
 （minX、Ⅱ，axX、nurnXI'ick,s，等等）进行实际修改而不仅仅只是复制，所落《的i
 adjustAxis()中的绝大多数代码都只是简单地试图确定两个记号之间适当距离的合适数值（这
 里就是“步长”）。为了沿每一根轴都可以获禧这样的合适数值，必须小心地选择这爷步篝。侈jI如，
@@ -2634,12 +2601,10 @@ m/n值的最近的步长倍数值，而新的max值大于初始max的最近的�
 取整后的nuii和max之间的距离个数。例如，如果在这个函数中输入的nun为240并且rnax为
 1184，那么新的范围就变为[200，1200]，有5个标记符。
 
-
-    这种算法在有些情况下给出的并不是最佳结果。发表在“Graphics Gems”(Morgan Kaufinann，
+这种算法在有些情况下给出的并不是最佳结果。发表在“Graphics Gems”(Morgan Kaufinann，
 1990)上Paul S．Heckbert的文章“Nice Numbers for Graph Labels”中，描述了一个复杂的算法。
     通过这一章，就结束了本书的第一部分。这一章解释了如何对已经存在的Qt窗口部件进行
 自定义，并且说明了如何使用QWidget作为基类来构建窗口部件的方法。第2章讲解了如何使用
 已有的窗口部件来组建新的窗口部件，而在第6章还会对这一主题做进一步探索。
     到此为止，我们利用Qt已经足以编写出完整的图形用户界面应用程序。在第二部分和第三
 部分，将会更进一步探索Qt，以使我们能够更为充分地利用Qt的强大功能。
-
