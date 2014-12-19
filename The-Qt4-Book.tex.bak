@@ -214,7 +214,7 @@ qmake quit.pro
 
 
 \section{窗口部件的布局}
-这一节将创建一个简单的例子程序，以说明如何用布局(layout)来管理窗口中窗口部件的几何形状，还要说明如何利用信号和槽来同步窗口部件。这个应用程序的运行效果如图1-4所示，它可以用来询问用户的年龄，而用户可以通过操纵微调框(spin box)或者滑块(slider)来完成年龄的输入。
+这一节将创建一个简单的例子程序，以说明如何用布局(layout)来管理窗口中窗口部件的几何形状，还要说明如何利用信号和槽来同步窗口部件。这个应用程序的运行效果如图1.4所示，它可以用来询问用户的年龄，而用户可以通过操纵微调框(spin box)或者滑块(slider)来完成年龄的输入。
 \begin{fig}{ageapplication}
 \caption{Age应用程序}
 \label{fig:ageapplication}
@@ -763,7 +763,7 @@ Qt的父－子对象机制是在QOject中实现的。当利用一个父对象创
 \item 将群组框的title属性设置为"\&{}Primary Key"，第一个标签的text属性设置为"Column:"，第二个标签的text属性设置为"Order:"。
 \item 右键单击第一个组合框。从Qt设计师弹出的上下文菜单的组合框编辑器中选择EditItems。用文本"None"创建一个项。
 \item 右键单击第二个组合框并且同样选择Edit Items。创建一个"Ascending"项和一个"Descending"项。
-\item 单击群组框，然后单击Form-Lay Out in a Grid。再次单击群组框，并且单击Form→Adjust Size。此时将会产生一个如图2.12(b)所示的布局。
+\item 单击群组框，然后单击Form→Lay Out in a Grid。再次单击群组框，并且单击Form→Adjust Size。此时将会产生一个如图2.12(b)所示的布局。
 \end{enumerate}
 
 \begin{linefig}[0.8]{sortlayout}
@@ -851,7 +851,7 @@ setColumnRange()槽根据电子制表软件中选择的列初始化了这些组�
 在Qt中，无论是使用手工编码的方式还是使用Qt设计师，都可以轻松地创建另一种常用的可以改变形状的对话框：多页对话框。可以通过多种不同的方式创建这种对话框：
 \begin{itemize}
 \item QTabWidget的用法就像它自己的名字一样。它提供了一个可以控制内置QStackedWidge的Tab栏。
-\item QListWidget和QStackedWidget可以一起使用，将QListWidget::curre-ntRowChanged()信号与QStackedWidget::setCurrentIndex()槽连接，然后再利用QListWidget的当前项就可以确定应该显示QStackedWidget中的哪一页。
+\item QListWidget和QStackedWidget可以一起使用，将\\ QListWidget::currentRowChanged()信号与\\ QStackedWidget::setCurrentIndex()槽连接，然后再利用QListWidget的当前项就可以确定应该显示QStackedWidget中的哪一页。
 \item 与上述QListWidget的用法相似，也可以将QTreeWidget和QStackedWidget一起使用。
 \end{itemize}
 
@@ -1142,7 +1142,7 @@ Show Grid动作和Auto-Recalculate动作是相互独立的两个复选动作。�
 \label{fig:spreadsheet3-6.png}
 \end{fig}
 
-一种更为高级的提供上下文菜单方法是重新实现QWidget::contextMenuEve-nt()函数，创建一个QMenu窗口部件，在其中添加所期望的那些动作，并且再对该窗口部件调用exec()函数。
+一种更为高级的提供上下文菜单方法是重新实现\\ QWidget::contextMenuEvent()函数，创建一个QMenu窗口部件，在其中添加所期望的那些动作，并且再对该窗口部件调用exec()函数。
 \begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{354}{368}
 \end{cppline}
 
@@ -1168,7 +1168,7 @@ QMainWindow::statusBar()函数返回一个指向状态栏的指针。\footnote{�
 
 图3.8所示的两个标签都有不同的空间需求。单元格定位指示器只需要非常小的空间，并且在重新定义窗口大小时，任何多余的空间都会分配给位于右侧的单元格公式指示器。这是通过在公式标签的QStatusBar::addWidget()调用中指定一个伸展因子$ 1 $而实现的。位置指示器的默认伸展因子为$ 0 $，这也就意味着它不喜欢被伸展。
 
-当QStatusBar摆放这些指示器窗口部件时，它会尽量考虑由QWidget::size-Hint()提供的每一个窗口部件的理想大小，然后再对那些可伸展的任意窗口部件进行伸展以填满全部可用空间。一个窗口部件的理想大小取决于这个窗口部件的内容以及改变内容时的变化大小。为了避免对定位指示器连续不断地重定义大小，设置它的最小尺寸大小为它所能包含的最大字符数("W999")和一些空格的总大小。还把它的对齐方式设置为Qt::AlignHCenter，以便可以在水平方向上居中对齐它的文本。
+当QStatusBar摆放这些指示器窗口部件时，它会尽量考虑由\\ QWidget::sizeHint()提供的每一个窗口部件的理想大小，然后再对那些可伸展的任意窗口部件进行伸展以填满全部可用空间。一个窗口部件的理想大小取决于这个窗口部件的内容以及改变内容时的变化大小。为了避免对定位指示器连续不断地重定义大小，设置它的最小尺寸大小为它所能包含的最大字符数("W999")和一些空格的总大小。还把它的对齐方式设置为Qt::AlignHCenter，以便可以在水平方向上居中对齐它的文本。
 
 在函数结尾的附近，把Spreadsheet的两个信号和MainWindow的两个槽，updateStatusBar()和spreadsheetModified()，连接了起来。
 \begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{151}{155}
@@ -1229,7 +1229,7 @@ loadFile()私有函数是在open()中得到调用的，它用来载入文件。�
 \begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{433}{443}
 \end{cppline}
 
-我们使用Spreadsheet::readFile()函数从磁盘中读取文件。如果载入成功，会调用setCurrentFile()函数来更新这个窗口的标题；否则，Spreadsheet::readFile()将会通过一个消息框把遇到的问题通知给用户。在通常情况下，让底层组件来报告错误消息是一个不错的习惯，这是因为它们可以提供准确的错误细节信息。
+我们使用Spreadsheet::readFile()函数从磁盘中读取文件。如果载入成功，会调用setCurrentFile()函数来更新这个窗口的标题；否则，\\ Spreadsheet::readFile()将会通过一个消息框把遇到的问题通知给用户。在通常情况下，让底层组件来报告错误消息是一个不错的习惯，这是因为它们可以提供准确的错误细节信息。
 
 在上述两种情况下，都会在状态栏中显示一个消息2秒（2000毫秒），这样可以通知用户应用程序正在做什么。
 
@@ -1244,7 +1244,7 @@ save()槽对File→Save做出响应。如果因为这个文件是之前打开的
 \begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{66}{75}
 \end{cppline}
 
-saveAs()槽对File→Save As做出响应。调用QFileDialog::getSaveFileName()函数来从用户那里得到一个文件名。如果用户单击了Cancel，则返回false，这将会使这个结果向上传递给它的调用者[save()或者okToContinue()]。
+saveAs()槽对File→Save As做出响应。调用\\ QFileDialog::getSaveFileName()函数来从用户那里得到一个文件名。如果用户单击了Cancel，则返回false，这将会使这个结果向上传递给它的调用者[save()或者okToContinue()]。
 
 如果给定的文件已经存在，getSaveFileName()函数将会要求用户确认是否需要覆盖该文件。但通过给getSaveFileName()函数传递一个QFileDialog::DontConfirmOverwrite附加参数，则可以改变这一行为。
 
@@ -1263,16 +1263,143 @@ saveAs()槽对File→Save As做出响应。调用QFileDialog::getSaveFileName()�
 \end{cppline}
 
 
-在setCurrentFile()中，对保存正在编辑的文件名的curFile私有变量进行了设置。在把这个文
-件名显示在标题栏中之前，需要使用strippedName()函数移除文件名中的路径字符，这样可以使文
-件名看起来更友好一些。    ：
+在setCurrentFile()中，对保存正在编辑的文件名的curFile私有变量进行了设置。在把这个文件名显示在标题栏中之前，需要使用strippedName()函数移除文件名中的路径字符，这样可以使文件名看起来更友好一些。   
 
-每个QWidget都有一个windowModified属性，如果该窗．口的文档存在没有保存的变化，则应当
-把它设置为kue，否则应当将其设置为false。在Mac OS X下，未保存的文档是通过窗口标题栏上
-关闭按钮中的一个点来表示的；在其他平台下，则是通过文件名字后跟一个星号来表示的。Qt会
-自动处理这一行为，只要始终让windowModified属性保持为当前最新状态，并且当需要显示星号的
-时候，把“[*]”标记放在窗口的标题栏上即可。
-    传递给setWindowTitle()函数的文本是：
+每个QWidget都有一个windowModified属性，如果该窗口的文档存在没有保存的变化，则应当把它设置为true，否则应当将其设置为false。在Mac OS X下，未保存的文档是通过窗口标题栏上关闭按钮中的一个点来表示的；在其他平台下，则是通过文件名字后跟一个星号来表示的。Qt会自动处理这一行为，只要始终让windowModified属性保持为当前最新状态，并且当需要显示星号的时候，把"[*]"标记放在窗口的标题栏上即可。
+
+传递给setWindowTitle()函数的文本是：
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{470}{471}
+\end{cppline}
+
+
+QString::arg()函数将会使用自己的参数替换最小数字的"\%{}n"参数，并且会用它的参数返回结果"\%{}n"字符和最终的结果字符串。在本例中，arg()被用于两个"\%{}n"参教中。第一个arg()调用会替换参数"\%{}1"，第二个arg()调用则会替换参数"\%{}2"。如果文件名是budget.sp并且没有载入翻译文件，那么结果字符串将是"budget.sp[*]-Spreadsheet"。这本应更简单地写作如下代码：
+\begin{Verbatim}
+setWindowTitle(shownName + tr("[*] - Spreadsheet"));
+\end{Verbatim}
+
+但使用arg()函数可以为翻译人员提供更多的灵活性。
+
+如果存在文件名，就需要更新应用程序的最近打开文件列表recentFiles。可以调用removeAll()从列表中移除任何已经出现过的文件名，从而避免该文件名的重复。然后，可以调用prepend()把这个文件名作为文件列表的第一项添加进去。在更新了文件列表之后，可以调用私有函数updateRencentFileActions()更新File菜单中的那些条目。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{474}{495}
+\end{cppline}
+
+使用一个Java风格的迭代器，可以移除任何不再存在的文件。一些文件或许已经在前面的会话中使用过，但在此之前还没被删除掉。recentFiles变量的类型是QStringList（QString型列表）。第11章会详细说明一些像QStringList一样的容器类，其中将会说明它们与C++标准模板库(Standard Template Library , STL)之间的关系，也会说明Qt的Java风格迭代器类的用法。
+
+然后，再遍历一次文件列表，这一次使用数组风格的索引形式。对于每一个文件，创建一个由一个与操作符、一位数字(j+1)、一个空格和该文件名（不带路径）组成的字符串。我们要为使用这种文本设置相应的动作。例如，如果第一个文件是\verb+C:\My Documents\tab04.sp+，那么第一个动作的文本将会是"\&{}1 tab04.sp"。图3.11给出了recentFileActions数组和菜单的最终结果之间的对应关系。
+
+\begin{linefig}[0.8]{spreadsheet3-11.png}
+\caption{带最近打开文件列表的File菜单}
+\label{fig:spreadsheet3-11.png}
+\end{linefig}
+
+每一个动作都可以带一个与之相关的QVariant型data项。QVariant类型可以保存许多C++和Qt型变量，第11章将说明这一点。这里，将文件的全名保存在动作的data项中，以便随后可以方便地找到它。还要将这个动作设置为可见。 
+
+如果有比最新文件更多的文件动作，那么只需隐藏那些多余的动作即可。最后，如果至少还存在一个最近打开的文件，那么就应该把间隔器设置为可见。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{142}{149}
+\end{cppline}
+
+当用户选择了一个最近打开的文件，就会调用openRecentFile()槽。只要有任何未保存的变化，就会调用okToContinue()函数，并且假定用户没有取消，还可以使用QObject::sender()查出是哪个特有动作调用了这个槽。   
+
+qobject\_{}cast<T>()函数可在Qt的moc（meta-object compiler，元对象编译器）所生成的元信息基础上执行动态类型强制转换(dynamic cast)。它返回一个指向所需QObject子类的指针，或者是在该对象不能被转换成所需的那种类型时返回0。与标准C++的dynamic\_{}cast<T>()不同，Qt的qobject\_{}cast<T>()可正确地跨越动态库边界。在例子中，使用qobject\_{}cast::<T>()把一个QObject指针转换成QAction指针。如果这个转换是成功的（应当是这样的），就可以利用从动作的data项中所提取的文件全名来调用loadFile()函数。
+
+顺便值得一提的是，由于知道这个发射器是一个QAction，如果使用\\ \verb+static_cast<T>()+或者传统的C风格的数据类型强制转换代替原有的数据转换方式，这个程序应当仍然是可以运行的。请参见附录D中“类型转换”一节对不同C++数据类型强制转换的概述。
+
+
+\section{使用对话框}
+这一节将说明如何在Qt中使用对话框——如何创建、初始化以及运行它们，并且对用户交互中的选择做出响应。本节将会使用在第2章中创建的Find、Go to Cell和Sort对话框，也会创建一个简单的About对话框。
+
+我们从如图3.12所示的Find对话框开始。由于希望用户能够在Spreadsheet窗口和Find对话框之间进行切换，所以Find对话框必须是非模态(modeless)的。非模态窗口就是运行在应用程序中对于任何其他窗口都独立的窗口。
+\begin{linefig}[0.6]{spreadsheet3-12.png}
+\caption{Spreadsheet应用程序的Find对话框}
+\label{fig:spreadsheet3-12.png}
+\end{linefig}
+
+创建非模态对话框时，通常会把它的信号连接到能够对用户的交互做出响应的那些槽上。
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{77}{94}
+\end{cppline}
+
+Find对话框是一个可以让用户在电子制表软件中搜索文本的窗口。当用户单击Edit→Find时，就会调用find()槽来弹出Find对话框。这时，就可能出现下列几种情形：
+\begin{itemize}
+\item 这是用户第一次调用Find对话框。
+\item 以前曾经调用过Find对话框，但用户关闭了它。
+\item 以前曾经调用过Find对话框，并且现在它还是可见的。
+\end{itemize}
+
+如果Find对话框还不曾存在过，就可以创建它并且把它的findNext()信号和findPrevious()信号与Spreadsheet中相对应的那些槽连接起来。本应该在MainWindow的构造函数中创建这个对话框，但是推迟对话框的创建过程将可以使程序的启动更加快速。还有，如果从来没有使用到这个对话框，那么它就决不会被创建，这样可以既节省时间又节省内存。
+
+然后，调用show()、raise()和activateWindow()来确保窗口位于其他窗口之上并且是可见的和激活的。只调用show()就足以让一个隐藏窗口变为可见的、位于最上方并且是激活的，但是也有可能是在Find对话框窗口已经是可见的时候又再次调用了它，在这种情况下，show()调用可能什么也不做，那么就必须调用raise()和activateWindow()让窗口成为顶层窗口和激活状态。还有另外一种方法，本可以写成：
+
+\begin{Verbatim}
+if (findDialog->isHidden()) {
+    findDialog->show();
+} else {
+    findDialog->raise();
+    findDialog->activateWindow();
+}
+\end{Verbatim}
+
+
+但这样的程序就好像明明在穿越单行道却又同时去看这条单行道的两个方向一样，显得多余。
+
+现在看一下如图3.13所示的Go to Cell对话框。我们希望用户可以弹出、使用和关闭它，但是却不希望让这个窗口能够与应用程序中的其他窗口相互切换。也就是说，Go to Cell对话框窗口必须是模态(modal)的。模态窗口就是一个在得到调用可以弹出并可以阻塞应用程序的窗口，从而会从调用发生开始起妨碍其他的任意处理或者交互操作，直到关闭该窗口为止。前面使用的文件对话框和消息框就是模态的。
+
+\begin{fig}{spreadsheet3-13.png}
+\caption{Spreadsheet应用程序的Go to Cell对话框}
+\label{fig:spreadsheet3-13.png}
+\end{fig}
+
+如果对话框是通过show()调用的，那么它就是非模态对话框[除非此后又调用了setModal()，才会让它变为模态对话框]。但是，如果它是通过exec()调用的，那么该对话框就会是模态对话框。
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{96}{104}
+\end{cppline}
+
+如果对话框被接受，函数QDialog::exec()可返回一个true值\\ (QDialog::Accepted)，否则就会返回一个false值(QDialog::Rejected)。可以回想一下，当初在第2章利用Qt设计师创建Go to Cell对话框时，就曾经把OK连接到accept()，把Cancel连接到reject()。如果用户选择OK，就把当前单元格的值设置成行编辑器中的值。
+
+QTable::setCurrentCell()函数需要两个参数：一个行索引和一个列索引。在Spreadsheet应用程序中，单元格A1就是单元格(0,0)，单元格B27就是单元格(26,1)。为了从函数QLineEdit::text()返回的QString中获得行索引，可以使用QString::mid()来提取行号（这个函数将返回一个从字符串的开始直到末尾位置的子字符串），然后使用QString::toInt()把它转换成一个整数值，并且把该值再减去1。对于列号，则可以用这个字符串中第一个字符的大写数值减去字符'A'的数值而得到。我们知道，该字符串将具有正确的格式，因为为对话框创建了一个QRegExpValidator检验器，只有满足一个字符后面再跟至多三个数字格式的字符串才能让OK按钮起作用。
+
+goToCell()函数与目前看到的所有代码都有些不同，因为它在堆栈中创建了一个作为变量的窗口部件（一个GoToCellDialog）。虽然多使用了一行代码，但是换来了使用new和delete的简便：
+
+\begin{Verbatim}
+void MainWindow::goToCell()
+{
+    GoToCellDialog *dialog = new GoToCellDialog(this);
+    if (dialog->exec()) {
+        QString str = dialog->lineEdit->text().toUpper();
+        spreadsheet->setCurrentCell(str.mid(1).toInt() - 1,
+                str[0].unicode() - 'A');
+}
+    delete dialog;
+}
+\end{Verbatim}
+
+由于在使用完一个对话框（或者菜单）后，通常就不再需要它了，所以在堆栈中创建对话框（和上下文菜单）是一种常见的编程模式。并且对话框会在作用域结束后自动销毁掉。
+
+现在转到Sort对话框上。Sort对话框是一个模态对话框，它允许用户在当前的选定区域中使用给定的列进行排序。图3.14给出了一个排序的实例，用列B作为排序的主键，列A作为排序的第二键（两个都采用升序）。
+
+\begin{linefig}[0.8]{spreadsheet3-14.png}
+\caption{对电子制表软件的选定区域进行排序}
+\label{fig:spreadsheet3-14.png}
+\end{linefig}
+
+\begin{cppline}{qt4-book/chap03/spreadsheet/mainwindow.cpp}{106}{129}
+\end{cppline}
+
+sort()函数中的代码使用了一种和goToCell()函数中用到的类似模式：
+\begin{itemize}
+\item 在堆栈中创建对话框并且对其进行初始化。
+\item 使用exec()弹出对话框。
+\item 如果用户单击OK，就从对话框的各个窗口部件中提取并且使用这些用户输入的值。
+\end{itemize}
+
+setColumnRange()调用将那些可用于排序的列变量设置为选定的列。例如，使用图3.14中的选择，range.leftColumn()将返回值0
+曛，即，并且
+range. rightColunu/()将返回
+
+compare对象储存了主键、第二键和第三键以及它们的排序顺序。（将会在下一章中看到
+SpreadsheetCompare类的定义。）这个对象会由
+Spreadsheet:：sort()使用，用于两行的比较。keys数组
+存储了这些键的列号。例如，如果选择区域是从
+C2扩展到F5，那么列C的位置就是0。ascendirig厂
 
 
 %附录
@@ -1329,122 +1456,6 @@ saveAs()槽对File→Save As做出响应。调用QFileDialog::getSaveFileName()�
 
 \end{common-format}
 \end{document}
-
-
-
-QString：：喵()函数将会使用自己的参数替换最小数字的“%n”参数，并且会用它的参数返回
-结果“%n”字符和最终的结果字符串。在本例中，喵()被用于两个“%n”参教中。第一个arg()调
-用会替换参数“%1”，第二个arg(．)调用则会替换参数‘t%2”。如果文件名是budget,。p并且没有载
-人翻译文件，那么结果字符串将是“budget.sp[*]-
-    _    ’
-但使用arg()函数可以为翻译人员提供更多的灵活性。
-    如果存在文件名，就需要更新应用程序的最近打开文件列表recentFile。。可以调用removeAll()
-从列表中移除任何已经出现过的文件名‘；从而避免该文件名的重复。然后，可以调用prepend()把
-这个文件名作为文件列表的第一项添加进去。在更新了文件列表之后，可以调用私有函数upda
-
-使用一个风格的迭代器，可以移除任何不再存在的文件。一些文件或许已经在前面的会
-话中使用过，但在此之前还没被删除掉。recentFiles交量的类型是QStringU。t（QString型列表）。第
-11章会详细说明一些像QStringJjst -样的容器类，其中将会说明它们与C++标准模板库（Standard
-Template LibraIy，STL)之间的关系，也会说明Qt的Java风格迭代器类的用法。
-    然后，再遍历一次文件列表，这_次使用数组风格的索引形式。对于每一个文件，创建一个由
-一个与操作符、一位数字（j斗1）、一个空格和该文件名（不带路径）组成的字符串。我们要为使用这
-种文本设置相应的动作。例如，如果第一个文件是C：那么第一个动作的文
-本将会是“&1
-
-    每一个动作都可以带一个与之相关的QVariant型data项。QVanaHt类型可以保存许多C++和
-Qt型变量，第11章将说明这一点。这里，将文件的全名保存在动作的data项中，以便随后可以方
-便地找到它。还要将这个动作设置为可见。 
-    如果有比最新文件更多的文件动作；那么只需隐藏那些多余的动作即可。‘最后，如果至少还
-存在一个最近打开的文件，那么就应该把间隔器设置为可见：
-
-    当用户选择了一个最近打开的文件，就会调用oper，RecentFile()槽。只要有任何未保存的变
-化，就会调用okToContinue()西数，并且假定用户没有取消，还可以使用QObject：：sende。()查出是哪
-    ？    ‘
-个特有动作调用了这个槽。   
-    qobject_cast <T>()函数可在Qt的moc(meta-object compiler，元对象编译器)所生成的元信息基
-础上执行动态类型强制转换(dynamid cast)。它返回一个指向所需QObject子类的指针，或者是在
-该对象不能被转换成所需的那种类型时返回0。与标准C++的：dynamic．．cast <T>()不同，Qt的
-qobject_cast<D()可正确地跨越动态库边界。在例子中，使用qobject_cast：：<D()把一个QObject指
-针转换成QAction指针。如果这个转换是成功的（应当是这样的），就可：以利用从动作的data项中
-所提取的文件全名来调用loadFile()函数。
-    顺便值得一提的是，由于知道这个发射器是一个QAcdon，如果使用static. cast乏D()或者传统
-的C风格的数据类型强制转换代替原有的数据转换方式，这个程序应当仍然是可以运行的。请参
-见附录D中“类型转换”一节对不同C++数据类型强制转换的概述。
-
-
-使用对话框
-一节将说明如何在Qt中使用对话框——如何创建：初始化以及运行它们，并且对用户交互
-择做出响应。本节将会使用在第2章中创建的Find、Go to Cell和Sort对话框，也会创建一
-
-
-们从如图3.12所示的Find对话框开始。’由于希望用户能够在Spreadsheet窗口和Find对话
-
-框之间进行切换，所以Find对话框必须
-中对于任何其他窗口都独童数宣旦一
-。非模态窗口就是运行在应用程序
-
-    Find对话框是一个可以让用户在电子制表软件中搜索文本的窗口。当用户单击Edit—Find
-时，就会调用find()槽来弹出Find对话框。这时，就可能出现下列几种情形：
-  ●这是用户第一次调用Find对话框。
-  ●以前曾经调用过Find对话框，但用户关闭了它。
-  。以前曾经调用过Find对话框，并且现在它还是可见的。
-  ．  如果Find对话框还不曾存在过，就可以创建它并且把它的findNext()信号和findPrevious()信号
-  与Spreadsheet中相对应的那些槽连接起来嗵迥嘤盛啦噔道垫宝剑蕉这个对话框，
-  但是推迟对话框的创建过程将可哒德堡壁釜囊鬓茎磊蓑篓还d如果从-hr使用到这不对话
-
-se()和ac曲ateWindow()来确保窗口位于其他寥且之占羞县墨酉见的和激
-活的。只调用sh6w(．)就足以让一个隐藏窗口变为可见的、位于最上方并且是激活的，但是也有可
-1粒是在Find对话框窗口已经是可见的时候又再次调用了它，在这种情况下，。how()调用可能什么
-也不做，那么就必须调用raise()和acdvateWindow()让窗口成为顶层窗口和激活状态。还有另外一
-种方法，本可以写成：
-
-但这样的程序就好像明明在穿越单行道却又同时去看这条单行道的两个方向一样，显得多余。
-    现在看一下如图3.13所示的Go to Cell对话框。我们希望用户可以弹出、使用和关闭它，但是
-却不希望让这个窗白能够与应用程序中的其他窗口相互切换。也就是说，Go to Cell对话框窗口必
-须是邀蓥垫狮da】咖由。模态窗口就是一个在得到调用可以弹出并可以匾藿西南疆再诵蔺面]夫而会
-从调用发生开始起妨碍其他的任意处理或者交互操作，直到关闭该窗口为止。前面使用的文件对
-话框和消息框就是模态的。    。
-    图3.13 Spreadsheet应用程序的G0 to CeU对话框
-桌对话框是通过show()调用的，那么它就是非模态对话框[除非此后又调甩：setModal()，芨会一
-让它变为模态对话框]。但是，如果它是通过e）【ec()调用的，那么该对话框就会是模态X适k
-
-    如果对话框被接受，函数QDialog：：exec()可返回一个true值（QDi抛：：Accep州），否则就会返
-回一个脚se值(QDialog：：Rejected)。可以回想一下，当初在第2章利用q．设计师创建Go to Cen对
-话框时，就曾经把0K连接到accept()，把Cancel连接到rej面t()。如果用户选择OK，就把当前单元
-格的值设置成行编辑器中的值。
-    Q铀le：：setCu玎entCeu()函数需要两个参数：一个行索引和一个列索引。在Spr睨dsheet应用程
-序中，单元格Al就是单元格(0，0)，单元格B27就是单元格(26，1)。为了从函数Q‰eE拙：：text()
-返回的QStriIlg中获得行索引，可以使用QS嘧唱：：rnid()来提取行号（这个函数将返回一个从字符串
-的开始直到末尾位置的子字符串），然后使用QS嘧唱：：toh()把它转换成一个整数值，并且把该值
-再减去l。对于列号，则可以用这个字符串中第～个字符的大写数值减去字符‘A’的数值而得到。
-我们知道，该字符串将具有正确的格式，因为为对话框创建了一食J坚凄粤翌些dator检验器，只有
-道星二全主煎遁堕亘曼跟至多三位数字格式的字符串才能让o墅缝鲤起生蟹凰———、～——————～
-    g汛cen()函数写画斋看蓟萌旃看砭羁郡有些不同j因为它在堆栈中创建了一个作为变量的窗
-口部件（一个GoTOCeuDialog）。虽然多使用了一行代码，但是换来了使用new和delete的简便：：
-  由于在使用完一个对话框（或者菜单）后，通常就不再需要它了，所以在堆栈，中创建对话框（和
-    f：
-上下文菜单）是一种常见的编程模式。并且对话框会在作用域结束后自动销毁掉。
-热现在转到Sort对话框上。Sort对ia:攥是-.个模态对话框，它允许用户在当前的选定区域中使
-
-用给定的列进行排序。图3 .14给出了-个排序的实例，用列，B作为排序的主键，列A作为排序的
-第二键（两个都采用升序）。
-(a)排序前
-
-sort()函数中的代码使用了一种和goToCell()豳数中用到的类似模式：
-
-。在堆栈中创建对话框并且对其进行初始化。
-。使用.exec()弹出对话框。．
-o如果用户单击0
-setColuiwnRange()调用将那些可用于排序的列变量设置为选定的列。例如，使用图
-的选择，range .leftColumn(')将返回值
-曛，即，并且
-range. rightColunu/()将返回
-
-compare对象储存了主键、第二键和第三键以及它们的排序顺序。（将会在下一章中看到
-SpreadsheetCompare类的定义。）这个对象会由
-Spreadsheet:：sort()使用，用于两行的比较。keys数组
-存储了这些键的列号。例如，如果选择区域是从
-C2扩展到F5，那么列C的位置就是0。ascendirig厂
 
     数组中按bool格式存储了和每一个键相关的顺序。QComlioBox:：currentlndex()返回当前选定项的
     索引值，该值是一个从0开始的数。对于第二键和第三键，考虑到“None”项，我们从当前项减去1。
