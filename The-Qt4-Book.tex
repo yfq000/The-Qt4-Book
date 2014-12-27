@@ -1613,6 +1613,495 @@ int main(int argc, char *argv[])
 到此为止，我们已经创建了Spreadsheet应用程序的用户界面。在下一章中，将会通过实现电子制表软件的核心功能来完成这个应用程序。
 
 
+\chapter{实现应用程序的功能}
+前两章说明了如何创建Spreadsheet应用程序的用户界面。在这一章中，将通过编写它的底层功能函数来完成这个程序。此外，还将看到如何载人和保存文件，如何内存中存储数据，如何实现剪贴板操作，以及如何向QTableWidget中添加对电子制表软件公式的支持等功能。
+
+\section{中央窗口部件}
+QMainWindow的中央区域可以被任意种类的窗口部件所占用。下面给出的是对所有可能情形的概述。
+\begin{enumerate}
+\item \textbf{使用一个标准的Qt窗口部件}
+
+像QTableWidget或者QTextEdit这样的标准窗口部件可以用作中央窗口部件。在这种情况下，这个应用程序的功能，如文件的载入和保存，必须在其他地方实现（例如，在QMainWindow的子类中）
+
+\item \textbf{使用一个自定义窗口部件}
+
+特殊的应用程序通常需要在自定义窗口部件中显示数据。例如，一个图标编辑器程序就应当使用一个IconEditor窗口部件作为自己的中央窗口部件。第5章将会说明如何在Qt中编写自定义窗口部件。
+
+\item \textbf{使用一个带布局管理器的普通QWidget}
+
+有时，应用程序的中央区域会被许多窗口部件所占用。这时可以通过使用一个作为所有这些其他窗口部件父对象的QWidget，以及通过使用布局管理器管理这些子窗口部件的大小和位置来完成这一特殊情况。
+
+\item \textbf{使用切分窗口(splitter)}
+
+多个窗口部件一起使用的另一种方法是使用QSplitter。QSplitter会在水平方向或者竖直方向上排列它的子窗口部件，用户可以利用切分条(splitter handle)控制它们的尺寸大小。切分窗口可以包含所有类型的窗口部件，包括其他切分窗口。
+
+\item \textbf{使用多文档界面工作空间}
+
+如果应用程序使用的是多文档界面，那么它的中央区域就会被QMdiArea窗口部件所占据，并且每个多文档界面窗口都是它的一个子窗口部件。
+\end{enumerate}
+
+布局、切分窗口和多文档界面工作空间都可以与标准的Qt窗口部件或者自定义窗口部件组合使用。第6章将会进一步深入地讲解这些类。
+
+对于Spreadsheet应用程序，会使用一个QTableWidget子类作为它的中央窗口部件。类QTableWidget已经提供了我们所需要的绝大多数电子制表软件的功能，但是它还不支持剪贴板操作，并且也不能理解诸如"=A1+A2+A3"这样的电子制表软件公式的意义。我们将会在Spreadsheet类中实现这些缺少的功能。
+
+\section{子类化QTableWidget}
+类Spreadsheet派生自QTableWidget，如图4.1所示。
+\begin{linefig}[0.5]{spreadsheet4-1.png}
+\caption{类Spreadsheet和Cell的继承树}
+\label{fig:spreadsheet4-1.png}
+\end{linefig}
+
+QTableWidget是一组格子，可以非常有效地用来表达二维稀疏数组。它可以在规定的维数内显示用户滚动到的任一单元格。当用户在一个空单元格内输入一些文本的时候，QTableWidget会自动创建一个用来存储这些文本的QTableWidgetItem。
+
+QTableWidget派生自QTableView，它是模型/视图类之一，我们将在第10章进一步了解它。对于另外一个表QicsTable，它有更多的非常规功能，可以从http://www.ics.com/中获取。
+
+让我们一起来实现Spreadsheet，首先从它的头文件开始：
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.h}{1}{7}
+\end{cppline}
+
+头文件是从Cell和SpreadsheetCompare类的前置声明开始的。
+
+QTableWidget单元格的属性，比如它的文本和对齐方式等，都存储在QTable-WidgeItem中。与QTableWidget不同的是，QTableWidgetItem不是一个窗口部件类，而是一个纯粹的数据类。Cell类派生自QTableWidgetItem，会在本章的最后一节对这个Cell类进行解释。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.h}{9}{23}
+\end{cppline}
+
+之所以把autoRecalculate()函数实现为内联函数，是因为无论自动重新计算的标识符生效与否，它都必须要有返回值。
+
+在第3章中，当实现MainWindow时，我们依赖于Spreadsheet中的一些公有函数。例如，我们从MainWindow::newFile()中调用clear()来重置电子制表软件。也使用了一些从QTableWidget中继承而来的函数，特别是setCurrentCell()和setShowGrid()。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.h}{25}{38}
+\end{cppline}
+
+Spreadsheet提供了许多实现Edit、Tools和Options菜单中的动作的槽：并且它也提供了一个modified()信号，用来告知用户，可能已经发生的任何变化。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.h}{40}{41}
+\end{cppline}
+
+还定义了一个由Spreadsheet类内部使用的私有槽： 
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.h}{43}{52}
+\end{cppline}
+
+在这个类的私有段中，声明了3个常量、4个函数和1个变量。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.h}{54}{0}
+\end{cppline}
+
+在这个头文件的最后，给出了SpreadsheetCompare类的定义。当查看Spreadsheet::sort()时，会解释这个类。
+
+现在来看一下它的实现文件：
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{1}{18}
+\end{cppline}
+
+通常情况下，当用户在一个空单元格中输入一些文本的时候，QTableWidget将会自动创建一个QTableWidgetItem来保存这些文本。在电子制表软件中，我们想利用将要创建的Cell项来代替QTableWidgetItem。这可以通过在构造函数中调用setItemPrototype()来完成。实际上，QTableWidget会在每次需要新项的时候把所传递的项以原型的形式克隆出来。
+
+同样是在构造函数中，我们将选择模式设置为QAbstractItemView::Contiguo\\ usSelection，从而可以允许简单矩形选择框方法。我们把表格窗口部件的itemChanged()信号连接到私有槽somethingChanged()上，这可以确保在用户编辑一个单元格的时候，somethingChanged()槽可以得到调用。最后，调用clear()来重新调整表格的尺寸大小并且设置列标题。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{39}{53}
+\end{cppline}
+
+clear()函数是从Spreadsheet构造函数中得到调用的，用来初始化电子制表软件。它也会在MainWindow::newFile()中得到调用。
+ 
+我们原本使用QTableWidget::clear()来清空所有项和任意选择，但是那样做的话，这些标题将会以当前大小的尺寸而被留下。相反的是，我们要把表格向下调整为$ 0\times 0 $。这样就可以完全清空整个表格，包括这些标题。然后，重新调整表的大小为ColumnCount × RowCount(26 × 999)，并且把QTableWidgetItem水平方向上的标题修改为列名"A"，"B"，$ \cdots $，"Z"。不需要设置垂直标题的标签，因为这些标签的默认值是"1"，"2"，$ \cdots $，"999"。最后，把单元格光标移动到单元格A1处。
+
+QTableWidget由多个子窗口部件构成。在它的顶部有一个水平的QHeaderView，左侧有一个垂直的QHeaderView，还有两个QScrollBar。在它的中间区域被一个名为视口(viewport)的特殊窗口部件所占用，QTableWidget可以在它上面绘制单元格。通过从QTableView和QAbstractScrollArea中继承的一些函数，可以访问这些不同的子窗口部件（参见图4.2）。QAbstractScrollArea提供了一个可以滚动的视口和两个可以打开或关闭的滚动条。第6章将讲述QScrollArea子类。
+
+\begin{linefig}[0.7]{spreadsheet4-2.png}
+\caption{构成QTableWidget的各个窗口部件}
+\label{fig:spreadsheet4-2.png}
+\end{linefig}
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{286}{289}
+\end{cppline}
+
+cell()私有函数可以根据给定的行和列返回一个Cell对象。它几乎和QTableWi-dget::item()函数的作用一样，只不过它返回的是一个Cell指针，而不是一个QTableWidgetItem指针。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{312}{320}
+\end{cppline}
+
+text()私有函数可以返回给定单元格中的文本。如果cell()返回的是一个空指针，则表示该单元格是空的，因而返回一个空字符串。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{302}{310}
+\end{cppline}
+
+formula()函数返回给定单元格中的公式。在很多情况下，公式和文本是相同的。例如，公式"Hello"等价于字符串"Hello"，所以如果用户在单元格中输入"Hello"并且按下回车键，那么该单元格就会显示文本"Hello"。但是还有一些例外的情况：
+\begin{itemize}
+\item 如果公式是一个数字，那么它就会被认为是一个数字。例如，公式"1.50"等价于双精度实数(double)的1.5，它在电子制表软件中会被显示为右对齐的"1.5"。
+\item 如果公式以单引号开始，那么公式的剩余部分将会被认为是文本。例如，公式"'12345"等价于字符串"12345"。
+\item 如果公式以等号开始，那么公式将会被认为是一个算术公式。例如，如果单元格A1包含"12"并且单元格A2包含"6"，那么公式"= A1+A2"就会等于18。
+\end{itemize}
+
+把公式转换成值的任务是由Cell类完成的。这时，要记住的事情是显示在单元格内的文本是公式的结果，而不是公式本身。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{291}{300}
+\end{cppline}
+
+setFormula()私有函数可以设置用于给定单元格的公式。如果该单元格已经有一个Cell对象，那么我们就重新使用它。否则，可以创建一个新的Cell对象并且调用QTableWidget::setItem()把它插入到表中。最后，调用该单元格自己的setFormula()函数，但如果这个单元格已经显示在屏幕上，那么就重新绘制它。我们不需要担心随后对这个Cell对象的删除操作。因为QTableWidget会得到这个单元格的所有权，并且会在正确的时候自动将其删除。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{20}{24}
+\end{cppline}
+
+currentLocation()函数返回当前单元格的位置，它是按照电子制表软件的通常格式，也就是一个列字母后跟上行号的形式来表示这个位置的值。MainWindow::updateStatusBar()使用它把这个单元格的位置显示在状态栏上。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{26}{29}
+\end{cppline}
+
+currentFormula()函数返回当前单元格的公式。它是从MainWindow::upda-teStatusBar()中得到调用的。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{279}{284}
+\end{cppline}
+
+如果启用了"auto-recalculate"（自动重新计算），那么somethingChanged-()私有槽就会重新计算整个电子制表软件。它也会发射modified()信号。
+
+\begin{framed}
+\vspace{-\parskip}
+\begin{center}
+\textbf{把数据存储为项}
+\end{center}
+
+在Spreadsheet应用程序中，每一个非空单元格都被当作一个独立的QTableWidgetItem对象而保存在内存中。把数据存储为项(item)是一种对QListWidgetItem和QTreeWidgetItem进行操作的方法，该方法也可用于QListWidget和QTreeWidget。
+
+Qt的项类可以用作非常规的数据持有者。例如，一个QTableWidgetItem已经存储了一些属性，其中包括一个字符串、一种字体、一种颜色和一个图标，以及一个返回到QTableWidget的指针。项也可以保存数据（QVariant型），包括一些已经注册过的自定义类型，以及通过项类的子类化，我们还可以提供其他功能。
+
+许多老一点的工具包在它们的项类中提供一个void指针来存储自定义数据。在Qt中，更为自然的方法是使用带QVariant的setData()，但如果需要一个void指针，那么可以通过子类化一个项类并且添加一个void指针成员变量来很简单地实现这一点。
+
+对于更具有挑战性的数据处理需求，比如大数据集、复杂数据项、数据库集成以及多数据视图等，Qt提供了一套模型/视图(model/view)类，利用这些类可以把数据从它们的直观表示中分离出来。这些内容将会在第10章中加以讲述。
+\end{framed}
+
+
+\section{载入和保存}
+现在，我们将使用一种自定义的二进制数格式来实现Spreadsheet文件的载入和保存。将使用QFile和QDataStream来完成这一工作，由它们共同提供与平台无关的二进制数输入/输出接口。
+
+首先从一个Spreadsheet文件的输出开始：
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{92}{118}
+\end{cppline}
+
+从MainWindow::saveFile()中调用的writeFile()函数把文件输出到磁盘中。如果输出成功，它会返回true；如果出现错误，则返回false。
+
+我们使用给定的文件名创建一个QFile对象，并且调用open()打开这个用于输出的文件。我们也会创建一个QDataStream对象，由它操作这个QFile对象并且使用该对象输出数据。
+
+在输出数据之前，我们把这个应用程序的光标修改为标准的等待光标（通常是一个沙漏），并且一旦所有的数据输出完毕，就需要把这个应用程序的光标重新恢复为普通光标。在函数的最后，文件会由QFile对象的析构函数自动关闭。 
+
+QDataStream既可以支持C++基本类型，也可以支持多种Qt类型。该语法模仿了标准C++的<iostream>中的那些类的语法。例如：
+\begin{Verbatim}
+out << x << y << z;
+\end{Verbatim}
+会把变量x、y和z输出到一个流中，而：
+\begin{Verbatim}
+in >> x >> y >> z;
+\end{Verbatim}
+会从流中读出它们。因为C++的基本类型在不同平台上可能会有不同的大小，所以把这些变量强制转换成qint8、quint8、qint16、quint16、qint32、quint32、qint64以及quint64中的一个是最安全的做法，这样做可以确保它们能够获得应有的大小（按位计算）。 
+
+Spreadsheet应用程序的文件格式是相当简单的。一个Spreadsheet文件以一个32位数字作为文件的开始，由它确定文件的格式（MagicNumber，在spreadsheet.h中定义为Ox7F51C883，它是一个任意的随机数）。然后是连续的数据块，每一数据块都包含了用于一个单元格中的行、列和公式。为了节省空间，我们没有输出空白单元格。该文件格式如图4.3所示。 
+\begin{fig}[0.8]{spreadsheet4-3.png}
+\caption{Spreadsheet的文件格式}
+\label{fig:spreadsheet4-3.png}
+\end{fig}
+
+关于这些数据类型的二进制数确切表示方法则是由QDataStream决定的。例如，一个quint16按照高字节在后的顺序存储为两个字节，而一个QString则被存储为字符串的长度后跟Unicode字符的形式。
+
+关于Qt数据类型的二进制数确切表示方法，自Qt1.0以来已经发生了许多变化。而且在未来的Qt发行版中，为了能够与现存的数据类型和将来允许出现的新的Qt类型保持一致，这样的表示方法还可能会继续变化下去。默认情况下，QDataStream会使用最近版本的二进制数格式（在Qt 4.3中的版本是第9版），但是可以设置它，使它可以读取那些旧的数据版本。如果以后有可能使用新的Qt发行版来重新编译这个应用程序，那么为了避免出现任何可能的兼容性问题，需要明确告诉QDataStream应该使用的是第9版，从而无需再考虑要使用的Qt版本。（QDataStream::Qt\_{}4\_{}3是一个方便的常量，它就等于9。）
+
+QDataStream的功能非常齐全。既可以把它用于QFile中，也可以把它用于QBuffer、QProcess、QTcpSocket、QUdpSocket或者QSslSocket中。在读取和输出文本文件时，Qt也提供了一个QTextStream类，可以使用它代替QDataStream类。第12章将深入地讲解这些类，并且也会讲述处理不同
+的QDataStream版本时所使用的各种方法。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{55}{90}
+\end{cppline}
+
+readFile()函数与writeFile()函数非常相似。我们使用QFile读取一个文件，但这一次使用的是QIODevice::ReadOnly标记，而不是QIODevice::WriteOnly标记。然后，把QDataStream的版本设置为
+9。用于读取文件的格式必须总是与输出文件的格式相同。
+
+如果该文件在开始处具有正确的幻数(magic number)，那么可以调用clear()来清空电子制表软件中的所有单元格，并且读入单元格中的数据。由于该文件中只包含那些非空单元格的数据，并且也不大可能重置电子制表软件中的每个单元格，所以必须确保在读入数据之前已经清空了所有的单元格。
+
+
+\section{实现Edit菜单}
+现在，我们已经为实现响应应用程序Edit菜单中的各个槽做好了准备。Spreadsheet应用程序中的Edit菜单如图4.4所示。    
+\begin{fig}[0.8]{spreadsheet4-4.png}
+\caption{Spreadsheet应用程序的Edit菜单}
+\label{fig:spreadsheet4-4.png}
+\end{fig}
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{146}{150}
+\end{cppline}
+
+cut()槽可以对Edit→Cut菜单做出响应。由于Cut的执行效果与Copy之后再加上一个Delete的执行效果相同，所以其实现代码很简单。 
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{152}{167}
+\end{cppline}
+
+copy()槽能够对Edit→copy做出响应。它会遍历当前选择（如果没有明确的选择，那么就认为选择的只是当前单元格）。每一个选中单元格的公式都会被添加到一个QString中，行与行之间利用换行符\verb+\n+分隔，列与列之间则以制表符\verb+\t+来分隔。图4.5给出了这一实现方法的示意图。
+
+\begin{fig}[0.8]{spreadsheet4-5.png}
+\caption{把选择复制到剪贴板中}
+\label{fig:spreadsheet4-5.png}
+\end{fig}
+
+在Qt中，通过调用QApplication::clipboard()静态函数可以使用系统的剪贴板。通过调用QClipboard::setText()，就既可以在本应用程序中又可以在其他应用程序中使用放在剪贴板上的这些文本。这种使用制表符\verb+\t+和换行符\verb+\n+作为文件分隔符的形式可以被包括微软Excel在内的许多应用程序所支持。  
+
+函数QTableWidget::selectedRanges()返回一个选择范围列表。我们知道，由于在构造函数中已经将选择模式设置为QAbstractItemView::ContiguousSelec-tion，所以选择范围不可能再超过一。为方便起见，我们定义了一个selectedRange()函数来返回这个选择范围。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{31}{37}
+\end{cppline}
+
+如果只有一个选择，则只需简单地返回第一个（并且也只有这一个）选择即可。没有选择的情况应该永远不会发生，因为ContiguousSelection模式至少可以把当前单元格当作是已经选中的选择。但是，为了避免使程序出现缺陷的可能性，还是需要对这种当前没有选中单元格的情况进行单独处理。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{169}{196}
+\end{cppline}
+
+paste()槽对Edit→Paste菜单选项做出响应。我们从剪贴板中取回文本，并且调用静态函数QString::split()把这串字符变成一个QStringList。每行都会变成这个列表中的一个字符串。
+
+接下来，需要求出复制区域的维数。行数就是QStringList中字符串的个数，列数就是第一行中制表符\verb+\t+字符的个数再加上1。如果只选中了一个单元格，就把这个单元格作为粘贴区域放在左上角；否则，就把当前选择作为要粘贴的区域。
+
+为了执行粘贴操作，我们遍历所有行并且再次使用QString::split()把它们分隔到每一个单元格中，但是这一次要把制表符\verb+\t+当作分隔符。图4.6给出了这一过程中所使用的步骤。
+\begin{fig}[0.8]{spreadsheet4-6.png}
+\caption{把剪贴板中的文本粘贴到电子制表软件中}
+\label{fig:spreadsheet4-6.png}
+\end{fig}
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{198}{206}
+\end{cppline}
+
+del()槽对Edit→Delete菜单选项做出响应。如果有选中的项，那么该函数就会删除它们并且调用somethingChanged()函数。对选择中的每一个Cell对象使用delete足以清空所有这些单元格。当删除QTableWidget的QTableWidgetItem的时候，QTableWidget就会注意到这一情况的发生，而如果这些项中有可见的任意项，QTableWidget将会自动对自己进行重绘。如果在一个已经删除过的单元格位置上又调用了cell()，那么该函数将会返回一个空指针。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{208}{216}
+\end{cppline}
+
+selectCurrentRow()和selectCurrentColumn()对Edit→Select→Row和Edit→Select→Column菜单选项做出响应。这些实现分别依赖于QTableWidget的selectRow()和selectColumn()函数。我们不必再去实现Edit→Select→All菜单选项的功能，因为该功能可以由QTableWidget从QAbstractItemView::selectAll\\()的函数中继承过来。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{236}{255}
+\end{cppline}
+
+findNext()槽会遍历单元格一遍，它从当前光标右侧的单元格开始遍历到这一行的最后一列，然后再从下一行的第一个单元格开始继续遍历，如此反复，直到找到所要查找的文本，或者是直到最后一个单元格为止。例如，如果当前的单元格是C24，那么就会搜索D24、E24、$ \cdots $、Z24，然后再去搜索A25、B25、C25、$ \cdots $、Z25，等等，一直遍历到Z999为止。如果找到了一个匹配项，那么就清空当前选择，把单元格光标移动到那个匹配的单元格上，并且让包含Spreadsheet的窗口变成激活状态。如果没能找到匹配的单元格，那么就让应用程序发出“哔”(beep)的一声来表明搜索已经结束，匹配没有成功。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{257}{277}
+\end{cppline}
+
+findPrevious()槽与findNext()槽相似，区别之处是它会向相反的方向遍历并且会在单元格A1处停下来。
+
+
+\section{实现其他菜单}
+现在，我们将要实现那些对Tools和Options菜单做出响应的槽。这些菜单项如图4.7所示。
+\begin{fig}{spreadsheet4-7.png}
+\caption{Spreadsheet应用程序的Tools和Options菜单}
+\label{fig:spreadsheet4-7.png}
+\end{fig}
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{218}{227}
+\end{cppline}
+
+recalculate()槽能够对Tools→Recalculate莱单选项做出响应。当必要时，它也会被Spreadsheet自动调用。  
+
+我们遍历每一个单元格，并且对每一个单元格调用setDirty()把它们标记为需要重新计算。为了在电子制表软件中显示一个Cell对象的值，QTableWidget会再次对该对象调用text()以获得其值，从而使该值重新计算一次。
+
+然后，对这个视口调用update()来重新绘制整个电子制表软件。QTableWidget中的重绘代码就又会对每一个可见单元格调用text()来获得它们中要显示的值。因为在每一个单元格上都调用了setDirty()，所以这些对text()的调用将会使用重新计算过的值。该计算可能需要重新计算那些不可见的单元格，这就会造成一个级联计算，直到每一个需要被重新计算的单元格能够在刚才刷新过的视口中重新得到计算，从而使它们也能够显示正确的文本。这一计算是由Cell类执行的。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{229}{234}
+\end{cppline}
+
+setAutoRecalculate()槽对Options→Auto-Recalculate菜单选项做出响应。如果启用了这个特性，则会立即重新计算整个电子制表软件以确保它是最新的，然后，recalculate()会自动在somethingChanged()中得到调用。
+
+因为QTableWidget已经提供了一个从QTableView中继承而来的setShowCrid()槽，所以不需要再对Options→Show Grid菜单选项编写任何代码。所有要保留的东西就是Spreadsheet::sort()，它会在MainWindow::sort()中得到调用：
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.cpp}{120}{144}
+\end{cppline}
+ 
+排序操作会对当前的选择进行，并且会根据存储在compare对象中的排序键和排序顺序重新排列这些行。我们使用一个QStringList来重新表示每一行数据，并且把该选择存储在一个行列表中。我们使用Qt的qStableSort()算法，并且根据公式而不是根据值来进行简单排序。这一过程如图4.8和图4.9所示。第11章中会讲述Qt的标准算法和数据结构。
+
+\begin{linefig}[0.8]{spreadsheet4-8.png}
+\caption{把选择存储为一个行列表}
+\label{fig:spreadsheet4-8.png}
+\end{linefig}
+
+\begin{linefig}[0.8]{spreadsheet4-9.png}
+\caption{排序后把数据放回表中}
+\label{fig:spreadsheet4-9.png}
+\end{linefig}
+
+
+qStableSort()函数可以接受一个开始迭代器、一个终止迭代器和一个比较函数。这个比较函数是一个带两个参数（两个QStringList）的函数，并且如果第一个参数“小于”第二个参数，它就返回true，否则返回false。传递的作为比较函数的这个compare对象并不是一个真正的函数，但是它可以用作一个函数，将会很快看到这一点。
+
+在执行完qStableSort()之后，我们把数据移回到这个表中，接着清空这一选择，并且调用。somethingChanged()函数。
+
+在spreadsheet.h文件中，Spreadsheet类的定义如下：
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/spreadsheet.h}{54}{63}
+\end{cppline}
+
+SpreadsheetCompare类有些特殊，因为它实现了一个“()”操作符。这样就允许把这个类像函数一样使用。把这样的类称为函数对象(function object)，或者称为仿函数(functor)。为了理解仿函数是如何工作的，首先从一个简单的例子开始：
+
+\begin{Verbatim}
+class Square
+{
+public:
+    int operator()(int x) const { return x * x; }
+}
+\end{Verbatim}
+
+Square类提供了一个函数，operator()(int)函数，它返回其参数的平方值。通过把这个函数命名为operator()(int)，而不是将其命名为compute(int)之类的函数，就可以把一个类型为Square的对象当作一个函数。
+
+\begin{Verbatim}
+Square square;
+int y = square(5);
+// y equals 25
+\end{Verbatim}
+
+现在，让我们来看一个包括SpreadsheetCompare的实例：
+\begin{Verbatim}
+QStringList row1, row2;
+SpreadsheetCompare compare;
+...
+if (compare(row1, row2)) {
+    // row1 is less than row2
+}
+\end{Verbatim}
+
+使用compare对象就像使用一个普通的compare()函数一样。另外，它的实现可以访问所有存储为成员变量的排序键和排序顺序。  
+
+与此方案相同的另一种方法是，把这些排序键和排序顺序存储在全局成员变量中，并且使用一个普通的compare()函数。然而，在全局成员变量之间通信是一种并不提倡的做法，并且可能会产生一些莫名其妙的问题。作为像qStableSort()这样的模板函数的接口，仿函数是一种更为常用的做法。
+
+这里给出的是对电子制表软件中的两个行进行比较的函数实现：
+\begin{Verbatim}
+bool SpreadsheetCompare::operator()(const QStringList &row1,
+                const QStringList &row2) const
+{
+    for (int i = 0; i < KeyCount; ++i) {
+        int column = keys[i];
+        if (column != -1) {
+            if (row1[column] != row2[column]) {
+                if (ascending[i]) {
+                    return row1[column] < row2[column];
+                } else {
+                    return row1[column] > row2[column];
+                }
+            }
+        }
+    }
+    return false;
+}
+\end{Verbatim}
+
+如果第1行小于第2行，该仿函数就返回true；否则，就返回false。qStableSort()函数会使用这个函数的结果来执行排序操作。
+
+SpreadsheetCompare对象的key与ascending数组和MainWindow::sort\\()函数（已经在第2章中给出过）一起配合使用。每个键都保存一个列索引，或者-1（为"None"时）。
+
+我们按键顺序比较两行中相应的单元格条目。一旦发现有不同之处，就返回一个适当的true或者false值。如果所有的比较关系都证明两者是相等的，就返回false。qStableSort()函数会使用这里给出的顺序来解决这种平局情形。如果一开始的时候row1在row2之前，并且它们都不“小于”对方，那么，在结果中row1还在row2前面。这就是qStableSort()与它很相似的非稳定版本的qSort()函数之间的区别。 
+
+现在已经完成了这个Spreadsheet类。在下一节中，将分析Cell类的代码。这个类用作保存单元格的公式，并且它还重新实现了QTableWidgetItem::data()函数，Spreadsheet可以通过QTableWidgetItem::text()间接调用该函数，用它显示单元格公式的计算结果。
+
+\section{子类化QTableWidgetItem}
+Cell类派生自QTableWidgetItem类。这个类被设计用于和Spreadsheet一起工作，但是它对类QTableWidgetItem没有任何特殊的依赖关系，所以在理论上讲，它也可以用于任意的QTableWidget类中。这里给出的是Cell类的头文件：
+
+\begin{cppinput}{qt4-book/chap04/spreadsheet/cell.h}
+\end{cppinput}
+
+通过增加两个私有变量，Cell类对QTableWidgetItem进行了扩展：
+\begin{itemize}
+\item cachedValue把单元格的值缓存为QVariant。
+\item 如果缓存的值不是最新的，那么就把cacheIsDirty设置为true。
+\end{itemize}
+之所以使用QVariant，是因为有些单元格是double型值，另外一些单元格则是QString型值。
+
+在声明cachedValue和cacheIsDirty变量时使用了C++的mutable关键字，这样就可以在const函数中修改这些变量。或者，在每次调用text()时，我们可以重新计算这个值，不过这样做是不必要而且效率低下的。
+
+我们注意到，在该类的定义中并没有使用Q\_{}OBJECT宏。这是因为，Cell是一个普通的C++类，它没有任何信号或者槽。实际上，因为QTableWidgetItem不是从QObject派生而来的，所以就不能让Cell拥有信号和槽。为了使Qt的项(item)类的开销降到最低，它们就不是从QObject派生的。如果需要信号和槽，可以在包含项的窗口部件中实现它们，或者在特殊情况下，可以通过对QObject进行多重继承的方式来实现它们。 
+
+以下是cell.cpp文件的开始部分：
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{1}{8}
+\end{cppline}
+
+在构造函数中，只需要将缓存设置为dirty。没有必要传递父对象，当用setItem()把单元格插入到一个QTableWidget中的时候，QTableWidget将会自动对其拥有所有权。
+
+每个QTableWidgetItem都可以保存一些数据，最多可以为每个数据“角色”分配一个QVariant变量。最常用的角色是Qt::EditRole和Qt::DisplayRole。编辑角色用在那些需要编辑的数据上，而显示角色用在那些需要显示的数据上。通常情况下，用于两者的数据是一样的，但在Cell类中，编辑角色对应于单元格的公式，而显示角色对应于单元格的值（对公式求值后的结果）。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{10}{13}
+\end{cppline}
+
+当QTableWidget需要创建一个新的单元格时，例如，当用户在一个以前没有使用过的空白单元格中开始输入数据时，它就会调用clone()函数。传递给QTableWidget::setItemPrototype()中的实例就是需要克隆的项。由于对于Cell来讲，成员级的复制已经足以满足需要，所以在clone()函数中，只需依靠由C++自动创建的默认复制构造函数就可以创建新的Cell实例了。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{41}{44}
+\end{cppline}
+
+setFormula()函数用来设置单元格中的公式。它只是一个对编辑角色调用setData()的简便函数。也可以从Spreadsheet::setFormula()中调用它。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{46}{49}
+\end{cppline}
+
+formula()函数会从Spreadsheet::formula\\()中得到调用。就像setFormula()一样，它也是一个简便函数，这次是重新获得该项的EditRole数据。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{15}{20}
+\end{cppline}
+
+如果有一个新的公式，就可以把cacheIsDirty设置为true，以确保在下一次调用text()的时候可以重新计算该单元格。
+
+尽管对Cell实例中的Spreadsheet::text()调用了text()，但在Cell中没有定义text()函数。这个text()函数是一个由QTableWidgetItem提供的简便函数。这相当于调用data(Qt::DisplayRole).toString()。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{51}{54}
+\end{cppline}
+
+调用setDirty()函数可以用来对该单元格的值强制进行重新计算。它只是简单地把cacheIsDirty设置为true，也就意味着cachedValue不再是最新值了。除非有必要，否则不会执行这个重新计算操作。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{22}{39}
+\end{cppline}
+
+data()函数是从QTableWidgetItem中重新实现的。如果使用Qt::DisplayRo-le调用这个函数，那么它返回在电子制表软件中应该显示的文本；如果使用Qt::EditRole调用这个函数，那么它返回该单元格中的公式；如果使用Qt::TextAli-gnmentRole调用这个函数，那么它返回一个合适的对齐方式。在使用DisplayRole的情况下，它依靠value()来计算单元格的值。如果该值是无效的（由于这个公式是错误的），则返回"\verb+####+"。
+
+在data()中使用的这个Cell::value()函数可以返回一个QVariant值。QVariant可以存储不同类型的值，比如double和QString，并且提供了把变量转换为其他类型变量的一些函数。例如，对一个保存了double值的变量调用toString()，可以产生一个表示这个double值的字符串。使用默认构造函数构造的QVariant是一个“无效”变量。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{56}{87}
+\end{cppline}
+
+value()私有函数返回这个单元格的值。如果cacheIsDirty是true，就需要重新计算这个值。
+
+如果公式是由单引号开始的（例如，"'12345"），那么这个单引号就会占用位置0，而值就是从位置1直到最后位置的一个字符串。
+
+如果公式是由等号开始的，那么会使用从位置1开始的字符串，并且将它可能包含的任意空格全部移除。然后，调用evalExpression()来计算这个表达式的值。这里的参数pos是通过引用(reference)方式传递的，由它来说明需要从哪里开始解析字符的位置。在调用evalExpression()之后，如果表达式解析成功，那么在位置pos处的字符应当是我们添加上的QChar::Null字符。如果在表达式结束之前解析失败了，那么可以把cachedValue设置为Invalid。
+
+如果公式不是由单引号或者等号开始的，那么可以使用toDouble()试着把它转换为浮点数。如果转换正常，就把cachedValue设置为结果数字；否则，把cachedValue设置为字符串公式。例如，公式"1.50"会导致toDouble()把ok设置为true并且返回$ 1.5 $，而公式"World Population"则会导致toDouble()把ok设置为false并且返回$ 0.0 $。
+
+通过给toDouble()一个bool指针，可以区分字符串转换中表示的是数字$ 0.0 $还是表示的是转换错误（此时，仍旧会返回一个$ 0.0 $，但是同时会把这个bool设置为false）。有时候，对于转换失败所返回的0值可能正是我们所需要的。在这种情况下，就没有必要再麻烦地传递一个bool指针了。考虑到程序的性能和移植性因素，Qt从来不使用C++异常(exception)机制来报告错误。但是，如果你的编译器支持C++异常，那么这也不会妨碍你在自己的Qt程序中使用它们。
+
+value()函数声明为const函数。我们不得不把cachedValue和cacheIsValid声明为mutable变量，以便编译器可以让我们在const函数中修改它们。当然，如果能够把value()声明为一个非const函数并且移除mutable关键字可能会更吸引人些，但是这将会导致无法编译，因为是从一个const函数的data()函数中调用value()的。
+
+除了要解析这些公式之外，现在已经完成了整个Spreadsheet应用程序。这一节的剩余部分将说明evalExpression()以及evalTerm()和evalFactor()这两个帮助函数。这些代码有一些复杂，但是把它们放在这里是为了能够让整个应用程序显得更完善些。由于这些代码和图形用户界面编程无关，所以你可以非常放心地略过这一部分，从第5章继续阅读下去。
+
+evalExpression()函数返回一个电子制表软件表达式的值。表达式可以定义为：一个或者多个通过许多"+"或者"-"操作符分隔而成的项。这些项自身可以定义为：由"*"或者"/"操作符分隔而成的一个或者多个因子(factor)。通过把表达式分解成项，再把项分解成因子，就可以确保以正确的顺序来使用这些操作符了。
+
+例如，"2*C5+D6"就是一个表达式，它由作为第一项的"2*G5"和作为第二项的"D6"构成。项"2*C5"是由作为第一个因子的"2"和作为第二个因子的"C5"组成的，而项"D6"则由一个单一的因子"D6"组成。一个因子可以是一个数("2")、一个单元格位置("C5")，或者是一个在圆括号内的表达式，在它们的前面可以有负号。
+
+在图4.10中，定义了电子制表软件表达式的语法。对于语法（表达式、项和因子）中的每一个符号，都对应一个解析它的成员函数，并且函数的结构严格遵循语法。通过这种方式写出的解析器称为递归渐降解析器(recursive-descent parser)。
+
+\begin{linefig}[0.8]{spreadsheet4-10.png}
+\caption{用于电子制表软件表达式的语法图}
+\label{fig:spreadsheet4-10.png}
+\end{linefig}
+
+让我们先从evalExpression()开始，这个函数可以解析一个表达式：
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{89}{111}
+\end{cppline}
+
+首先，调用evalTerm()得到第一项的值。如果它后面紧跟的字符是"+"或者"-"，那么就继续第二次调用evalTerm()；否则，表达式就只包含一个单一项，并且把它的值作为整个表达式的值而返回。在得到前两项的值之后，根据操作符计算出这一操作的结果。如果两项都求出一个double值，就把计算出的结果当作一个double值；否则，把结果设置为Invalid。
+
+像前面那样继续操作，直到再没有更多的项为止。这样做可以正确地进行，因为加法和减法都是左相关(left-associative)的；也就是说，"1-2-3"的意思是"(1-2)-3"，而不是"1-(2-3)"。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{113}{139}
+\end{cppline}
+
+除了evalTerm()函数是处理乘法和除法这一点不同之外，它和evalExpression()都很相似。在evalTerm()中唯一的不同就是必须要避免除零，因为在一些处理器中这将是一个错误。尽管测试浮点数值是否相等通常并不明智，因为其中存在取舍问题，但是在这个防止除零的问题上，这样做相等性测试已经足够了。
+
+\begin{cppline}{qt4-book/chap04/spreadsheet/cell.cpp}{141}{193}
+\end{cppline}
+
+evalFactor()函数比evalExpression()和evalTerm()函数都要复杂一些。它先从计算因子是否为负开始。然后，判断它是否是从左圆括号开始的。如果是，就先把圆括号内的内容作为表达式并通过调用evalExpression()来处理它。当解析到带圆括号的表达式时，evalExpression()调用evalTerm()，evalTerm()调用evalFactor()，evalFactor()则会再次调用evalExpression()。这就是在解析器中出现递归调用的地方。
+
+如果该因子不是一个嵌套表达式，就提取下一个记号，它应当是一个单元格的位置，或者也可能是一个数字。如果这个记号匹配QRegExp，就把它认为是一个单元格引用并且对给定位置处的单元格调用value()。该单元格可能在电子制表软件中的任何一个地方，并且它可能会依赖于其他的单元格。这种依赖不是什么问题，它们只会简单地触发更多的value()调用和（对于那些"dirty"单元格）更多的解析处理，直到所有相关的单元格的值都得到计算为止。如果记号不是一个单元格的位置，那么就把它看作是一个数字。
+
+如果单元格A1包含公式"=A1"时会发生什么呢？或者如果单元格A1包含公式"=A2"并且单元格A2包含公式"=A1"时又会发生什么呢？尽管还没有编写任何特定代码来检测这种循环依赖关系，但解析器可以通过返回一个无效的QVariant来完美地处理这一情况。之所以可以正常工作，是因为在调用evalExpression()之前，我们会在value()中把cacheIsDirty设置为false，把cachedValue设置为Invalid。如果evalExpression()对同一个单元格循环调用value()，它就会立即返回Invalid，并且这样就会使整个表达式等于Invalid。
+
+现在，我们已经完成了公式解析器。通过扩展因子的语法定义，公式解析器可以非常方便地处理那些在电子制表软件中像"sum()"和"avg()"一样的某些预定义函数。而另外一种比较容易的扩展方式是将"+"操作符实现为字符串连接（就像串联一样），这样就无需再对这个语法进行修改了。
 
 
 %附录
@@ -1661,7 +2150,7 @@ int main(int argc, char *argv[])
 
 源文件main.cpp包含了main()函数的定义。在C++中，这个函数的参数是一个int和一个char * 数组（一个字符串数组）。可以从argv[0]中获取程序的名字，命令行参数则分别放在argv[1]、argv[2]、$\cdots$、argv[argc-1]中。把参数命名为argc（argument count，参数个数）和argv（argument values，参数值）是一种习惯性的做法。如果这个程序不能使用命令行参数，那么可以把main()定义成不带参数的形式。
  
- 这个main()函数使用标准C++库中的strtod()（即“string转换到double”)、cout（c++的标准输出流），和cerr（c++的标准错误信息输出流），把命令行参数转换成double，并且以文本的形式打印到终端控制台。字符串、数字和行尾标记符(endl)都是使用<<操作符的输出流，该操作符也用于移位操作(bit-shifting)中。为了可以使用这一标准功能，我们需要在第1行和第2行中加入\verb+#inlcude+指示符。
+这个main()函数使用标准C++库中的strtod()（即“string转换到double”)、cout（c++的标准输出流），和cerr（c++的标准错误信息输出流），把命令行参数转换成double，并且以文本的形式打印到终端控制台。字符串、数字和行尾标记符(endl)都是使用<<操作符的输出流，该操作符也用于移位操作(bit-shifting)中。为了可以使用这一标准功能，我们需要在第1行和第2行中加入\verb+#inlcude+指示符。
 
 
 
@@ -1671,423 +2160,4 @@ int main(int argc, char *argv[])
 \end{document}
 
 
-\chapter{实现应用程序的功能}
-前两章说明了如何创建Spreadsheet应用程序的用户界面。在这一章中；将通过编写它的底层
-功能函数来完成这个程序。此外，还将看到如何载人鸭保存文件，女哜旺莓内存中存储数据，如何实
-现剪贴板操作，以及如何向QTableWidget中舔加对电子制表软件公式的支持等功能。
-
-中央窗口部件 
-    QMainWindow的中央区域可以被任意种类的窗口部件所占用。下面给出的是x所有可能情形
-的概述。
-1．使用一个标准的Qt窗口部件
-    像QTableWidget或者QTextEdit这样的标准窗口部件可以用作中央窗口部件。在这种情况下，
-这个应用程序的功能，如文件的载人和保存，必须在其他地方实现（例如，在QMainWindow的子
-2．使用一个自定义窗口部件
-    特殊的应用程序通常需要在自定义窗口部件中显示数据。例如，一个图标编辑器程序就应当
-使用一个IconEditor窗口部件作为自己的中央窗口部件。第5章将会说明如何在’Qt中编写自定义
-窗口部件。    ’
-3．使用一个带布局管理器的普通QWidget
-    有时，应用程序的中央区域会被许多窗口部件所占用。这时可以遁过使用一个作为所有这些
-其他窗口部件父对象的QWidget，以及通过使用布局管理器管理这些子窗口部件的大小和位置来
-完成这一特殊情况。
-4．使用切分窗口(splitter)
-    多个窗口部件一起使用的另．种方法是使用QSplitter。QSplitter会在水平方向或者竖直方向
-上排列它的子窗口部件，用户可以利用切分条(splitter handle)控制它们的尺寸大小。切分窗口可
-以包含所有类型的窗口部件，包括其他切分窗口。
-5．使用多文档界面工作空间
-    如果应用程序使用的是多文档界面，那么它的中央区域就会被QMdiArea窗口部件所占据，并
-且每个多文档界面窗口都是它的一个子窗口部件。
-    布局、切分窗口和多文档界面工作空间都可以与标准的Qt窗口部件或者自定义窗口部件组
-合使用。第6章将会进一步深入地讲解这些类。
-    对于Spreadsheet应用程序，会使用一个QTableWidget子类作为它的中央窗口部件。类QTable-
-Widget已经提供了我们所需要的绝大多数电子制表软件的功能，但是它还不支持剪贴板操作，并
-且也不能理解诸如“= A1+A2+A3”这样的电子制表软件公式的意义。我们将会在Spreads heet类中
-窦现这些缺少的功能。
-
-
-    类Spreadsheet派生自QTableWidget，如图4.1所示。 
-    eView
-QTableWidget是一纽格子，可以非常有效地用来表达二维  oT86下vj
-稀疏数组。它可以在规定的维数内显示用户滚动到的任'iLQTableWidget    QTabLeWidgetltem i
-    l    I
-一单元格。当用户在一个空单元格内输入一些文本的时  Spreadsheet    Cell
-候，QTableWidget会自动创建二个用莱存储遂些文笨酌S    。
-    ，  图4.1类Spreadsheet和Cell的继承树
-QTableWidgedtem。    _
-    QTableWidget派生自QTableView，它是模型／视图类之一，我们将在第10章进一步了解它。对
-于另外一个表QicsTable，它有更多的非常规功能，可以从http：//www.ics. com/中获取：
-    让我们一起来实现Spreadsheet，首先从它的头文件歼始：    ‘    ．
-
-头文件是从Cell和SpreadsheetCompare类的前置声明开始的。
-
-    QTableWidget单元格的属性，比如它的文本和对齐方式等，都存储在QTableWjdgeⅡtem中。与
-QTableWidget不同的是，QTableWidgedtem不是一个窗口部件类，而是一个纯粹的数据类：Cell类派
-生自QTableWidgeⅡtem，会在本章的最后一节对这个Cell类进行解释。
-
-
-乏所以把autoRecalculate()函数实现为内联函数，是因为无论自动重新计算的标识符生效与
-它都必须要有返回值。
-在第3章中，当实现MainWindow时，我们依赖于S
-中的一些公有函数。例如，我们从
-MainWindow:：newFile()中调用clear()来重置电子制表软件。也使用了一些从QTableWidget中继承
-而来的函数，，特别是setCurrentCell()和setShowGrid()。
-
-    Spreadsheet提供了许多实现Edit、’rools和Options菜单中的动作酌槽：并且它也提供了一个
-modified()信号，用来告知用户，可能已经发生的任何变化。
-
-还定义了一个由Spreadsheet类内部使用的私有槽： 
-
-在这个类的私有段中，声明了3伞常量、4个函数和1个变量。
-
-    在这个头文件的最后，给出了SpreadsheetCompare类的定义。当查看1Spre。dsheet：。：。orf()时，会
-解释这个类。
-现在来看一下它的实现文件：
-
-通常情况下，当用户在一个空单元格中输入一些文本的时候，QTableWidget将会自动创建一个
-  QTableWidgetltem来保存这些文本。在电子制表软件中，我们想利用将要创建的Cell项来代替
-  QTableWidgedtem。这可以通过在构造函数中调用sedtemPrototype()来完成。实际上，QTableWidget
-  会在每次需要新项的时候把所传递的项以原型的形式克隆出来。
-    同样是在构造函数中，我们将选择模式设置为QAbstracdtemView：：ConUguousSelection，从而可以
-  允许简单矩形选择框方法。我们把表格窗口部件的ite．nChanged()信号连接到私有槽s
-
-
-Changed()上，这可以确保在用户编辑一个单元格的时候，somethingChanged()槽可以得到调用。最
-后，调用clear()来重新调整表格的尺寸大小并且设置列标题。
-
-clear()函数是从Spreadsheet构造函数中得到调用的，用来初始化电子制表软件。它也会在
-Ma/nWindow:：newFile()中得到调用。  
-    我们原本使用qLableWidget：：clear()来清空所有项和任意选择，但是那样儆的话，这些标题将会
-以当前大小的尺寸而被留下。相反的是，我们要把表格向下调整为Ox0。这样就可以完全清空整个
-表格，包括这些标题。然后，，重新调整表的大小为ColumnCount×RowCount(26×999)，并且把QIable-
-Widgetltem水平方向上的标题修改为列名“A'’，“B”，…，“Z”。不需要设置垂直标题的标签，因为这些
-标签的默认值是“1”，“2”，…，“999'’。最后，’把单元格光标移动到单元格Al处。
-    qlCableWidget由多个子窗口部件构成。在它的顶部有一个水平的QHeaderView，左侧有一个垂
-直的QHeaderView，还有两个QScrollBar。在它的中间区域被一个名为视口(viewport)的特殊窗口部
-件所占用，’QTableWidget可以在它上面绘制单元格。通过从QTableView和QAbstractScroⅡArea中继
-承的一些函数，可以访问这些不同的子窗口部件(参见图4.2)。‘QAbstractScrollArea提供了一个可
-以滚动的视口，和两个可以打开或关闭的滚动条。第6章将讲述QScrollArea子类。．  ’
-
-
-  。cell()私有函数可以根据给定的行和列返回一个Cell对象。它几乎和QTableWidget:：item()函
-数的作用一样，只不过它返回的是一个Cell指针，而不是一个QTableWidgetltem指针。
-
-    text()私有函数可以返回给定单元格中的文本。如果cell()返回的是一个空指针，则表示该单
-元格是空的，因而返回一个空字符串。
-
-    formula()函数返回给定单元格中的公式。在很多情况下，公式和文本是相同的。例如，公式
-“Hello”等价于字符串“Hello”，所以如果用户在单元格中输入“Hello”并且按下回车键浔眵么该单元
-格就会显示文本“Hello”。但是还有一些例外的情况：：    j
-    ·如果公式是一个数字，那么它就会被认为是一个数字。，例如，公式“1.50”等价于双精度实数
-    ( double)的1.5，它在电子制表软件中会被豆示为右对齐的“1.5:’。
-    ·如果公式以单引号开始．那么公式的剩余部分将会被认为是文本。例如，公式'12345”等价
-    。    ：
-    于字符串“12345”。    ，
-
-●如果公式以等号开始，那么公式将会被认为是一个算术公式。例如，如果单元格．A1包含
-    “12”并且单元格A2包含“6”，那么公式“= A1+A2”就会等于18。    。
-    把公式转换成值的任务是由Cell类完成的。这时，要记住的事情是显示在单元格内的/cAs:i是
-公式的结果，而不是公式本身。
-
-setFormula()私有函数可以设置用于给定单元格的公式。如果该单元格已经有一个Cell对象，
-那么我们就重新使用它。否则，可以创建一个新的Cell对象并且调用QTableWidget:：setltem()把它
-插入到表中。最后，调用该单元格自己的setFormula(>函数，但如果这个单元格已经显示在屏幕上．
-那么就重新绘制它。我们不需要担心随后对这个.Cell对象的迥l瞧操绦。因为7．凹ableWidget会得到
-这个单元格的所有权，并且会在正确的时候自动将其删除。
-
-    currentLocation()函数返回当前单元格的位置，它是按照电子制表软件的通常格式，也就是一个
-
-列字母后跟上行号的形式来表示这个位置的值。MainWindow：：updateStatusBar()使用它把这个单元
-格的位置显示在状态栏上。
-
-currentFonnula()函数返回当前单元格的公式。它是从MainWindow:：updateStatusBar()中得到调
-用的。
-
-如果启用了“引ito-recalculate”（自动重新计算），那么somethingChanged()私有槽就会重新计算整
-个电子制表软件。它也会发射modified()信号。
-4.3载入和保存
-  现在，我们将使用一种自定义的二进制数格式来实现Spreadsheet文件的载人和保存。将使用
-QFile和QDaLaStream来完成这一工作．由它们共同提供与平台无关的二进制数输入，输出接口。
-    首先从一个Spreadsheet文件的输出开始：    +．
-
-第4章实现应用程序的功能
-
-
-从MainWindow:：saveFile()中调用的writeFile()函数把文件输出到二磁盘中。如果输出成功，它
-会返回true；如果出现错误，则返回false。    ‘
-    我们使用给定的文件名创建一个QFile对象，并且调用open()打开这个用于输出的文件。我
-们也会创建一个QDataStream财象，由它操作这个QFile对象并且使用该对象输出数据。
-    在输出数据之前，我们把这个应用程序的光标修改为标准的等待光标（通常是●个沙漏），并
-且一旦所有的数据输出完毕，就需要把这个应用程序的光标重新恢复为普通光标。在函数的最
-后，文件会由QFile对象的析构函数自动关闭。    。一    ．  ．：  。，◆  ．
-    QDataStream既可以支持C++基本类型，也可以支持多种Qt类型。该语法模仿了标准C++的
-<iostream>中的那些类的语法。例如：
-
-会把变量x、y和z输出到一个流中，而：
-
-会从流中读出它们。因为C++的基本类型在不同平台上可能会有不同的大小，所以把这些变量
-强制转换成qint8、quint8、qint16、quint16、qint32、quint32、qint64以及quint64中的一个是最安全的做
-法，这样做可以确保它们能够获得应有的大小（按位计算）。  。  。    ‘
-    ：、
-    Spreadsheet应用程序的文件格式是相当简单的。一个Spreadsheet文件以一个32位数字作为
-文件的开始，由它确定文件的格式（MagicNu．nber，茌spreadsheet．hf中定义为Ox7F51C883，它是一个
-任意的随机数）。然后是连续的数据块，每一数据块都包含了用于一个单元格中的行、列和公式。
-为了节省空间，我们没有输出空白单元格。该文件格式如图4.3所示。    ”    ，
-图4.3 Spreadsheet'的文件格式
-    关于这些数据类型的二进制数确切表示方法则是由QDataStream决定的。例如，一个quint16
-  按照高字节在后的顺序存储为两个字节，而一个QString则被存储为字符串的长度后跟Unicode字
-  ．符的形式。
-    关于Qt数据类型的二进制数确切表示方法，自Qtl.0以来已经发生了许多变化。而且在未来的
-．。Qt发行版中，为了能够与现存的数据类型和将来允许出现的新的Qt类型保持一致，这样的表示方法
-。还可能会继续变化下去。默认情况下，QDataStrea/n会使用最近版本的二进制数格式（在Qt 4.3中
-C.++ GUI Qt 4编程（第二版）
-的版本是第9版），但是可以设置它，使它可以读取那些1日的数据版本。如果以后有可能使用新的
-Qt发行版来重新编译这个应用程序，那么为了避免出现任何可能的兼容性问题，需要明确告诉
-QDataStream应该使用的是第9版，从而无需再考虑要使用的Qt版本。（QDataStreanl-：Qt_4_3是一
-个方便的常量，它就等于乡。）
-    QDataStream的功能非常齐全。既可以把它用于QFile中，也可以把它用于QBuffer、QProcess、
-QTcpSocket、QUdpSocket或者QSslSocket中。在读取和输出文本文件时，Qt也提供了一个QText-
-Sueam类，可以使用它代替QDataStream类。第12章将深入地讲解这些类，并且也会讲述处理不同
-的QDataStream版本时所使用的各种方法。
-
-
-readFile()函数与writeFile()函数非常相似。我们使用QFile读取一个文件，但这一次使用的是
-QIODevice.:：ReadOnly标记，而不是QIODevice：：WriteOnly标记。1然后，把'QDataStream的版本设置为
-9。用于读取文件的格式必须总是与输出文件的格式相同。
-    如果该文件在开始处具有正确的幻数(magic nur—iber)，那么可以调用clear()来清空电子制表软
-件中的所有单元格，并且读人单元格中的数据。由于该文件中只包含那些非空单元格的数据，并
-且也不大可能重置电子制表软件中的每个单元格，所以必须确保在读人数据之前已经清空了所有
-的单元格。
-4:4实现Edit菜单
-    现在，我们已经为实现响应应用程序Edit菜单中的各个槽做好了准备。Spreadsheet应用程序
-中的'Edit菜单如图4.4所示。    
-
-    cut()槽可以对Edit_+ Cut菜单做出响应。由于Cut的执行效果与Copy之后再加上一个Delete
-的执行效果相同，所以其实现代码很简单。    、
-
-copy()槽能够对Edit_+C叩y做出响应。它会遍历当前选择（如果没有明确的选择，那么就认为
-选择的只是当前单元格）。每一个选中单元格的公式都会被添加到一个QStri坞中，行与衍之间利
-用换行符“＼n”分隔，列与列之间则以制表符“＼t”来分隔。图4.5给出了这一实现方法的示意图。
-    图4.4 Spreadsheet应用程序的Edit菜单    图4.5’把选择复制到剪贴板中
-    在Qt中，通过调用QApplication：：clipboard()静态函数可以使用系统的剪贴板。通过调用
-QClipboard：：setText()，就既可以在本应用程序中又可以在其他应用程序中使用放在剪贴板上的这
-些文本。这种使用制表符“＼t”和换行符“＼n”作为文件分隔符的形式可以被包括微软Excel在内的
-许多应用程序所支持。    ．    ’    ．
-    函数QTableWidget：：selectedRanges()返回一个选择范围列表j1我fl]知道；由于在构造函数中已
-经将选择模式设置为QAbstracdtemView：：ContiguousSelection，所以选择范围不可能再超过Vl。为方
-便起见，我们定义了一个selectedRange()函数来返回这个选择范围。、  “
-
-
-如果只有．个选择，则只需简单地返回第一个（并且也只有这一个）选择即可。没有选择的。隋
-
-况应该永远不会发生，因为ContiguousSelection模式至少可以把当前单元格当作是已经选中的选
-择。但是，为了避免使程序出现缺陷的可能性，还是需要对这种当前没有选中单元格的情况进行
-单独处理。    。
-
-paste()槽对Edit—Paste菜单选项做出响应。我们从剪贴板中取回文本，并且调甩静态函数
-制表符“"字符的个数再加上1。如果只选中了一个单元格，‘就把这个单元格作为粘贴区域放在
-左上角；否则，就把当前选择作为要粘贴的区域。
-为了执行粘贴操作，我们遍历所有行并且再次使用
-QString:：spht()把它们分隔到每一个单元
-格中，但是这一次要把制表符当作分隔符。图4.6给出了这一过程中所使用的步骤。
-
-:rDelete菜单选项做出响应。7如果有选’中的项，那么该函数就会ff/l.l除它们并且
-调用gmethingChanged(:)函数。，对选择中的每一个CeR对象使用.delete足以清空所有这些单元格j
-当删除QTableWidget的QTableWidgetlte蹬的时候，凹abKWidget就会注意到这一情况的发生，而如果
-这些项中有可见的任意项，QTableWidget将会自动对自己进行重绘。如果在一个已经删除过thj单
-元格位置上又调用了cell()，那么该函数将会返回。个空指针。
-
-项做出响应。这些实现分别依赖于QTableWidget的selJectRow()和selectColumn()函数。+我们不必再
-去实现Edit  Select- All菜单选项的功能，因为该功能可以由QTableWidget从QAbstiactItemView：：
-selectAll()的函数中继承过来。
-
-findNext()槽会遍历单元格一遍，它从当前光标右侧的单元格开始逋冼到这一行的最后一列，
-然后再从下一行的第一个单元格开始继续遍历，如此反复，直到找到所要鲞找的文本，或者是直到
-最后一个单元格为止。例如，如果当前的单元格是C24，那么就会搜索D24、E24、…、224，然后再去
-搜索A25、B25、C25、-？，≮225;等等，一直遍历到2999为止。如果找到才々个匹配项，那么就清空当
-前选择，把单元格光标移动到那个匹配的单元格上，并且让包含．Spreads~et的窗日变成激潘状态。
-如果没能找到匹配的单元格，那么就让应用程序发出，哔’’'( beep)盼一声来表明搜索已经结束i匹配
-没有成功。
-
-findPrevious()槽与findNext()槽相似，区别之处是它会向相反的方向遍历并且会在单元格Al
-处停下来。
-4.5实现其他菜单
-    现在，我们将要实现那些对Tools和Options菜单做出响应的槽。这些菜单项如图4.7所示。
-recalculate()槽能够对Tools—Recalculate莱单选项做出响应。当必要时，它也会被Spreadsheet
-自动调用。  
-    我们遍历每一个单元格，并且对每一个单元格调用setDirty()把它们标记为需要重新计算。为
-了在电子制表软件中显示一个Cell对象的值，QTableWidget会再次对该对象调用text()以获得其
-值，从而使该值重新计算一次。
-    然后，对这个视口调用update()来重新绘制整个电子制表软件。QTableWidget中的重绘代码就
-又会对每一个可见单元格调用text()来获得它们中要显示的值。因为在每一个单元格上都调用了
-setDiIy.()，所以这些对text()的调用将会使用重新计算过的值。该计算可能需要重新计算那些不
-可见的单元格，这就会造成一个级联计算，直到每一个需要被重新计算的单元格能够在刚才刷新
-过的视口中重新得到计算，从而使它们也能够显示正确的文本。这一计算是由Cell类执行的。
-
-    setAutoRecalculate()槽对OpUons—Auto-Reealculate菜单选项做出响应。如果启用了这个特性，则
-会立即重新计算整个电子制表软件以确保它是最新的，然后，recalculate()会自动在something-
-Changed()中得到调用。
-    因为QTableWidget已经提供了一个从QTableView中继承而来的setShowCrid()槽，所以不需要
-再对OpUons—ShowGI-id菜单选项编写任何代码。所有要保留的东西就是Spreadsheet：：sort()，它会
-在MainWindow:：soit()中得到调用：
- 
- 徘序操作会对当前的选择进行，并且会根据存储在compare对象中的排序键和排序顺序重新
-排列这些行。我们使用一个QStringList来重新表示每一行数据，并且把该选择存储在一个行列表
-中。我们使用Qt的qStableSort()算法，并且根据公式而不是根据值来进行简单排序。这一过程如
-图4.8和图4.9所示。第11章中会讲述Qt的标准算法和数据结构。
-
-图4.9排序后把数据放回表中
-    qStable,Sort()函数可以接受一个开始迭代器、二个终止迭代器和一个比较函数。这个比较函数
-是一个带两个参数(两个QStringList)的函数，并且如果第一个参数“小于”第二个参数，它就返回
-
-true，否则返回false。传递的作为比较函数的这个compare对象并不是一个真正的函数，但是它可
-以用作一个函数，将会很快看到这一点。  j
-    在执行完qStableSmt()之后，我们把数据移回到这个表中，接着清空这一选择，并且调用。ome-
-thingChanged()函数。
-
-Sp”eadsheetCompare类有些特殊，因为它实现了一个“()”操作符。这样就允许把这个类像函数
-一样使用。把这样的类称为函数对象(function object)，或者称为仿函数(fun。to。)o为了理解仿函数
-是如何工作的，首先从一个简单的例子开始：
-
-    Square粪提供了一个函数，operator() (int)函数，它返回其参数的平方值。通过把这个函数命名
-为operator() (int)，而不是将其命名为compute(int)之类的函数，就可以把一个类型为Square的对象
-当作一个函数。
-
-使用compare对象就像使用一个普通的con．pare()函数一样。另外，它的实现可以访问所有存
-储为成员变量的排序键和排序顺序。  ，    ，，    ：。、，：
-    与此方案相同的另一种方法是，把这些排序键和排序顺序存储在全局成员变量中，并且使用
-一个普通的c优npare()函数。然而，在全局成员变量之间通信是一种并不提侣的做法，并且可能会
-产生一些莫名其妙的问题。作为像qStableSort()这样的模板函数的接口，仿函数是一种更为常用
-的做法。
-这里给出的是对电子制表软件中的两个行进行比较的函数实现：
-
-    如果第1行小于第2行，该仿函数就返回true；否则，就返回false。qStableSort()函数会使用这
-个函数的结果来执行排序操作。
-    SpreadsheetCompare对象的key与ascending数组和MainWindow：；sort()函数（已经在第2章中给
-出过）一起配合使用。每个键都保存一个列索引，或者-1（为“None”时）。
-    我们按键顺序比较两行中相应的单元格条目。一旦发现有不同之处，就返回一个适当的true或
-者false值。如果所有的比较关系都证明两者是相等的，就返回false。qStableSort()函数会使用这里给
-出etjJ顷序来解决这种平局情形。如果一开始的时候rowl在row2之前，并且它们都苯“小于”对方，
-那么，在结果中rowl还在row2前面。这就是qStableSort()与它很葙似酌非稳定版本的qSort()函数
-之间的区别。    ‘    ‘
-    现在已经宪成了这个Spreadsheet类。在下一节中，将分析Cell类的代码。这个类用作保存单
-元格的公式，并且它还重新实现了QTableWidgetltem：：data()函数，Spreadsheet可以通过QTabl．-Wid-
-getltem:：text()间接调用该函数，用它显示单元格公式的计算结果。
-4.6  子类化QTableWidgetltem
-    Cell类派生自QTableWidgetltem类。这个类被设计用于和Spreadsheet' -起工作，但是它对类
-QTableWidgetltem没有任何特殊的依赖关系，所以在理论上讲，它也可以用于任意的QTableWidget
-类中。这里给出的是Cell类的头文件：
-
-遁过增加两个私有变量，Cell类对QTableWidgetltem进行了扩展：
-
-●cachedValue把单元格的值缓存为QV撕ant。
-．如果缓存的值不是最新的，那么就把cacheIsDirty设置为true。
-之所以使用QVanant，是因为有些单元格是double型值，另外一些单元格则是QString型值。
-    在声明cachedValue和cacheIsDirt.y变量时使用了C++的mutable关键字，这样就可以在const
-函数中修改这些变量。或者，在每次调用text()时，本应当重新计算这个值，但是这样做是不必要
-的，因为它的效率非常低下。  ？
-    我们注意到，在该类的定义中并没有使用Q- OBJECT宏。这是因为，Cell是-个普通的C’++
-类，它没有使用任何信号或者槽。实际上，因为QTableWidgetltem不是从QObject派生而来的，所以
-就不能让Cell拥有信号和槽。为了使QL‘的项(item)类的开销降到最低，它们就不是从QObject派
-生的。如果需要信号和槽，可以在包含项的窗口部件中实现它们，或者在特殊情况下，可以通过对
-QObject进行多重继承的方式来实现它们。    ．    ．
-在构造函数中，只需要将缓存设置为dirty。没有必要传递父对象，当用setltem()把单元格插
-人到一个QTableWidget中的时候，QTableWidget将会自动对其拥有所有权。
-    每个QTableWidgetltem都可以保存一些数据，最多可以为每个数据“角鸟”分配一个QV矗aIlt变
-量。最常用的角色是Qt:：Ed/tRole和Qt:：DisplayRole。编辑角色用在那些需要编辑的数据上，而显
-示角色用在那些需要显示的数据上。通常情况下，用于两者的数据是一样的，但在Cell类中，．编辑
-角色对应于单元格的公式，而显示角色对应于单元格的值（对公式求值后的结果）。．
-
-  一当QTableWidget需要创建一个新的单元格时，例如，当用户在一个以前没有使用过的空白单元
-格中开始输入数据时，它就会调用clone()函数。传递给QTableWidget:：setItemPrototype()中的实例
-就是需要克隆的项。曲于对于Cell来讲，成员级的复制已经足以满足需要，所以在clone()函数中，
-只需依靠由C++自动创建的默认复制构造函数就可以创建新的Cell实例了。
-setFormula()函数用来设置单元格中的公式。它只是一个对编辑角色调用setData()的简便函
-数。也可以从Spreadsheet:：setFonnula()中调用它。
-
-    formula()函数会从Spreadsheet:：fonnula()中得到调用。就像setFormula() -样，它也是一个简
-便函数，这次是重新获得该项的Ed/tRole数据。
-
-    如果有一个新的公式，就可以把cacheIsDirty设置为true，以确保在下一次调用text()的时候可
-以重新计算该单元格。
-    尽管对Cell实例中的SpreAdsheet:：text()调用了text()，但在Cen中没有定义text()函数。这个
-text()函数是一个由QTableWidgetltem提供的简便函数。这相当于调用data(
-    调用setDnty()函数可以用来对该单元格的值强制进行重新计算。它只是简单地把cachels -
-Dirty设置为true，也就意味着cachedValue不再是最新值了。除非有必要，否则不会执行这个重新
-计算操作。
-data()豳数是从QTableWidgetltem中重新实现的。如果使用Qt:：DiBplayRole调用这个函数，那
-么它返回在电子制表软件中应该显示的文本；如果使用Qt:：EditRole调用这个函数，那么它返回该
-单元格中的公式；如果使用Qt:：TextAlignmentRole调用这个函数，那么它返回一个合适的对齐方
-式。在使用DisplayRole的情况下，它依靠value()未计算单元格的值。如果该值是无效的（由于这
-个公式是错误的），则返回“辑#样”。    ，  ‘
-。在data()中使用的这个CeⅡ:：value()函数可以返回一个QVariant值。QVariant可以存储不同
-类型的值，比如double和QString，并且提供了把变量转换为其他类型变量的一些函数。例如，对一
-个保存了double值的变量调用toString()，可以产生一个表示这个double值的字符串。使用默认构
-造函数构造的QVariant是一个“无效”变量。    ：
-
-value()私有函数返回这个单元格的值。如果cacheIsDirty是true，就需要重新计算这个值。
-    如果公式是由单引号开始的（例如，“’12345”），那么这个单引号就会占用位置0，而值就是从
-位置1直到最后位置的一个字符串。    ‘’
-    如果公式是由等号开始的，那么会使用从位置1开始的字符串．并且将它可能包含的任意空
-格全部移除。然后，调用evalExpression()来计算这个表达式的值。这里的参数pos是通过引用(ref-
-erence)方式传递的，由它来说明需要从哪里开始解析字符的位置。在调用evalExpression()之后，如
-果表达式解析成功，那么在位置pos处的字符应当是我们添加上的QChar:：Null字符。如果在表达
-式结束之前解析失败了，那么可以把cachedValue设置为Invalid。
-    如果公式不是由单引号或者等号开始的，那么可以使用toDouble()试着把它转换为浮点数。
-如果转换正常，就把cachedValue设置为结果数字；否则，把cachedValue设置为字符串公式。例如，
-公式“1.50”会导致toDouble()把ok设置为true并且返回i.5，而公式“World Population”则会导致
-toDouble()把ok设置为false并且返回0.0。
-    通过给toDouble()-个bool指针，可以区分字符串转换中表示的是数字0.0还是表示的是转
-换错误(此时，仍旧会返回一个0.0，但是同时会把这个bool设置为~alse)。有时候，对于转换矢败
-所返回的0值可能正是我们所需要的。在这种情况下，就没有必要再麻烦地传递一个bool指针
-了。考虑到程序的性能和移植性因素，Qt从来不使用C++异常(exception)机制来报告错误。但
-是，如果你的编译器支持C++异常，那么这也不会妨碍你在自己的Qt程序中使用它们。
-    value()函数声明为const函数。，我们不得不把cachedValue和cacheIsValid声明为mutable变量，
-以便编译器可以让我们在．const。函数中修改它们。当然，如果能够把value()声明为一个非const函
-数并且移除mutable哭键掌可能会更吸引火些，但是这将会导致无法编译，因为是从一个const函数
-的data()函数中调用value()的。
-    除了要解析这些公式之外：现在已经完成了整个Spreadsheet应用程序。这一节的剩余部分将
-说明evalExpression()以及evalTerm()和evalFactor()这两个帮助函数。这些代码有一些复杂，但是把
-它们放在这里是为了能够让整个应用程序显得更完善些。由于这些代码和图形用户界面编程无
-关，所以你可以非常放心地略过这一部分，从第5章继缤阅读下去。
-    evalExpression()函数返回一个电子制表软件表达式的值。表达式可以定义为：一个或者多个
-通过许多“+”或者“一”操作符分隔而成的项。这些项自身可以定义为：由“*”或者“／”操作符分
-隔而成的一个或者多个因子( factor)。通过把表达式分解成项，再把项分解成因子，就可以确保以
-正确的顺序来使用这些操作符了。
-    例如，“2*C5+D6”就是一个表达式，它由作为第一项的j'2*G5”和作为第二项的“D6”构成。项
-“2 x-C5”是由作为第一个因子的“2”和作为第二个因子的“C5”组成的，而项“D6”则由一个单一的因
-子“D6”组成。一个因子可以是一个数(“2”)、一个单元格位置(‘！c5”)，或者是一个在圆括号内的表
-达式，在它们的前面可以有负号。
-    在图4.10中，定义了电子制表软件表达式的语法。对于语法（表达式、项和因子）中的每一个
-符号，都对应一个解析它的成员函数，并且函数的结构严格遵循语法。通过这种方式写出的解析
-器称为递归渐降解析器( recursive-descent parser)。
-首先，调用evalTerm()得到第一项的值j如果它后面紧跟的字符是“+，”或者“二”，那么就继续
-第二次调用evalTerm()；否则，表达式就只包含一个单一项’，并且把它的值作为墼个表达式的值而
-返回。在得到前两项的值之后，根据操作符计算出这一一操作的结果o=如果两项都求出一个doubl。
-值，就把计算出的结果当作一个double值；否则，把结果设置为Invalid。。一  ，  ，    ：
-    像前面那样继续操作，直到再没有更多的项为止。，这样做可以正确地进行．；因为加法和减法
-都是左相关(left:associative)的；也就是说，“1-2-3”的意思是‘j(1÷2)，3”，而不evalTerm()函数是处理乘法和除法这一点不同之外，它和evalExpression()都很相似。在
-)中唯二的不同就是必须要避免除零，因为在_些处理器中这将是一个错误。尽管测试
-浮点数值是否相等通常并不明智，因为其中存在取舍问题，但是在这个防止除零的问题上，这样做
-相等性测试已经足够了。
-
-    evalFactor()函数比evalExpression()和evalTerm()函数都要复杂一些。它先从计算因子是否为负
-开始。然后，判断它是否是从左圆括号开始的。如果是，就先把圆括号内的内容作为表达式并通过调
-用evalExpression()来处理它。当解析到带圆括号的表达式时，evalExpression()调用evalTerm()，eval-
-Term()调用evalFactor()，evalFactor()贝U会再次调f evalExpression()。这就是在解析器中出现递归调用
-的地方。
-    如果该因子不是一个嵌套表达式，就提取下一个记号，它应当是一个单元格的位置，或者也可
-能是一个数字。如果这个记号匹配QRegExp．就把它认为是一个单元格引用并且对给定位置处的
-单元格调用value()。该单元格可能在电子制表软件中的任何一个地方，并且它可能会依赖于其他
-的单元格。这种依赖不是什么问题，它们只会简单地触发更多的value()调用和（对于那些“_diry”
-单元格）更多的解析处理，直到所有相关的单元格的值都得到计算为止。如果记号不是一个单元
-格的位置，那么就把它看作是一个数字。    ．
-    如果单元格Al包含公式“=A1”时会发生什么呢？或者如果单元格A1包含公式“=A2”并且
-单元格A2包含公式“=A1”时又会发生什么呢？尽管还没有编写任何特定代码来检测这种循环依
-赖关系，但解析器可以通过返回一个无效的QVariant来完美地处理这一情况。之所以可以正常工
-作，是因为在调用evalExpr；ession()之前，我们会在value()中把cacheIsDirty设置为false，把
-cachedValue设置为Invalid。如果evalExpression()对同一个单元格循环调用value()，，它就会立即返
-回Invahd，并且这样就会使整个表达式等于Invalid。
-    现在，我们已经完成了公式解析器。通过扩展因子的语法定叉，公式解析器可以非常方便地处
-理那些在电子制表软件中像“sum()”和“a．vg()”一样的某些预定义函数。而另外一种比较容易的扩展
-方式是将“+”操作符实现为字符串连接（就像串联一样），这样就无需再对这个语法进行修改了。
 
