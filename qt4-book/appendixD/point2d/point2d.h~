@@ -1,0 +1,31 @@
+#ifndef POINT2D_H
+#define POINT2D_H
+class Point2D
+{
+public:
+Point2D() {
+xVal = 0;
+yVal = 0;
+}
+Point2D(double x, double y) {
+xVal = x;
+yVal = y;
+}
+void setX(double
+void setY(double
+double x() const
+double y() const
+x) { xVal = x;
+y) { yVal = y;
+{ return xVal;
+{ return yVal;
+}
+}
+}
+}
+
+private:
+double xVal;
+double yVal;
+};
+#endif
