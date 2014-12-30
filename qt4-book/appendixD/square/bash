@@ -1,0 +1,3 @@
+g++ -c  main.cpp;
+g++ -c  square.cpp;
+g++ main.o square.o -o square;

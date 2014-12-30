@@ -222,9 +222,14 @@ text-micro = μ
 \definecolor{codeback}{RGB}{240,240,240}
 \definecolor{bashback}{RGB}{48,10,36}
 
-\newtcblisting{tcbcode}[1][text]{listing engine=minted,minted language=#1,minted options={fontsize=\footnotesize,frame=none},listing only,breakable=true,colback=codeback,boxrule=0.4pt,boxsep=0pt}
+\newtcblisting{tcbcode}[2][]{listing engine=minted,minted language=#2,minted options={fontsize=\footnotesize,frame=none},listing only,#1,breakable=true,colback=codeback,boxrule=0.4pt,boxsep=0pt}
 
-\newtcbinputlisting{tcbinput}[2][text]{listing engine=minted,minted language=#1,minted options={fontsize=\footnotesize,frame=none},listing only,breakable=true,colback=blue!5!white,boxrule=0.4pt,boxsep=0pt,listing file={#2}}
+\newtcblisting{tcbpython}[1][]{listing engine=minted,minted language=python,minted options={fontsize=\footnotesize,frame=none},listing only,#1,breakable=true,colback=codeback,boxrule=0.4pt,boxsep=0pt}
+
+\newtcblisting{tcbbash}[1][]{listing engine=minted,minted style=native,minted language=bash,minted options={fontsize=\footnotesize,frame=none},listing only,#1,breakable=true,boxrule=0.4pt,colback=bashback,coltext=white}
+
+
+\newtcbinputlisting{tcbinput}[3][]{listing engine=minted,minted language=#2,minted options={fontsize=\footnotesize,frame=none},listing only,#1,breakable=true,colback=blue!5!white,boxrule=0.4pt,boxsep=0pt,listing file={#3}}
 
 
 \tcbuselibrary{skins}
