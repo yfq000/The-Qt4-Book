@@ -2282,49 +2282,73 @@ char类型用于存储ASCⅡ字符和8位整型值（字节）。当用作整型
 \begin{cppinput}{qt4-book/appendixD/point2d2/main.cpp}
 \end{cppinput}
 
+在C++中，任意类型的变量都可以直接声明而不必一定要使用new。第一个变量会使用默认的Point2D构造函数（这个构造函数没有参数）进行初始化。第二个变量则使用第二个构造函数进行初始化。对一个对象的成员进行访问需要使用"."（点）操作符。
+
+以这种方式声明变量的行为就像在Java/C\#{}中声明一些基本类型一样，比如int和double。例如，当使用赋值操作符时，会复制变量的内容，而不是复制对象的引用(reference)。如果要在以后修改一个变量值，那么从它那里赋值而来的其他任何变量都仍旧会保持不变。
+
+作为一种面向对象的语言，C++支持继承(inheritance)和多态(polymorphism)。为了说明它们是如何工作的，我们将分析一个例子，该例以Shape为抽象基类，以Circle为子类。先从基类开始：
+
+\begin{cppinput}{qt4-book/appendixD/shape/shape.h}
+\end{cppinput}
+
+这个定义放在头文件shape.h中。由于在这个类的定义中引用了类Point2D，所以需要包含头文件point2d.h。
+
+类Shape没有基类。这一点不像Java和C\#{}，C++没有为所有的类提供一个可以从中继承出来的一般类Object。Qt则为所有类型的对象提供了一个简单基类QObject。
+
+draw()函数的声明有两个有趣的特点：它含有virtual关键字，并且以"=0"为结尾，关键字virtual表明这个函数可能会在子类中重新得到实现。就像在C\#{}中一样，C++的成员函数在默认情况下也是不能重新实现的。这个奇特的"=0"的语句表明这个函数是一个纯虚函数(pure virtual function)——一个没有默认实现代码并且必须在子类中实现的函数。要把Java和C\#{}中的“接口”的概念对应到类中，就只能用C++的纯虚函数来表示了。
+
+以下是子类Circle的定义：
+
+\begin{cppinput}{qt4-book/appendixD/shape/circle.h}
+\end{cppinput}
+
+类Circle通过公有(public)方式继承了Shape，也就是说，Shape中的所有公有成员在Circle中仍旧是公有的。C++也支持保护(protected)继承和私有(private)继承，利用它们可以限制对基类的public成员和protected成员的访问。
+
+这个构造函数带有两个参数。第二个参数是可选的，并且如果没有给定参数值就会取0.5。构造函数在函数名和函数体之间使用一种特殊的语法把center参数传递给基类的构造函数。在函数体中，我们对成员变量myRadius进行了初始化。在基类构造函数初始化时，我们也本应在同一行初始化该变量：
+\begin{Verbatim}
+Circle(Point2D center, double radius = 0.5)
+    : Shape(center), myRadius(radius) { }
+\end{Verbatim}
+
+另一方面，C++不允许在类定义中初始化成员变量，因此，下面的代码就是错误的：
+\begin{Verbatim}
+// 将无法编译通过
+private:
+    double myRadius = 0.5;
+};
+\end{Verbatim}
+
+draw()函数与Shape中声明的虚函数draw()具有相同的名字。它是该函数的一个重新实现，并且在Circle实例上通过Shape引用或者指针调用draw()时，就会以多态的形式调用该函数。C++不像C\#{}那样有override关键字。而且C++也没有能够指向基类的super或者base关键字。如果需要调用一个函数的基本实现，则可以在这个函数的名字前加上一个由基类的名字和"::"操作符构成的前缀。例如：
+\begin{Verbatim}
+class LabeledCircle : public Circle
+{
+public:
+    void draw() {
+        Circle::draw();
+        drawLabel();
+    }
+...
+};
+\end{Verbatim}
+
+
+C++支持多重继承，也就是说，一个类可以同时从多个类中派生出来。语法形式如下所示：
+\begin{Verbatim}
+class DerivedClass : public BaseClass1, public BaseClass2, ...,
+                public BaseClassN{
+    ...
+};
+\end{Verbatim}
+
+
+
+
 
 %这里空一行
 
 \end{common-format}
 \end{document}
 
-
-    在C++中，任意类型的变量都可以直接声明而不必一定要使用new。第一个变量会使用默认
-的Point2D构造函数（这个构造函数没有参数）进行初始化。第二个变量则使用第二个构造函数进
-行初始化。对一个对象的成员进行访问需要使用“．”（点）操作符。
-    以这种方式声明变量的行为就像在Java/C#中声明一些基本类型一样，比如血和double。例如，
-当使用赋值操作符盱蘧凌制变量的内容，而不是复制对象的引用( reference)。如呆要在以后修改一
-个变量值i那么从它那童赡馥而来的其他任何变量都仍旧会保持不变。’    、
-    作为一种面向对象的语言，C++支持继承(inheritance)和多态(polymorph/sm)。为了说明它们
-是如何工作的，我们将分析一个例子，该例以Shape为抽象基类，以Circle,为子类：’先从基类开始：
-
-    这个定义放在头文件shape．h中。由于在这个类的定义中引用了类Point2D，所以需要包含头
-文件point2d.h。
-    类Shape没有基类。这一点不像Java和C#，C++没有为所有的类提供一个可以从中继承出
-来的一般类Object。q则为所有类型的对象提供了一个简单基类QObject。
-    draw()函数的声明有两个有趣的特点：它含有virtual关键字，并且以“兰0：’为结尾，关键字vlr-
-tual表明这个函数可能会在子类中重新得到实现。就像在．C#．中一样，C++’的成员函数在默认情
-况下也是不能重新实现的。这个奇特的“=0”的语句表明这个函数是一个纯虚函数(pure vinual
-function) --个没有默认实现代码并且必须在子类中实现的函数。要把Java和C#中的“接口”
-的概念对应到类中，就只能用C++的纯虚函数来表示了。
-    以下是子类Circle的定义：
-．一类Circle通过公有(public)方式继承了Shape，也就是说，Shape中的所有公有成员在Circle中仍
-旧是公有的。。C。++也支持保护(protected)继承和私有（private）继承，一利用它们可以限制对基类的
-public成员和protected成员的访问i。    ．    0．  __．  j 7．+  √  ：；-
-    这个构造函数带有两个参数。第二个参数是可选的，并且如果没有给定参黎值就会取o．5。
-构造函数在函数名和函数体之间使用一种特殊的语法把center参数传递给基类的构造函数。，在函
-数体中，我们对成员变量myRadius'进行了初始化。在基类构造函数初始化时，我们也本应在同一
-行初始化该变量：
-
-    另一方面，C++不允许在类定义中初始化成员变量，因此，下面的代码就是错误的，．  。
-
-    dIaw()函数与Shape中声明的虚函数draw()具有相同的名字。它是该函数的一个重新实现，
-并且在Circle实例上通过Shape引用或者指针调用draw()时，就会以多态的形式调用该函数。
-C++不像C#那样有override关键字。而且C++也没有能够指向基类的super或者base关键字。
-如果需要调用一个函数的基本实现，则可以在这个函数的名字前加上一个由基类的名字和“：：”操
-作符构成的前缀。例如：
-
-C++支持多重继承，也就是说，一个类可以同时从多个类中派生出来。语法形式如下所示：
 
     默认情况下，类中声明的函数和变量都与这个类的实例相关。我们也可以声明静态( stadc)成
 员函数和静态成员变量，可以在没有实例的情况下使用它们。例如：
