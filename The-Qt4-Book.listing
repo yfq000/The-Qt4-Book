@@ -1,10 +1,9 @@
-ello.cpp]{c++}
-#include <QApplication>
-#include <QLabel>
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
-    QLabel *label = new QLabel("Hello Qt!");
-    label->show();
-    return app.exec();
+#include "point2d.h"
+
+int main(){
+    Point2D *point = new Point2D;
+    point->setX(1.0);
+    point->setY(2.5);
+    delete point;
+    return 0;
 }
